@@ -1,0 +1,66 @@
+---
+const WHATSAPP_NUMBER = '5493XXXXXXXXX' // TODO: reemplazar con número real
+const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}`
+
+const links = [
+  { href: '#servicios', label: 'Servicios' },
+  { href: '#planes', label: 'Planes' },
+  { href: '#cotizador', label: 'Cotizador' },
+  { href: '#contacto', label: 'Contacto' },
+]
+---
+
+<header class="fixed top-0 left-0 right-0 z-50 bg-stone-50/90 backdrop-blur-sm border-b border-stone-200">
+  <div class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+
+    <a href="/" class="font-display text-xl font-semibold text-stone-900">
+      Huellas de Paz
+    </a>
+
+    <nav class="hidden md:flex items-center gap-8">
+      {links.map(link => (
+        <a href={link.href} class="text-sm text-stone-600 hover:text-brand-600 transition-colors">
+          {link.label}
+        </a>
+      ))}
+    </nav>
+
+    <a
+      href={WHATSAPP_URL}
+      target="_blank"
+      rel="noopener noreferrer"
+      class="hidden md:inline-flex items-center gap-2 bg-brand-600 hover:bg-brand-800 text-white text-sm font-medium px-4 py-2 rounded-full transition-colors"
+    >
+      Consultar por WhatsApp
+    </a>
+
+    <button id="menu-toggle" class="md:hidden p-2 text-stone-600" aria-label="Abrir menú">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="3" y1="6" x2="21" y2="6" />
+        <line x1="3" y1="12" x2="21" y2="12" />
+        <line x1="3" y1="18" x2="21" y2="18" />
+      </svg>
+    </button>
+  </div>
+
+  <div id="mobile-menu" class="hidden md:hidden border-t border-stone-200 bg-stone-50">
+    <nav class="flex flex-col px-6 py-4 gap-4">
+      {links.map(link => (
+        <a href={link.href} class="text-stone-700 hover:text-brand-600 transition-colors"
+          onclick="document.getElementById('mobile-menu').classList.add('hidden')">
+          {link.label}
+        </a>
+      ))}
+      <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer"
+        class="inline-flex items-center justify-center bg-brand-600 text-white text-sm font-medium px-4 py-2 rounded-full">
+        Consultar por WhatsApp
+      </a>
+    </nav>
+  </div>
+</header>
+
+<script>
+  const toggle = document.getElementById('menu-toggle')
+  const menu = document.getElementById('mobile-menu')
+  toggle?.addEventListener('click', () => menu?.classList.toggle('hidden'))
+</script>

@@ -1,0 +1,47 @@
+---
+const WHATSAPP_NUMBER = '5493XXXXXXXXX' // TODO: reemplazar
+const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}`
+const year = new Date().getFullYear()
+---
+
+<footer class="bg-stone-900 text-stone-400 py-16">
+  <div class="max-w-6xl mx-auto px-6">
+    <div class="grid md:grid-cols-3 gap-12 mb-12">
+
+      <div>
+        <p class="font-display text-white text-xl font-semibold mb-3">Huellas de Paz</p>
+        <p class="text-sm leading-relaxed text-stone-500">
+          Crematorio y cementerio parque de mascotas en Rosario. Más de 20 años acompañando a las familias.
+        </p>
+      </div>
+
+      <div>
+        <p class="text-white text-sm font-medium mb-4">Servicios</p>
+        <ul class="flex flex-col gap-2 text-sm">
+          <li><a href="#servicios" class="hover:text-white transition-colors">Cremación individual</a></li>
+          <li><a href="#servicios" class="hover:text-white transition-colors">Cremación comunitaria</a></li>
+          <li><a href="#servicios" class="hover:text-white transition-colors">Entierro en parcela o nicho</a></li>
+          <li><a href="#planes" class="hover:text-white transition-colors">Planes de previsión</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <p class="text-white text-sm font-medium mb-4">Contacto</p>
+        <ul class="flex flex-col gap-2 text-sm">
+          <li>Dirección — pendiente</li>
+          <li>Teléfono — pendiente</li>
+          <li>
+            <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer" class="hover:text-white transition-colors">
+              WhatsApp
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="border-t border-stone-800 pt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-stone-600">
+      <p>© {year} Huellas de Paz. Todos los derechos reservados.</p>
+      <p>Desarrollado por <span class="text-stone-500">Ravenna</span></p>
+    </div>
+  </div>
+</footer>

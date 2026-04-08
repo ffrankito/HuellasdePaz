@@ -1,0 +1,135 @@
+---
+// El formulario envía a /api/leads del CRM
+// Fallback v1 temp: webhook Make → Google Sheets
+// TODO: configurar PUBLIC_CRM_API_URL en .env
+---
+
+<section id="contacto" class="py-24 bg-white">
+  <div class="max-w-6xl mx-auto px-6 grid md:grid-cols-2 gap-16 items-start">
+
+    <div>
+      <p class="text-brand-600 text-sm font-medium tracking-wide uppercase mb-3">Contacto</p>
+      <h2 class="font-display text-4xl font-semibold text-stone-900 mb-4">
+        Tenés dudas? <br />Te llamamos nosotros
+      </h2>
+      <p class="text-stone-500 text-lg leading-relaxed mb-8">
+        Dejanos tus datos y un integrante del equipo se comunica con vos para responder todo sin apuro.
+      </p>
+      <div class="flex flex-col gap-3 text-sm text-stone-600">
+        <div class="flex items-center gap-3">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-brand-600 flex-shrink-0">
+            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+          </svg>
+          <span>Dirección — pendiente</span>
+        </div>
+        <div class="flex items-center gap-3">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-brand-600 flex-shrink-0">
+            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1.25h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 8.37a16 16 0 0 0 6 6l.91-.91a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 21.73 16z"/>
+          </svg>
+          <span>Teléfono — pendiente</span>
+        </div>
+      </div>
+    </div>
+
+    <form id="contact-form" class="flex flex-col gap-5">
+
+      <div class="flex flex-col gap-1.5">
+        <label for="nombre" class="text-sm font-medium text-stone-700">Nombre *</label>
+        <input type="text" id="nombre" name="nombre" required minlength="2" placeholder="Tu nombre completo"
+          class="border border-stone-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-brand-600 transition-colors" />
+      </div>
+
+      <div class="flex flex-col gap-1.5">
+        <label for="telefono" class="text-sm font-medium text-stone-700">Teléfono *</label>
+        <input type="tel" id="telefono" name="telefono" required placeholder="Ej: 341 555-1234"
+          class="border border-stone-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-brand-600 transition-colors" />
+        <p class="text-xs text-stone-400">Te contactamos por WhatsApp.</p>
+      </div>
+
+      <div class="flex flex-col gap-1.5">
+        <label for="email" class="text-sm font-medium text-stone-700">Email <span class="text-stone-400 font-normal">(opcional)</span></label>
+        <input type="email" id="email" name="email" placeholder="tu@email.com"
+          class="border border-stone-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-brand-600 transition-colors" />
+      </div>
+
+      <div class="flex flex-col gap-1.5">
+        <label for="plan_interes" class="text-sm font-medium text-stone-700">Plan de interés <span class="text-stone-400 font-normal">(opcional)</span></label>
+        <select id="plan_interes" name="plan_interes"
+          class="border border-stone-300 rounded-xl px-4 py-3 text-sm bg-white focus:outline-none focus:border-brand-600 transition-colors">
+          <option value="">Seleccioná una opción</option>
+          <!-- TODO: reemplazar con nombres reales de los planes -->
+          <option value="plan_1">Plan 1</option>
+          <option value="plan_2">Plan 2</option>
+          <option value="plan_3">Plan 3</option>
+          <option value="servicio_directo">Servicio directo (sin plan)</option>
+        </select>
+      </div>
+
+      <div class="flex flex-col gap-1.5">
+        <label for="mensaje" class="text-sm font-medium text-stone-700">Mensaje <span class="text-stone-400 font-normal">(opcional)</span></label>
+        <textarea id="mensaje" name="mensaje" rows="3" placeholder="En qué podemos ayudarte?"
+          class="border border-stone-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-brand-600 transition-colors resize-none"></textarea>
+      </div>
+
+      <button type="submit" id="submit-btn"
+        class="bg-brand-600 hover:bg-brand-800 text-white font-medium px-6 py-3 rounded-full transition-colors text-sm">
+        Enviar consulta
+      </button>
+
+      <div id="form-success" class="hidden text-sm text-brand-600 text-center py-2">
+        Gracias! Te contactamos a la brevedad.
+      </div>
+      <div id="form-error" class="hidden text-sm text-red-500 text-center py-2">
+        Hubo un error. Por favor intentá de nuevo o escribinos por WhatsApp.
+      </div>
+
+    </form>
+  </div>
+</section>
+
+<script>
+  const form = document.getElementById('contact-form') as HTMLFormElement
+  const submitBtn = document.getElementById('submit-btn') as HTMLButtonElement
+  const successMsg = document.getElementById('form-success')
+  const errorMsg = document.getElementById('form-error')
+
+  const params = new URLSearchParams(window.location.search)
+  const canalOrigen = params.get('utm_source') || 'directo'
+
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault()
+    submitBtn.disabled = true
+    submitBtn.textContent = 'Enviando...'
+    successMsg?.classList.add('hidden')
+    errorMsg?.classList.add('hidden')
+
+    const data = {
+      nombre: (form.elements.namedItem('nombre') as HTMLInputElement).value,
+      telefono: (form.elements.namedItem('telefono') as HTMLInputElement).value,
+      email: (form.elements.namedItem('email') as HTMLInputElement).value,
+      plan_interes: (form.elements.namedItem('plan_interes') as HTMLSelectElement).value,
+      mensaje: (form.elements.namedItem('mensaje') as HTMLTextAreaElement).value,
+      canal_origen: canalOrigen,
+    }
+
+    try {
+      const CRM_API_URL = import.meta.env.PUBLIC_CRM_API_URL || 'https://crm.huellasdepaz.com.ar/api/leads'
+      const res = await fetch(CRM_API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      })
+      if (res.ok) {
+        form.reset()
+        successMsg?.classList.remove('hidden')
+      } else {
+        throw new Error('error')
+      }
+    } catch {
+      errorMsg?.classList.remove('hidden')
+    } finally {
+      submitBtn.disabled = false
+      submitBtn.textContent = 'Enviar consulta'
+    }
+  })
+</script>

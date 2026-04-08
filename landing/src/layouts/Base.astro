@@ -1,0 +1,31 @@
+---
+export interface Props {
+  title?: string
+  description?: string
+}
+
+const {
+  title = 'Huellas de Paz — Crematorio y Cementerio de Mascotas',
+  description = 'El primer crematorio de mascotas con habilitación formal en Rosario. Planes de previsión, cremación individual y comunitaria, cementerio parque.',
+} = Astro.props
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <title>{title}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <!-- TODO: favicon real cuando haya logo -->
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>

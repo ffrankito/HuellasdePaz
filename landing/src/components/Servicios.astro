@@ -1,0 +1,58 @@
+---
+const servicios = [
+  {
+    id: 'cremacion-individual',
+    titulo: 'Cremación individual',
+    descripcion: 'Tu mascota es cremada sola, de manera privada. Recibís sus cenizas en una urna sellada con identificación, con la certeza de que son las de tu compañero.',
+    detalle: ['Proceso individual y privado', 'Urna con identificación', 'Certificado de cremación', 'Entrega a domicilio opcional'],
+    destacado: true,
+  },
+  {
+    id: 'cremacion-comunitaria',
+    titulo: 'Cremación comunitaria',
+    descripcion: 'Cremación grupal para quienes prefieren una opción más accesible. Las cenizas se dispersan con respeto en el predio del cementerio parque.',
+    detalle: ['Proceso grupal respetuoso', 'Dispersión en el predio', 'Certificado de servicio', 'Opción más accesible'],
+    destacado: false,
+  },
+  {
+    id: 'entierro',
+    titulo: 'Entierro en parcela o nicho',
+    descripcion: 'Un lugar físico donde recordar a tu mascota. Parcelas y nichos en un espacio natural, tranquilo y cuidado.',
+    detalle: ['Parcela o nicho individual', 'Espacio natural y cuidado', 'Placa de identificación', 'Visitas libres'],
+    destacado: false,
+  },
+]
+---
+
+<section id="servicios" class="py-24 bg-white">
+  <div class="max-w-6xl mx-auto px-6">
+    <div class="mb-14">
+      <p class="text-brand-600 text-sm font-medium tracking-wide uppercase mb-3">Servicios</p>
+      <h2 class="font-display text-4xl font-semibold text-stone-900 mb-4">
+        Elegí la despedida <br />que mejor acompañe
+      </h2>
+      <p class="text-stone-500 text-lg max-w-lg">
+        Cada familia es diferente. Ofrecemos opciones para que puedas despedirte de la manera que sientas más adecuada.
+      </p>
+    </div>
+    <div class="grid md:grid-cols-3 gap-6">
+      {servicios.map(s => (
+        <div class={`rounded-2xl border p-8 flex flex-col gap-6 ${s.destacado ? 'border-brand-400 bg-brand-50' : 'border-stone-200 bg-stone-50'}`}>
+          {s.destacado && <span class="inline-block self-start bg-brand-600 text-white text-xs font-medium px-3 py-1 rounded-full">Más elegido</span>}
+          <div>
+            <h3 class="font-display text-xl font-semibold text-stone-900 mb-2">{s.titulo}</h3>
+            <p class="text-stone-600 text-sm leading-relaxed">{s.descripcion}</p>
+          </div>
+          <ul class="flex flex-col gap-2 mt-auto">
+            {s.detalle.map(item => (
+              <li class="flex items-center gap-2 text-sm text-stone-600">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-brand-600 flex-shrink-0"><polyline points="20 6 9 17 4 12"/></svg>
+                {item}
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>

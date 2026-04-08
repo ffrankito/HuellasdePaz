@@ -1,0 +1,36 @@
+# Dependencies
+node_modules/
+.pnp
+
+# Build outputs
+dist/
+.next/
+out/
+build/
+.astro/
+
+# Environment variables
+.env
+.env.local
+.env.development
+.env.production
+
+# Vercel
+.vercel
+
+# Supabase
+supabase/.branches
+supabase/.temp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+*.swp
+
+# Logs
+*.log
+npm-debug.log*
