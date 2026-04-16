@@ -2,6 +2,7 @@ import { pgTable, uuid, text, timestamp, pgEnum } from 'drizzle-orm/pg-core'
 
 export const rolEnum = pgEnum('rol', [
   'admin',
+  'manager',
   'contadora',
   'televenta',
   'transporte',

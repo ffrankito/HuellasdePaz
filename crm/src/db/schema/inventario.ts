@@ -18,9 +18,11 @@ export const inventario = pgTable('inventario', {
   stockMinimo: integer('stock_minimo').notNull().default(5),
   precioUnitario: numeric('precio_unitario', { precision: 10, scale: 2 }),
   proveedor: text('proveedor'),
+  foto: text('foto'),
   notas: text('notas'),
   creadoEn: timestamp('creado_en').defaultNow().notNull(),
-  actualizadoEn: timestamp('actualizado_en').defaultNow().notNull(),
+  actualizadoEn: timestamp('actualizado_en').defaultNow().notNull()
+  
 })
 
 export type ItemInventario = typeof inventario.$inferSelect

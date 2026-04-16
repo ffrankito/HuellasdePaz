@@ -39,9 +39,7 @@ export default function LeadsPage() {
     if (!result.destination) return
     const leadId = result.draggableId
     const nuevoEstado = result.destination.droppableId as EstadoLead
-
     setLeads(prev => prev.map(l => l.id === leadId ? { ...l, estado: nuevoEstado } : l))
-
     await fetch(`/api/leads/${leadId}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
@@ -50,8 +48,8 @@ export default function LeadsPage() {
   }
 
   return (
-    <div style={{ padding: '40px 48px', background: '#f9fafb', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 32 }}>
+    <div className="page-container" style={{ display: 'flex', flexDirection: 'column' }}>
+      <div className="page-header">
         <div>
           <h1 style={{ fontSize: 24, fontWeight: 600, color: '#111827', margin: 0 }}>Leads</h1>
           <p style={{ fontSize: 14, color: '#6b7280', marginTop: 4, marginBottom: 0 }}>{leads.length} leads registrados</p>
@@ -68,31 +66,25 @@ export default function LeadsPage() {
         <p style={{ fontSize: 14, color: '#9ca3af' }}>Cargando...</p>
       ) : (
         <DragDropContext onDragEnd={onDragEnd}>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 16, flex: 1, alignItems: 'start' }}>
+          <div style={{ display: 'flex', gap: 16, overflowX: 'auto', paddingBottom: 16, flex: 1, alignItems: 'start' }}>
             {columnas.map(col => {
               const leadsColumna = leads.filter(l => l.estado === col.id)
               return (
-                <div key={col.id}>
+                <div key={col.id} style={{ minWidth: 200, flex: '0 0 200px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12, padding: '0 4px' }}>
                     <span style={{ width: 8, height: 8, borderRadius: '50%', background: col.color, display: 'inline-block', flexShrink: 0 }} />
                     <span style={{ fontSize: 13, fontWeight: 600, color: '#374151' }}>{col.label}</span>
                     <span style={{ fontSize: 12, color: '#9ca3af', marginLeft: 'auto', background: '#f3f4f6', padding: '1px 7px', borderRadius: 20 }}>{leadsColumna.length}</span>
                   </div>
-
                   <Droppable droppableId={col.id}>
                     {(provided, snapshot) => (
                       <div
                         ref={provided.innerRef}
                         {...provided.droppableProps}
                         style={{
-                          minHeight: 200,
-                          background: snapshot.isDraggingOver ? '#f0f9ff' : '#f3f4f6',
-                          borderRadius: 14,
-                          padding: 8,
-                          transition: 'background 0.15s',
-                          display: 'flex',
-                          flexDirection: 'column',
-                          gap: 8,
+                          minHeight: 200, background: snapshot.isDraggingOver ? '#f0f9ff' : '#f3f4f6',
+                          borderRadius: 14, padding: 8, transition: 'background 0.15s',
+                          display: 'flex', flexDirection: 'column', gap: 8,
                         }}
                       >
                         {leadsColumna.map((lead, index) => (
@@ -103,13 +95,10 @@ export default function LeadsPage() {
                                 {...provided.draggableProps}
                                 {...provided.dragHandleProps}
                                 style={{
-                                  background: 'white',
-                                  borderRadius: 12,
-                                  padding: '14px 16px',
+                                  background: 'white', borderRadius: 12, padding: '14px 16px',
                                   border: '1px solid #f3f4f6',
                                   boxShadow: snapshot.isDragging ? '0 8px 24px rgba(0,0,0,0.12)' : '0 1px 3px rgba(0,0,0,0.04)',
-                                  cursor: 'grab',
-                                  ...provided.draggableProps.style,
+                                  cursor: 'grab', ...provided.draggableProps.style,
                                 }}
                               >
                                 <p style={{ fontSize: 14, fontWeight: 600, color: '#111827', margin: '0 0 6px' }}>{lead.nombre}</p>

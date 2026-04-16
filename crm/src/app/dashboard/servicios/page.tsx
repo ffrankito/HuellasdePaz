@@ -39,8 +39,8 @@ export default async function ServiciosPage() {
     .orderBy(desc(servicios.creadoEn))
 
   return (
-    <div style={{ padding: '40px 48px', background: '#f9fafb', minHeight: '100vh' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 32 }}>
+    <div className="page-container">
+      <div className="page-header">
         <div>
           <h1 style={{ fontSize: 24, fontWeight: 600, color: '#111827', margin: 0 }}>Servicios</h1>
           <p style={{ fontSize: 14, color: '#6b7280', marginTop: 4, marginBottom: 0 }}>{data.length} servicios registrados</p>
@@ -53,7 +53,7 @@ export default async function ServiciosPage() {
         </Link>
       </div>
 
-      <div style={{ background: 'white', borderRadius: 16, border: '1px solid #f3f4f6', overflow: 'hidden', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
+      <div className="table-container">
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead>
             <tr style={{ borderBottom: '1px solid #f3f4f6' }}>
@@ -80,12 +80,8 @@ export default async function ServiciosPage() {
                       <p style={{ fontSize: 14, fontWeight: 500, color: '#111827', margin: 0 }}>{s.mascotaNombre ?? '—'}</p>
                       <p style={{ fontSize: 12, color: '#9ca3af', margin: 0 }}>{s.mascotaEspecie ?? ''}</p>
                     </td>
-                    <td style={{ padding: '14px 20px', fontSize: 14, color: '#4b5563' }}>
-                      {s.clienteNombre} {s.clienteApellido}
-                    </td>
-                    <td style={{ padding: '14px 20px', fontSize: 14, color: '#4b5563' }}>
-                      {tipoLabel[s.tipo] ?? s.tipo}
-                    </td>
+                    <td style={{ padding: '14px 20px', fontSize: 14, color: '#4b5563' }}>{s.clienteNombre} {s.clienteApellido}</td>
+                    <td style={{ padding: '14px 20px', fontSize: 14, color: '#4b5563' }}>{tipoLabel[s.tipo] ?? s.tipo}</td>
                     <td style={{ padding: '14px 20px' }}>
                       <span style={{ background: badge.bg, color: badge.color, padding: '3px 10px', borderRadius: 20, fontSize: 12, fontWeight: 500 }}>
                         {s.estado.replace(/_/g, ' ')}
@@ -95,9 +91,7 @@ export default async function ServiciosPage() {
                       {s.fechaRetiro ? new Date(s.fechaRetiro).toLocaleDateString('es-AR') : '—'}
                     </td>
                     <td style={{ padding: '14px 20px', textAlign: 'right' }}>
-                      <Link href={`/dashboard/servicios/${s.id}`} style={{ fontSize: 13, color: '#6b7280', textDecoration: 'none', fontWeight: 500 }}>
-                        Ver →
-                      </Link>
+                      <Link href={`/dashboard/servicios/${s.id}`} style={{ fontSize: 13, color: '#6b7280', textDecoration: 'none', fontWeight: 500 }}>Ver →</Link>
                     </td>
                   </tr>
                 )

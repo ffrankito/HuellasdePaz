@@ -8,6 +8,55 @@
       "when": 1775391643552,
       "tag": "0000_unusual_hulk",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1776252728895,
+      "tag": "0001_smiling_vivisector",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1776254697097,
+      "tag": "0002_clammy_night_nurse",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1776256980825,
+      "tag": "0003_rich_proteus",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1776270703255,
+      "tag": "0004_broken_tana_nile",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1776273937017,
+      "tag": "0005_acoustic_runaways",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1776279288950,
+      "tag": "0006_foamy_marvel_apes",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1776298007060,
+      "tag": "0007_last_sprite",
+      "breakpoints": true
     }
   ]
 }

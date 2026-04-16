@@ -16,13 +16,26 @@ export const leads = pgTable('leads', {
   telefono: text('telefono').notNull(),
   email: text('email'),
   mensaje: text('mensaje'),
-  origen: text('origen').default('landing'), // landing, whatsapp, veterinaria, referido
+  origen: text('origen').default('landing'),
   estado: estadoLeadEnum('estado').notNull().default('nuevo'),
   asignadoAId: uuid('asignado_a_id').references(() => usuarios.id),
   notas: text('notas'),
+  primerRespuestaEn: timestamp('primer_respuesta_en'),
+  ultimaInteraccionEn: timestamp('ultima_interaccion_en'),
   creadoEn: timestamp('creado_en').defaultNow().notNull(),
   actualizadoEn: timestamp('actualizado_en').defaultNow().notNull(),
 })
 
+export const leadInteracciones = pgTable('lead_interacciones', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  leadId: uuid('lead_id').notNull().references(() => leads.id),
+  usuarioId: uuid('usuario_id').references(() => usuarios.id),
+  tipo: text('tipo').notNull(), // nota, estado_cambio, asignacion
+  descripcion: text('descripcion').notNull(),
+  creadoEn: timestamp('creado_en').defaultNow().notNull(),
+})
+
 export type Lead = typeof leads.$inferSelect
 export type NuevoLead = typeof leads.$inferInsert
+export type LeadInteraccion = typeof leadInteracciones.$inferSelect
+export type NuevaLeadInteraccion = typeof leadInteracciones.$inferInsert

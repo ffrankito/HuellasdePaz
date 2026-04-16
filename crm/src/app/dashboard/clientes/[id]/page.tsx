@@ -1,8 +1,13 @@
 import { db } from '@/db'
-import { clientes, mascotas, servicios, planes } from '@/db/schema'
+import { clientes, mascotas, servicios, planes, usuarios } from '@/db/schema'
 import { eq } from 'drizzle-orm'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
+import { AgregarMascotaForm } from '@/components/clientes/AgregarMascotaForm'
+import { getEspeciesMascota } from '@/lib/utils/config'
+import { PortalLinkButton } from '@/components/clientes/PortalLinkButton'
+import { InvitarPortalButton } from '@/components/clientes/InvitarPortalButton'
+import { createClient } from '@/lib/supabase/server'
 
 export default async function ClienteDetallePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
@@ -13,14 +18,21 @@ export default async function ClienteDetallePage({ params }: { params: Promise<{
 
   if (!cliente) notFound()
 
-  const [mascotasData, serviciosData, planesData] = await Promise.all([
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  const usuarioCRM = await db.query.usuarios.findFirst({
+    where: eq(usuarios.id, user!.id),
+  })
+
+  const [mascotasData, serviciosData, planesData, especies] = await Promise.all([
     db.select().from(mascotas).where(eq(mascotas.clienteId, id)),
     db.select().from(servicios).where(eq(servicios.clienteId, id)),
     db.select().from(planes).where(eq(planes.clienteId, id)),
+    getEspeciesMascota(),
   ])
 
   return (
-    <div style={{ padding: '40px 48px', background: '#f9fafb', minHeight: '100vh' }}>
+    <div className="page-container">
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 32 }}>
         <div>
           <Link href="/dashboard/clientes" style={{ fontSize: 13, color: '#6b7280', textDecoration: 'none' }}>← Clientes</Link>
@@ -31,7 +43,7 @@ export default async function ClienteDetallePage({ params }: { params: Promise<{
         </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
+      <div className="grid-2">
         <div style={{ background: 'white', borderRadius: 16, border: '1px solid #f3f4f6', padding: '24px', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
           <h2 style={{ fontSize: 15, fontWeight: 600, color: '#111827', marginBottom: 16, marginTop: 0 }}>Datos personales</h2>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
@@ -42,18 +54,41 @@ export default async function ClienteDetallePage({ params }: { params: Promise<{
             <InfoRow label="Provincia" value={cliente.provincia ?? '—'} />
             <InfoRow label="Origen" value={cliente.origen ?? '—'} />
           </div>
+
+          {cliente.tokenPortal && (
+            <div style={{ paddingTop: 16, borderTop: '1px solid #f3f4f6', marginTop: 16 }}>
+              <PortalLinkButton token={cliente.tokenPortal} />
+            </div>
+          )}
+
+          <div style={{ paddingTop: 12, borderTop: '1px solid #f3f4f6', marginTop: 12 }}>
+            <InvitarPortalButton
+              clienteId={cliente.id}
+              email={cliente.email}
+              yaInvitado={!!cliente.authUserId}
+              rol={usuarioCRM?.rol ?? 'admin'}
+            />
+          </div>
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
           <div style={{ background: 'white', borderRadius: 16, border: '1px solid #f3f4f6', padding: '24px', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
-            <h2 style={{ fontSize: 15, fontWeight: 600, color: '#111827', marginBottom: 12, marginTop: 0 }}>Mascotas</h2>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+              <h2 style={{ fontSize: 15, fontWeight: 600, color: '#111827', margin: 0 }}>Mascotas</h2>
+            </div>
             {mascotasData.length === 0 ? (
-              <p style={{ fontSize: 14, color: '#9ca3af', margin: 0 }}>Sin mascotas registradas</p>
+              <p style={{ fontSize: 14, color: '#9ca3af', margin: '0 0 16px' }}>Sin mascotas registradas</p>
             ) : (
-              mascotasData.map(m => (
-                <p key={m.id} style={{ fontSize: 14, color: '#374151', margin: '4px 0' }}>{m.nombre} · {m.especie}</p>
-              ))
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 16 }}>
+                {mascotasData.map(m => (
+                  <div key={m.id} style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 14px', background: '#f9fafb', borderRadius: 10 }}>
+                    <span style={{ fontSize: 14, fontWeight: 500, color: '#111827' }}>{m.nombre}</span>
+                    <span style={{ fontSize: 13, color: '#6b7280' }}>{m.especie}{m.raza ? ` · ${m.raza}` : ''}</span>
+                  </div>
+                ))}
+              </div>
             )}
+            <AgregarMascotaForm clienteId={id} especies={especies} />
           </div>
 
           <div style={{ background: 'white', borderRadius: 16, border: '1px solid #f3f4f6', padding: '24px', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
@@ -62,7 +97,7 @@ export default async function ClienteDetallePage({ params }: { params: Promise<{
               <p style={{ fontSize: 14, color: '#9ca3af', margin: 0 }}>Sin servicios registrados</p>
             ) : (
               serviciosData.map(s => (
-                <p key={s.id} style={{ fontSize: 14, color: '#374151', margin: '4px 0' }}>{s.tipo} · {s.estado}</p>
+                <p key={s.id} style={{ fontSize: 14, color: '#374151', margin: '4px 0' }}>{s.tipo.replace(/_/g, ' ')} · {s.estado.replace(/_/g, ' ')}</p>
               ))
             )}
           </div>

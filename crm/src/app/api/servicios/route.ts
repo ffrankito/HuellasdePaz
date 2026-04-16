@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/db'
 import { servicios } from '@/db/schema'
+import { eq, ne, and } from 'drizzle-orm'
 
 export async function POST(request: NextRequest) {
   try {
@@ -11,6 +12,7 @@ export async function POST(request: NextRequest) {
       mascotaId: body.mascotaId,
       tipo: body.tipo,
       estado: 'ingresado',
+      fechaRetiro: body.fechaRetiro ? new Date(body.fechaRetiro) : null,
       notas: body.notas,
     }).returning()
 

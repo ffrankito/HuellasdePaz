@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 
-export function NuevoLeadForm() {
+export function NuevoLeadForm({ origenes }: { origenes: string[] }) {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -18,7 +18,7 @@ export function NuevoLeadForm() {
       nombre: (form.elements.namedItem('nombre') as HTMLInputElement).value,
       telefono: (form.elements.namedItem('telefono') as HTMLInputElement).value,
       email: (form.elements.namedItem('email') as HTMLInputElement).value || null,
-      origen: (form.elements.namedItem('origen') as HTMLSelectElement).value || 'landing',
+      origen: (form.elements.namedItem('origen') as HTMLSelectElement).value || origenes[0],
       mensaje: (form.elements.namedItem('mensaje') as HTMLTextAreaElement).value || null,
     }
 
@@ -39,66 +39,44 @@ export function NuevoLeadForm() {
   }
 
   const inputStyle = {
-    display: 'block',
-    width: '100%',
-    padding: '10px 14px',
-    fontSize: 14,
-    color: '#111827',
-    background: 'white',
-    border: '1px solid #e5e7eb',
-    borderRadius: 10,
-    outline: 'none',
-    boxSizing: 'border-box' as const,
+    display: 'block', width: '100%', padding: '10px 14px', fontSize: 14,
+    color: '#111827', background: 'white', border: '1px solid #e5e7eb',
+    borderRadius: 10, outline: 'none', boxSizing: 'border-box' as const,
   }
 
-  const labelStyle = {
-    display: 'block',
-    fontSize: 13,
-    fontWeight: 500,
-    color: '#374151',
-    marginBottom: 6,
-  }
-
+  const labelStyle = { display: 'block', fontSize: 13, fontWeight: 500, color: '#374151', marginBottom: 6 }
   const fieldStyle = { display: 'flex', flexDirection: 'column' as const }
 
   return (
     <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
         <div style={fieldStyle}>
-          <label htmlFor="nombre" style={labelStyle}>Nombre *</label>
-          <input id="nombre" name="nombre" type="text" required style={inputStyle} placeholder="Juan García" />
+          <label style={labelStyle}>Nombre *</label>
+          <input name="nombre" type="text" required style={inputStyle} placeholder="Juan García" />
         </div>
         <div style={fieldStyle}>
-          <label htmlFor="telefono" style={labelStyle}>Teléfono *</label>
-          <input id="telefono" name="telefono" type="tel" required style={inputStyle} placeholder="3413000000" />
+          <label style={labelStyle}>Teléfono *</label>
+          <input name="telefono" type="tel" required style={inputStyle} placeholder="3413000000" />
         </div>
       </div>
 
       <div style={fieldStyle}>
-        <label htmlFor="email" style={labelStyle}>Email</label>
-        <input id="email" name="email" type="email" style={inputStyle} placeholder="juan@email.com" />
+        <label style={labelStyle}>Email</label>
+        <input name="email" type="email" style={inputStyle} placeholder="juan@email.com" />
       </div>
 
       <div style={fieldStyle}>
-        <label htmlFor="origen" style={labelStyle}>Origen</label>
-        <select id="origen" name="origen" style={inputStyle}>
-          <option value="landing">Landing page</option>
-          <option value="whatsapp">WhatsApp</option>
-          <option value="veterinaria">Veterinaria</option>
-          <option value="referido">Referido</option>
-          <option value="redes">Redes sociales</option>
+        <label style={labelStyle}>Origen</label>
+        <select name="origen" style={inputStyle}>
+          {origenes.map(o => (
+            <option key={o} value={o}>{o.replace(/_/g, ' ')}</option>
+          ))}
         </select>
       </div>
 
       <div style={fieldStyle}>
-        <label htmlFor="mensaje" style={labelStyle}>Mensaje</label>
-        <textarea
-          id="mensaje"
-          name="mensaje"
-          rows={3}
-          style={{ ...inputStyle, resize: 'vertical' }}
-          placeholder="Mensaje o consulta del lead..."
-        />
+        <label style={labelStyle}>Mensaje</label>
+        <textarea name="mensaje" rows={3} style={{ ...inputStyle, resize: 'vertical' }} placeholder="Mensaje o consulta del lead..." />
       </div>
 
       {error && (
@@ -108,18 +86,12 @@ export function NuevoLeadForm() {
       )}
 
       <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end', paddingTop: 8 }}>
-        <button
-          type="button"
-          onClick={() => router.back()}
-          style={{ padding: '10px 20px', borderRadius: 10, fontSize: 14, fontWeight: 500, border: '1px solid #e5e7eb', background: 'white', color: '#374151', cursor: 'pointer' }}
-        >
+        <button type="button" onClick={() => router.back()}
+          style={{ padding: '10px 20px', borderRadius: 10, fontSize: 14, fontWeight: 500, border: '1px solid #e5e7eb', background: 'white', color: '#374151', cursor: 'pointer' }}>
           Cancelar
         </button>
-        <button
-          type="submit"
-          disabled={loading}
-          style={{ padding: '10px 20px', borderRadius: 10, fontSize: 14, fontWeight: 500, border: 'none', background: '#111827', color: 'white', cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.6 : 1 }}
-        >
+        <button type="submit" disabled={loading}
+          style={{ padding: '10px 20px', borderRadius: 10, fontSize: 14, fontWeight: 500, border: 'none', background: '#111827', color: 'white', cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.6 : 1 }}>
           {loading ? 'Guardando...' : 'Guardar lead'}
         </button>
       </div>

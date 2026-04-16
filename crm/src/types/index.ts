@@ -1,5 +1,4 @@
-export type Rol = 'admin' | 'contadora' | 'televenta' | 'transporte' | 'cremacion' | 'entrega'
-
+export type Rol = 'admin' | 'manager' | 'contadora' | 'televenta' | 'transporte' | 'cremacion' | 'entrega'
 export type EstadoServicio =
   | 'ingresado'
   | 'retiro_pendiente'

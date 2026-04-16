@@ -1,0 +1,1 @@
+ALTER TABLE "inventario" ADD COLUMN "foto" text;

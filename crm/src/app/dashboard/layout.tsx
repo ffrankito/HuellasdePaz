@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { Sidebar } from '@/components/layout/Sidebar'
+import { Header } from '@/components/layout/Header'
 import { db } from '@/db'
 import { usuarios } from '@/db/schema'
 import { eq } from 'drizzle-orm'
@@ -22,11 +23,14 @@ export default async function DashboardLayout({
   if (!usuario) redirect('/auth/login')
 
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div style={{ display: 'flex', height: '100vh', overflow: 'hidden' }}>
       <Sidebar usuario={usuario} />
-      <main className="flex-1 overflow-y-auto">
-        {children}
-      </main>
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+        <Header nombre={usuario.nombre} />
+        <main style={{ flex: 1, overflowY: 'auto' }}>
+          {children}
+        </main>
+      </div>
     </div>
   )
 }

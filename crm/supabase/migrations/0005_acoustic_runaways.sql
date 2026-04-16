@@ -1,0 +1,1 @@
+ALTER TABLE "mascotas" ADD COLUMN "dedicatoria" text;

@@ -14,6 +14,7 @@ export const mascotas = pgTable('mascotas', {
   notas: text('notas'),
   creadoEn: timestamp('creado_en').defaultNow().notNull(),
   actualizadoEn: timestamp('actualizado_en').defaultNow().notNull(),
+  dedicatoria: text('dedicatoria')
 })
 
 export type Mascota = typeof mascotas.$inferSelect

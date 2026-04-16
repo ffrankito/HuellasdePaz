@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/db'
 import { clientes } from '@/db/schema'
+import { generarToken } from '@/lib/utils/token'
 
 export async function POST(request: NextRequest) {
   try {
@@ -16,6 +17,7 @@ export async function POST(request: NextRequest) {
       provincia: body.provincia ?? 'Santa Fe',
       origen: body.origen,
       notas: body.notas,
+      tokenPortal: generarToken(),
     }).returning()
 
     return NextResponse.json(cliente, { status: 201 })

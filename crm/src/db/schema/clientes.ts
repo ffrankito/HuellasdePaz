@@ -1,4 +1,4 @@
-import { pgTable, uuid, text, timestamp, date } from 'drizzle-orm/pg-core'
+import { pgTable, uuid, text, timestamp } from 'drizzle-orm/pg-core'
 
 export const clientes = pgTable('clientes', {
   id: uuid('id').primaryKey().defaultRandom(),
@@ -9,8 +9,10 @@ export const clientes = pgTable('clientes', {
   direccion: text('direccion'),
   localidad: text('localidad'),
   provincia: text('provincia').default('Santa Fe'),
-  origen: text('origen'), // referido, veterinaria, redes, web, etc
+  origen: text('origen'),
   notas: text('notas'),
+  tokenPortal: text('token_portal').unique(),
+  authUserId: text('auth_user_id').unique(),
   creadoEn: timestamp('creado_en').defaultNow().notNull(),
   actualizadoEn: timestamp('actualizado_en').defaultNow().notNull(),
 })
