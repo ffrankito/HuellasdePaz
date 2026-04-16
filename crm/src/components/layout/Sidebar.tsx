@@ -5,6 +5,8 @@ import { usePathname } from 'next/navigation'
 import { useState } from 'react'
 import { type Usuario } from '@/db/schema'
 
+// ─── Navegación por rol operativo ───────────────────────────────────────────
+
 const navAdmin = [
   { label: 'Dashboard', href: '/dashboard' },
   { label: 'Clientes', href: '/dashboard/clientes' },
@@ -12,6 +14,7 @@ const navAdmin = [
   { label: 'Planes', href: '/dashboard/planes' },
   { label: 'Agenda', href: '/dashboard/agenda' },
   { label: 'Leads', href: '/dashboard/leads' },
+   { label: 'Veterinarias', href: '/dashboard/veterinarias' },
   { label: 'Comunicación', href: '/dashboard/comunicacion' },
   { label: 'Inventario', href: '/dashboard/inventario' },
   { label: 'Cobranzas', href: '/dashboard/cobranzas' },
@@ -33,31 +36,49 @@ const navAgente = [
   { label: 'Comunicación', href: '/dashboard/comunicacion' },
 ]
 
+const navContadora = [
+  { label: 'Dashboard', href: '/dashboard' },
+  { label: 'Clientes', href: '/dashboard/clientes' },
+  { label: 'Planes', href: '/dashboard/planes' },
+  { label: 'Cobranzas', href: '/dashboard/cobranzas' },
+  { label: 'Reportes', href: '/dashboard/reportes' },
+]
+
+const navTransporte = [
+  { label: 'Agenda', href: '/dashboard/agenda' },
+  { label: 'Servicios', href: '/dashboard/servicios' },
+]
+
+const navCremacion = [
+  { label: 'Agenda', href: '/dashboard/agenda' },
+  { label: 'Servicios', href: '/dashboard/servicios' },
+  { label: 'Inventario', href: '/dashboard/inventario' },
+]
+
+const navEntrega = [
+  { label: 'Agenda', href: '/dashboard/agenda' },
+  { label: 'Servicios', href: '/dashboard/servicios' },
+]
+
 const navPorRol: Record<string, { label: string; href: string }[]> = {
   admin: navAdmin,
   manager: navManager,
-  contadora: [
-    { label: 'Dashboard', href: '/dashboard' },
-    { label: 'Clientes', href: '/dashboard/clientes' },
-    { label: 'Planes', href: '/dashboard/planes' },
-    { label: 'Cobranzas', href: '/dashboard/cobranzas' },
-    { label: 'Reportes', href: '/dashboard/reportes' },
-  ],
+  contadora: navContadora,
   televenta: navAgente,
-  transporte: [
-    { label: 'Agenda', href: '/dashboard/agenda' },
-    { label: 'Servicios', href: '/dashboard/servicios' },
-  ],
-  cremacion: [
-    { label: 'Agenda', href: '/dashboard/agenda' },
-    { label: 'Servicios', href: '/dashboard/servicios' },
-    { label: 'Inventario', href: '/dashboard/inventario' },
-  ],
-  entrega: [
-    { label: 'Agenda', href: '/dashboard/agenda' },
-    { label: 'Servicios', href: '/dashboard/servicios' },
-  ],
+  transporte: navTransporte,
+  cremacion: navCremacion,
+  entrega: navEntrega,
 }
+
+// ─── Secciones extra por permiso ────────────────────────────────────────────
+
+const navGestionEquipo = [
+  { label: 'Agentes', href: '/dashboard/manager/agentes' },
+  { label: 'Rendimiento equipo', href: '/dashboard/manager/rendimiento' },
+  { label: 'Reportes equipo', href: '/dashboard/manager/reportes' },
+]
+
+// ─── Labels y colores ────────────────────────────────────────────────────────
 
 const rolLabel: Record<string, string> = {
   admin: 'Administrador',
@@ -69,18 +90,70 @@ const rolLabel: Record<string, string> = {
   entrega: 'Entrega',
 }
 
+const rolColor: Record<string, { bg: string; color: string }> = {
+  admin: { bg: '#eff6ff', color: '#1d4ed8' },
+  manager: { bg: '#fdf4ff', color: '#7e22ce' },
+  contadora: { bg: '#fefce8', color: '#a16207' },
+  televenta: { bg: '#f0fdf4', color: '#15803d' },
+  transporte: { bg: '#fff7ed', color: '#c2410c' },
+  cremacion: { bg: '#f3f4f6', color: '#374151' },
+  entrega: { bg: '#f0fdf4', color: '#15803d' },
+}
+
+// ─── Helper de permisos ──────────────────────────────────────────────────────
+
+function tienePermiso(usuario: Usuario, permiso: string): boolean {
+  if (usuario.rol === 'admin') return true
+  return (usuario.permisos ?? []).includes(permiso)
+}
+
+// ─── Componente ──────────────────────────────────────────────────────────────
+
 export function Sidebar({ usuario }: { usuario: Usuario }) {
   const pathname = usePathname()
   const [abierto, setAbierto] = useState(false)
 
-  const navItems = navPorRol[usuario.rol] ?? navAdmin
+  const badge = rolColor[usuario.rol] ?? { bg: '#f3f4f6', color: '#374151' }
+
+  // Nav base según rol
+  const navBase = navPorRol[usuario.rol] ?? navAdmin
+
+  // Si tiene permiso gestion_equipo y NO es manager puro (para no duplicar),
+  // se agrega la sección de equipo al final
+  const tieneGestionEquipo = tienePermiso(usuario, 'gestion_equipo') && usuario.rol !== 'manager'
+
+  const renderNav = (items: { label: string; href: string }[]) =>
+    items.map((item) => {
+      const activo = pathname === item.href
+      return (
+        <Link
+          key={item.href}
+          href={item.href}
+          onClick={() => setAbierto(false)}
+          style={{
+            display: 'block',
+            padding: '9px 14px',
+            borderRadius: 8,
+            fontSize: 14,
+            fontWeight: activo ? 500 : 400,
+            color: activo ? 'white' : '#4b5563',
+            background: activo ? '#111827' : 'transparent',
+            textDecoration: 'none',
+            transition: 'background 0.1s',
+          }}
+        >
+          {item.label}
+        </Link>
+      )
+    })
 
   const contenido = (
     <>
-      <div style={{ padding: '24px 20px', borderBottom: '1px solid #f3f4f6', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      {/* Logo */}
+      <div style={{ padding: '24px 20px 16px', borderBottom: '1px solid #f3f4f6', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
-          <h1 style={{ fontSize: 16, fontWeight: 600, color: '#111827', margin: 0 }}>Huellas de Paz</h1>
-          <p style={{ fontSize: 12, color: '#9ca3af', marginTop: 2, marginBottom: 0 }}>Sistema de gestión</p>
+          <h1 style={{ fontSize: 15, fontWeight: 700, color: '#111827', margin: 0 }}>Huellas de Paz</h1>
+          <p style={{ fontSize: 11, color: '#9ca3af', marginTop: 2, marginBottom: 0 }}>Sistema de gestión</p>
         </div>
         <button
           onClick={() => setAbierto(false)}
@@ -94,45 +167,39 @@ export function Sidebar({ usuario }: { usuario: Usuario }) {
       {/* Badge de rol */}
       <div style={{ padding: '10px 20px', borderBottom: '1px solid #f3f4f6' }}>
         <span style={{
-          fontSize: 11,
-          fontWeight: 600,
-          color: usuario.rol === 'manager' ? '#7e22ce' : usuario.rol === 'admin' ? '#1d4ed8' : '#15803d',
-          background: usuario.rol === 'manager' ? '#fdf4ff' : usuario.rol === 'admin' ? '#eff6ff' : '#f0fdf4',
-          padding: '3px 10px',
-          borderRadius: 20,
-          textTransform: 'uppercase',
-          letterSpacing: '0.05em',
+          fontSize: 11, fontWeight: 600,
+          color: badge.color, background: badge.bg,
+          padding: '3px 10px', borderRadius: 20,
+          textTransform: 'uppercase', letterSpacing: '0.06em',
         }}>
           {rolLabel[usuario.rol] ?? usuario.rol}
+          {tieneGestionEquipo && (
+            <span style={{ marginLeft: 6, opacity: 0.7 }}>+ Manager</span>
+          )}
         </span>
       </div>
 
-      <nav style={{ flex: 1, padding: '12px 10px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 2 }}>
-        {navItems.map((item) => {
-          const activo = pathname === item.href
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              onClick={() => setAbierto(false)}
-              style={{
-                display: 'block',
-                padding: '10px 14px',
-                borderRadius: 8,
-                fontSize: 14,
-                fontWeight: activo ? 500 : 400,
-                color: activo ? 'white' : '#4b5563',
-                background: activo ? '#111827' : 'transparent',
-                textDecoration: 'none',
-              }}
-            >
-              {item.label}
-            </Link>
-          )
-        })}
+      {/* Navegación */}
+      <nav style={{ flex: 1, padding: '10px 10px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 2 }}>
+
+        {/* Nav principal del rol */}
+        {renderNav(navBase)}
+
+        {/* Sección de gestión de equipo si tiene permiso */}
+        {tieneGestionEquipo && (
+          <>
+            <div style={{ height: 1, background: '#f3f4f6', margin: '10px 4px 6px' }} />
+            <p style={{ fontSize: 10, fontWeight: 600, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.08em', padding: '0 14px', margin: '0 0 4px' }}>
+              Gestión de equipo
+            </p>
+            {renderNav(navGestionEquipo)}
+          </>
+        )}
+
       </nav>
 
-      <div style={{ padding: '16px 20px', borderTop: '1px solid #f3f4f6' }}>
+      {/* Footer */}
+      <div style={{ padding: '14px 20px', borderTop: '1px solid #f3f4f6' }}>
         <p style={{ fontSize: 14, fontWeight: 500, color: '#111827', margin: 0 }}>{usuario.nombre}</p>
         <p style={{ fontSize: 12, color: '#9ca3af', marginTop: 2, marginBottom: 0 }}>{rolLabel[usuario.rol] ?? usuario.rol}</p>
       </div>
@@ -159,13 +226,13 @@ export function Sidebar({ usuario }: { usuario: Usuario }) {
         <div
           onClick={() => setAbierto(false)}
           id="sidebar-overlay"
-          style={{ display: 'none', position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 40 }}
+          style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 40 }}
         />
       )}
 
       <aside
         id="sidebar-desktop"
-        style={{ width: 240, minWidth: 240, background: 'white', borderRight: '1px solid #f3f4f6', display: 'flex', flexDirection: 'column', height: '100vh' }}
+        style={{ width: 240, minWidth: 240, background: 'white', borderRight: '1px solid #f3f4f6', display: 'flex', flexDirection: 'column', height: '100vh', position: 'sticky', top: 0 }}
       >
         {contenido}
       </aside>
@@ -173,7 +240,8 @@ export function Sidebar({ usuario }: { usuario: Usuario }) {
       <aside
         id="sidebar-mobile"
         style={{
-          display: 'none', position: 'fixed', top: 0, left: abierto ? 0 : -280,
+          display: 'none', position: 'fixed', top: 0,
+          left: abierto ? 0 : -280,
           width: 260, height: '100vh', background: 'white', zIndex: 50,
           flexDirection: 'column', boxShadow: '0 4px 24px rgba(0,0,0,0.12)',
           transition: 'left 0.25s ease',
@@ -185,7 +253,6 @@ export function Sidebar({ usuario }: { usuario: Usuario }) {
       <style>{`
         @media (max-width: 768px) {
           #hamburger-btn { display: flex !important; }
-          #sidebar-overlay { display: block !important; }
           #sidebar-desktop { display: none !important; }
           #sidebar-mobile { display: flex !important; }
           .sidebar-close { display: block !important; }

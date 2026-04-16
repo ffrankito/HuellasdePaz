@@ -1,4 +1,4 @@
-import { pgTable, uuid, text, timestamp, numeric, pgEnum } from 'drizzle-orm/pg-core'
+import { pgTable, uuid, text, timestamp, numeric, integer, pgEnum } from 'drizzle-orm/pg-core'
 import { clientes } from './clientes'
 import { mascotas } from './mascotas'
 import { usuarios } from './usuarios'
@@ -23,6 +23,7 @@ export const tipoServicioEnum = pgEnum('tipo_servicio', [
 
 export const servicios = pgTable('servicios', {
   id: uuid('id').primaryKey().defaultRandom(),
+  numero: integer('numero').notNull(),
   clienteId: uuid('cliente_id').notNull().references(() => clientes.id),
   mascotaId: uuid('mascota_id').notNull().references(() => mascotas.id),
   tipo: tipoServicioEnum('tipo').notNull(),

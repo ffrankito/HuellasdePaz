@@ -1,4 +1,5 @@
 import { pgTable, uuid, text, timestamp } from 'drizzle-orm/pg-core'
+import { veterinarias } from './veterinarias'
 
 export const clientes = pgTable('clientes', {
   id: uuid('id').primaryKey().defaultRandom(),
@@ -15,6 +16,7 @@ export const clientes = pgTable('clientes', {
   authUserId: text('auth_user_id').unique(),
   creadoEn: timestamp('creado_en').defaultNow().notNull(),
   actualizadoEn: timestamp('actualizado_en').defaultNow().notNull(),
+  veterinariaId: uuid('veterinaria_id').references(() => veterinarias.id),
 })
 
 export type Cliente = typeof clientes.$inferSelect
