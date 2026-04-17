@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/db'
 import { leads } from '@/db/schema'
 import { eq, asc } from 'drizzle-orm'
-import { crearLeadAutomatico, type OrigenLead } from '@/lib/leads/crearLeadAutomatico'
+import { crearLeadAutomatico } from '@/lib/leads/crearLeadAutomatico'
+import type { OrigenLead } from '@/lib/leads/crearLeadAutomatico'
 
 export async function POST(request: NextRequest) {
   try {
@@ -37,4 +38,4 @@ export async function GET(request: NextRequest) {
     console.error('Error obteniendo leads:', error)
     return NextResponse.json({ error: 'Error interno del servidor' }, { status: 500 })
   }
-} 
+}
