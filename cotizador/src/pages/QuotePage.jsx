@@ -424,7 +424,7 @@ const handleNext = async () => {
   return (
     <div className="app">
       {!isFinal && (
-        <StepIndicator step={step} totalSteps={effectiveTotalSteps} />
+        <StepIndicator step={step} totalSteps={totalSteps} needsZone={needsZone} />
       )}
       <div className="quote-content">
         <div className="step-content" key={animKey}>

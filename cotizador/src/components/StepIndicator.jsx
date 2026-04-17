@@ -1,19 +1,13 @@
-const STEP_LABELS = [
-  "Mascota",
-  "Tamaño",
-  "Servicio",
-  "Retiro",
-  "Cenizas",
-  "Zona",
-  "Tus datos",
-  "Resumen",
-];
+const STEPS_CON_ZONA = ["Mascota", "Tamaño", "Servicio", "Retiro", "Cenizas", "Zona", "Tus datos"];
+const STEPS_SIN_ZONA = ["Mascota", "Tamaño", "Servicio", "Retiro", "Cenizas", "Tus datos"];
 
-export default function StepIndicator({ step, totalSteps }) {
+export default function StepIndicator({ step, totalSteps, needsZone }) {
+  const labels = needsZone ? STEPS_CON_ZONA : STEPS_SIN_ZONA;
+
   return (
     <div className="step-indicator-wrapper">
       <nav className="step-indicator" aria-label="Progreso del cotizador">
-        {STEP_LABELS.slice(0, totalSteps).map((label, index) => {
+        {labels.map((label, index) => {
           const num = index + 1;
           const isActive = num === step;
           const isDone = num < step;
@@ -26,7 +20,7 @@ export default function StepIndicator({ step, totalSteps }) {
                 <span className="step-indicator__dot" />
                 {label}
               </div>
-              {num < totalSteps && (
+              {num < labels.length && (
                 <div className="step-indicator__separator" />
               )}
             </div>
