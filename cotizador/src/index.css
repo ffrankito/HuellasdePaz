@@ -22,7 +22,10 @@
 }
 
 *, *::before, *::after { box-sizing: border-box; }
-html { scroll-behavior: smooth; }
+html {
+  scroll-behavior: smooth;
+  background-color: #2d5a3d;
+}
 
 body {
   margin: 0;
@@ -31,7 +34,7 @@ body {
   background-position: center center;
   background-repeat: no-repeat;
   background-attachment: scroll;  /* scroll en vez de fixed para mobile */
-  background-color: #a8c5a0;
+  background-color: #2d5a3d;
   color: var(--text);
   font-family: var(--font);
   -webkit-font-smoothing: antialiased;
