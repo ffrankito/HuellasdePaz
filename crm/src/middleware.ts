@@ -9,6 +9,11 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next()
   }
 
+  // Las API routes no requieren auth de sesión
+  if (pathname.startsWith('/api')) {
+    return NextResponse.next()
+  }
+
   return await updateSession(request)
 }
 
