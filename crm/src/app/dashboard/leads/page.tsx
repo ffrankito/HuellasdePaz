@@ -101,13 +101,24 @@ export default function LeadsPage() {
                                   cursor: 'grab', ...provided.draggableProps.style,
                                 }}
                               >
-                                <p style={{ fontSize: 14, fontWeight: 600, color: '#111827', margin: '0 0 6px' }}>{lead.nombre}</p>
+                                <p style={{ fontSize: 14, fontWeight: 600, color: '#111827', margin: '0 0 4px' }}>{lead.nombre}</p>
                                 <p style={{ fontSize: 13, color: '#6b7280', margin: '0 0 8px' }}>{lead.telefono}</p>
                                 {lead.origen && (
                                   <span style={{ fontSize: 11, color: '#6b7280', background: '#f9fafb', padding: '3px 8px', borderRadius: 20, border: '1px solid #f3f4f6' }}>
                                     {lead.origen}
                                   </span>
                                 )}
+                                <Link
+                                  href={`/dashboard/leads/${lead.id}`}
+                                  style={{
+                                    display: 'block', marginTop: 10, fontSize: 12, fontWeight: 600,
+                                    color: '#1d4ed8', textDecoration: 'none', textAlign: 'center',
+                                    background: '#eff6ff', padding: '6px', borderRadius: 8,
+                                  }}
+                                  onClick={e => e.stopPropagation()}
+                                >
+                                  Ver detalle →
+                                </Link>
                               </div>
                             )}
                           </Draggable>
