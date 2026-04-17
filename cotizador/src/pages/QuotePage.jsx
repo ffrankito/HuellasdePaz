@@ -67,49 +67,53 @@ export default function QuotePage() {
     return true;
   };
 
-  const handleNext = async () => {
-    if (!canContinue()) return;
+const handleNext = async () => {
+  if (!canContinue()) return;
 
-    const dataStep = needsZone ? 7 : 6;
+  const dataStep = needsZone ? 7 : 6;
+  const successStep = needsZone ? 8 : 7;
 
-    if (step === dataStep) {
-      const selectedService = services.find((s) => s.id === formData.service);
-      const selectedSize = sizes.find((s) => s.id === formData.size);
-      const selectedPickup = pickupMethods.find((p) => p.id === formData.pickupMethod);
-      const selectedZone = zones.find((z) => z.id === formData.zone);
+  if (step === dataStep) {
+    const selectedService = services.find((s) => s.id === formData.service);
+    const selectedSize = sizes.find((s) => s.id === formData.size);
+    const selectedPickup = pickupMethods.find((p) => p.id === formData.pickupMethod);
+    const selectedZone = zones.find((z) => z.id === formData.zone);
 
-      const resumen = [
-        selectedService?.title,
-        selectedSize?.title,
-        selectedPickup?.title?.replace("\n", " "),
-        selectedZone ? "Zona: " + selectedZone.title : null,
-        "Mascota: " + formData.petName + " (" + formData.petType + ")",
-      ].filter(Boolean).join(" · ");
+    const resumen = [
+      selectedService?.title,
+      selectedSize?.title,
+      selectedPickup?.title?.replace("\n", " "),
+      selectedZone ? "Zona: " + selectedZone.title : null,
+      "Mascota: " + formData.petName + " (" + formData.petType + ")",
+    ].filter(Boolean).join(" · ");
 
-      try {
-        await fetch(CRM_API_URL, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            nombre: formData.ownerName,
-            telefono: formData.phone,
-            email: formData.email,
-            origen: "cotizador",
-            mensaje: resumen,
-          }),
-        });
-      } catch (err) {
-        console.error("Error creando lead en CRM:", err);
-      }
+    try {
+      await fetch(CRM_API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          nombre: formData.ownerName,
+          telefono: formData.phone,
+          email: formData.email,
+          origen: "cotizador",
+          mensaje: resumen,
+        }),
+      });
+    } catch (err) {
+      console.error("Error creando lead en CRM:", err);
     }
 
-    if (step === 5 && !needsZone) {
-      goTo(6);
-      return;
-    }
+    goTo(successStep);  // ← ir al resumen
+    return;             // ← cortar acá
+  }
 
-    if (step < effectiveTotalSteps) goTo(step + 1);
-  };
+  if (step === 5 && !needsZone) {
+    goTo(6);
+    return;
+  }
+
+  if (step < effectiveTotalSteps) goTo(step + 1);
+};
 
   const handleBack = () => {
     if (step === 1 && showOtherPetTypes) {
