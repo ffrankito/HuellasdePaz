@@ -1,96 +1,129 @@
 ---
-// TODO: completar con nombres, precios y beneficios reales
-// Ver landing/docs/entrevista-checklist.md
+const WHATSAPP_NUMBER = '5493XXXXXXXXX' // TODO: reemplazar
 const planes = [
   {
-    id: 'plan-1',
-    nombre: 'Plan Básico', // TODO: nombre real
+    id: 'huellitas',
+    nombre: 'Huellitas',
     precio: 'Consultar',
-    descripcion: 'Descripción pendiente de confirmar con Huellas de Paz.',
-    beneficios: ['Beneficio 1 (pendiente)', 'Beneficio 2 (pendiente)', 'Beneficio 3 (pendiente)'],
+    descripcion: 'Un adiós sencillo y respetuoso. La opción más accesible para cuidar a tu compañero con dignidad.',
+    beneficios: [
+      'Cremación comunitaria incluida',
+      'Certificado de cremación',
+      'Cuotas mensuales fijas',
+      'Cobertura 100% desde el mes 13',
+    ],
     destacado: false,
+    emoji: '🐾',
   },
   {
-    id: 'plan-2',
-    nombre: 'Plan Completo', // TODO: nombre real
+    id: 'amigos-para-siempre',
+    nombre: 'Amigos para siempre',
     precio: 'Consultar',
-    descripcion: 'Descripción pendiente de confirmar con Huellas de Paz.',
-    beneficios: ['Beneficio 1 (pendiente)', 'Beneficio 2 (pendiente)', 'Beneficio 3 (pendiente)', 'Beneficio 4 (pendiente)'],
+    descripcion: 'Un homenaje completo y personalizado. El plan más elegido por las familias de Rosario.',
+    beneficios: [
+      'Cremación individual',
+      'Devolución de cenizas en urna',
+      'Despedida en nuestra sala',
+      'Custodia de hasta 30 días',
+      'Certificado de cremación',
+    ],
     destacado: true,
+    emoji: '💛',
   },
   {
-    id: 'plan-3',
-    nombre: 'Plan Premium', // TODO: nombre real
+    id: 'amigos-de-verdad',
+    nombre: 'Amigos de verdad',
     precio: 'Consultar',
-    descripcion: 'Descripción pendiente de confirmar con Huellas de Paz.',
-    beneficios: ['Beneficio 1 (pendiente)', 'Beneficio 2 (pendiente)', 'Beneficio 3 (pendiente)', 'Beneficio 4 (pendiente)', 'Beneficio 5 (pendiente)'],
+    descripcion: 'La opción más completa para despedir a tu compañero con todo el amor que se merece.',
+    beneficios: [
+      'Cremación individual',
+      'Devolución de cenizas en urna',
+      'Despedida en nuestra sala',
+      'Custodia de hasta 30 días',
+      'Certificado de cremación',
+      'Urna personalizada + collar de recuerdo',
+    ],
     destacado: false,
+    emoji: '🌟',
   },
 ]
-
-const WHATSAPP_NUMBER = '5493XXXXXXXXX' // TODO: reemplazar
 ---
 
-<section id="planes" class="py-24 bg-stone-50">
-  <div class="max-w-6xl mx-auto px-6">
-    <div class="mb-14">
-      <p class="text-brand-600 text-sm font-medium tracking-wide uppercase mb-3">Planes de previsión</p>
-      <h2 class="font-display text-4xl font-semibold text-stone-900 mb-4">
-        Planeá con anticipación, <br />sin preocupaciones
+<section id="planes" class="py-16 md:py-24 bg-planes">
+  <div class="max-w-6xl mx-auto px-5">
+
+    <!-- Header centrado -->
+    <div class="mb-12 md:mb-14 text-center">
+      <p class="text-brand-600 text-xs md:text-sm font-medium tracking-widest uppercase mb-3">Planes de previsión</p>
+      <h2 class="font-display text-3xl md:text-4xl font-semibold text-stone-900 mb-4">
+        Planeá con tiempo, <br />sin preocupaciones
       </h2>
-      <p class="text-stone-500 text-lg max-w-xl">
-        Tomá la decisión hoy, cuando hay tiempo para pensar. Cuotas mensuales accesibles con cobertura creciente.
+      <p class="text-stone-500 text-base md:text-lg leading-relaxed max-w-xl mx-auto">
+        Tomá la decisión hoy, cuando hay calma para pensar. Cuotas mensuales accesibles con cobertura creciente.
       </p>
     </div>
 
-    <!-- Cobertura escalonada -->
-    <div class="bg-white border border-stone-200 rounded-2xl p-6 mb-10 max-w-lg">
-      <p class="text-sm font-medium text-stone-700 mb-4">Cobertura del plan</p>
-      <div class="grid grid-cols-3 gap-4 text-center text-sm">
-        <div class="bg-stone-50 rounded-xl p-4">
-          <p class="text-2xl font-display font-semibold text-stone-400 mb-1">0%</p>
+    <!-- Cobertura escalonada centrada -->
+    <div class="bg-white border border-stone-200 rounded-2xl p-5 md:p-6 mb-10 md:mb-12 max-w-lg mx-auto">
+      <p class="text-sm font-semibold text-stone-700 mb-4 text-center">Cómo funciona la cobertura</p>
+      <div class="grid grid-cols-3 gap-3 md:gap-4 text-center text-sm">
+        <div class="bg-stone-50 rounded-xl p-3 md:p-4">
+          <p class="text-xl md:text-2xl font-display font-semibold text-stone-400 mb-1">0%</p>
           <p class="text-stone-500 text-xs">Meses 1–6</p>
         </div>
-        <div class="bg-brand-50 rounded-xl p-4">
-          <p class="text-2xl font-display font-semibold text-brand-600 mb-1">50%</p>
+        <div class="bg-brand-50 rounded-xl p-3 md:p-4">
+          <p class="text-xl md:text-2xl font-display font-semibold text-brand-600 mb-1">50%</p>
           <p class="text-stone-500 text-xs">Meses 7–12</p>
         </div>
-        <div class="bg-brand-600 rounded-xl p-4">
-          <p class="text-2xl font-display font-semibold text-white mb-1">100%</p>
+        <div class="bg-brand-600 rounded-xl p-3 md:p-4">
+          <p class="text-xl md:text-2xl font-display font-semibold text-white mb-1">100%</p>
           <p class="text-brand-100 text-xs">Desde mes 13</p>
         </div>
       </div>
-      <p class="text-xs text-stone-400 mt-3">* Mascota adicional: +50% sobre la cuota base.</p>
+      <p class="text-xs text-stone-400 mt-3 text-center">* Mascota adicional: +50% sobre la cuota base.</p>
     </div>
 
-    <div class="grid md:grid-cols-3 gap-6">
+    <!-- Cards de planes -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-5 md:gap-6">
       {planes.map(plan => (
-        <div class={`rounded-2xl border p-8 flex flex-col gap-6 bg-white ${plan.destacado ? 'border-brand-400 shadow-sm' : 'border-stone-200'}`}>
-          {plan.destacado && <span class="inline-block self-start bg-brand-600 text-white text-xs font-medium px-3 py-1 rounded-full">Más completo</span>}
-          <div>
-            <h3 class="font-display text-xl font-semibold text-stone-900 mb-1">{plan.nombre}</h3>
-            <p class="text-brand-600 text-2xl font-semibold mb-3">
-              {plan.precio}<span class="text-stone-400 text-base font-normal">/mes</span>
-            </p>
+        <div class={`rounded-3xl border p-6 md:p-8 flex flex-col gap-5 md:gap-6 bg-white transition-shadow hover:shadow-md ${plan.destacado ? 'border-brand-400 shadow-sm relative' : 'border-stone-200'}`}>
+
+          {plan.destacado && (
+            <div class="absolute -top-3 left-1/2 -translate-x-1/2">
+              <span class="bg-brand-600 text-white text-xs font-semibold px-4 py-1 rounded-full whitespace-nowrap">
+                Más elegido ✨
+              </span>
+            </div>
+          )}
+
+          <div class="text-center pt-2">
+            <span class="text-3xl md:text-4xl mb-3 block">{plan.emoji}</span>
+            <h3 class="font-display text-lg md:text-xl font-semibold text-stone-900 mb-1">{plan.nombre}</h3>
             <p class="text-stone-500 text-sm leading-relaxed">{plan.descripcion}</p>
           </div>
+
           <ul class="flex flex-col gap-2">
             {plan.beneficios.map(b => (
-              <li class="flex items-center gap-2 text-sm text-stone-600">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-brand-600 flex-shrink-0"><polyline points="20 6 9 17 4 12"/></svg>
+              <li class="flex items-start gap-2 text-sm text-stone-600">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-brand-600 flex-shrink-0 mt-0.5">
+                  <polyline points="20 6 9 17 4 12"/>
+                </svg>
                 {b}
               </li>
             ))}
           </ul>
+
           <a
-            href={`https://wa.me/${WHATSAPP_NUMBER}?text=Hola%2C%20quiero%20info%20sobre%20el%20${encodeURIComponent(plan.nombre)}`}
-            target="_blank" rel="noopener noreferrer"
-            class={`mt-auto inline-flex items-center justify-center px-5 py-2.5 rounded-full text-sm font-medium transition-colors ${plan.destacado ? 'bg-brand-600 hover:bg-brand-800 text-white' : 'border border-stone-300 hover:border-brand-600 text-stone-700 hover:text-brand-600'}`}
+            href={`https://wa.me/${WHATSAPP_NUMBER}?text=Hola%2C%20quiero%20info%20sobre%20el%20plan%20${encodeURIComponent(plan.nombre)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            class={`mt-auto inline-flex items-center justify-center px-5 py-2.5 rounded-full text-sm font-medium transition-colors w-full ${plan.destacado ? 'bg-brand-600 hover:bg-brand-800 text-white' : 'border border-stone-300 hover:border-brand-600 text-stone-700 hover:text-brand-600'}`}
           >
             Consultar este plan
           </a>
         </div>
       ))}
     </div>
+
   </div>
 </section>

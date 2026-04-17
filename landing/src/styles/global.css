@@ -22,10 +22,54 @@
 }
 
 html { scroll-behavior: smooth; }
+
 body {
   font-family: var(--font-body);
   color: var(--color-stone-900);
-  background-color: var(--color-stone-50);
+  background-color: #f5f2ee;
   -webkit-font-smoothing: antialiased;
 }
+
 h1, h2, h3 { font-family: var(--font-display); }
+
+/* ─── Fondos texturizados ─────────────────────────────────── */
+
+/* Puntos sutiles sobre crema */
+.bg-dots {
+  background-color: #f5f2ee;
+  background-image: radial-gradient(circle, #d6cfc6 1px, transparent 1px);
+  background-size: 22px 22px;
+}
+
+/* Puntos más claros sobre blanco */
+.bg-dots-light {
+  background-color: #faf9f7;
+  background-image: radial-gradient(circle, #e8e2da 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+/* Degradado diagonal verde suave — para secciones de planes */
+.bg-planes {
+  background-color: #f0faf4;
+  background-image:
+    radial-gradient(ellipse at 0% 0%, rgba(45,138,84,0.08) 0%, transparent 60%),
+    radial-gradient(ellipse at 100% 100%, rgba(45,138,84,0.06) 0%, transparent 60%),
+    radial-gradient(circle, #c8e8d4 1px, transparent 1px);
+  background-size: auto, auto, 22px 22px;
+}
+
+/* Degradado cálido — para sección de servicios */
+.bg-servicios {
+  background-color: #f7f3ee;
+  background-image:
+    radial-gradient(ellipse at 100% 0%, rgba(212,180,142,0.15) 0%, transparent 50%),
+    radial-gradient(ellipse at 0% 100%, rgba(45,138,84,0.06) 0%, transparent 50%),
+    radial-gradient(circle, #ddd6cc 1px, transparent 1px);
+  background-size: auto, auto, 22px 22px;
+}
+
+/* ─── Mobile ──────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  h1 { font-size: 2.25rem !important; line-height: 1.2 !important; }
+  h2 { font-size: 1.875rem !important; }
+}
