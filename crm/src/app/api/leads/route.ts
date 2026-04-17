@@ -6,17 +6,28 @@ import { crearLeadAutomatico } from '@/lib/leads/crearLeadAutomatico'
 import type { OrigenLead } from '@/lib/leads/crearLeadAutomatico'
 import { createClient } from '@/lib/supabase/server'
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type',
+const ALLOWED_ORIGINS = [
+  'https://huellasde-paz-cotizador.vercel.app',
+  'https://huellasde-paz-pl2f.vercel.app',
+  'http://localhost:5173',
+  'http://localhost:3001',
+]
+
+function getCorsHeaders(origin: string | null) {
+  const allowed = origin && ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0]
+  return {
+    'Access-Control-Allow-Origin': allowed,
+    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type',
+  }
 }
 
-export async function OPTIONS() {
-  return NextResponse.json({}, { headers: corsHeaders })
+export async function OPTIONS(request: NextRequest) {
+  return NextResponse.json({}, { headers: getCorsHeaders(request.headers.get('origin')) })
 }
 
 export async function POST(request: NextRequest) {
+  const corsHeaders = getCorsHeaders(request.headers.get('origin'))
   try {
     const body = await request.json()
     if (!body.nombre || !body.telefono) {
@@ -38,6 +49,7 @@ export async function POST(request: NextRequest) {
 }
 
 export async function GET(request: NextRequest) {
+  const corsHeaders = getCorsHeaders(request.headers.get('origin'))
   try {
     const { searchParams } = new URL(request.url)
     const agenteId = searchParams.get('agenteId')
