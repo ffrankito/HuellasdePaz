@@ -27,10 +27,18 @@
 html { scroll-behavior: smooth; }
 body {
   margin: 0;
-  background: #fff;
+  background-color: #f7f3ee;
+  background-image: radial-gradient(circle, #d4c9bc 1px, transparent 1px);
+  background-size: 28px 28px;
   color: var(--text);
   font-family: var(--font);
   -webkit-font-smoothing: antialiased;
+}
+
+.app {
+  min-height: 100vh;
+  background: transparent;
+  padding: 0;
 }
 h1, h2, h3, h4 { font-family: var(--font); line-height: 1.15; }
 button, input, textarea { font: inherit; }
@@ -42,7 +50,12 @@ img { max-width: 100%; display: block; }
 .container { max-width: var(--container); margin: 0 auto; padding: 0 28px; }
 
 /* ─── COTIZADOR CONTENT ───────────────────────────────────── */
-.quote-content { max-width: var(--container); margin: 0 auto; padding: 30px 28px 80px; }
+.quote-content {
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: 30px 28px 80px;
+  background: transparent;
+}
 
 /* ─── SECCIÓN ─────────────────────────────────────────────── */
 .section-block { margin-bottom: 36px; }
