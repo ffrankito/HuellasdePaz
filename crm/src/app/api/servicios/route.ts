@@ -2,12 +2,14 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/db'
 import { servicios } from '@/db/schema'
 import { eq, ne, and } from 'drizzle-orm'
+import { sql } from 'drizzle-orm'
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
 
     const [servicio] = await db.insert(servicios).values({
+      numero: sql`nextval('servicios_numero_seq')`,
       clienteId: body.clienteId,
       mascotaId: body.mascotaId,
       tipo: body.tipo,
