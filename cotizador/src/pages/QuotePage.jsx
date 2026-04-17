@@ -7,8 +7,6 @@ import { pickupMethods } from "../data/pickupMethods";
 import { ashesDelivery } from "../data/ashesDelivery";
 import { zones } from "../data/zones";
 
-const TOTAL_STEPS = 8;
-
 const initialFormData = {
   petType: "",
   size: "",
@@ -28,7 +26,7 @@ const initialOpenFeatures = {
   "amigos-de-verdad": false,
 };
 
-const CRM_API_URL = import.meta.env.VITE_CRM_API_URL || "https://crm.huellasdepaz.com.ar/api/leads";
+const CRM_API_URL = import.meta.env.VITE_CRM_API_URL || "https://huellasde-paz.vercel.app/api/leads";
 
 export default function QuotePage() {
   const [step, setStep] = useState(1);
@@ -38,7 +36,10 @@ export default function QuotePage() {
   const [animKey, setAnimKey] = useState(0);
 
   const needsZone = formData.pickupMethod === "domicilio";
-  const effectiveTotalSteps = needsZone ? TOTAL_STEPS : TOTAL_STEPS - 1;
+  const totalSteps = needsZone ? 8 : 7;
+  const dataStep = needsZone ? 7 : 6;
+  const successStep = needsZone ? 8 : 7;
+  const isFinal = step === successStep;
 
   const principalPetTypes = petTypes.filter((p) => p.group === "principal");
   const otherPetTypes = petTypes.filter((p) => p.group === "otros");
@@ -55,7 +56,6 @@ export default function QuotePage() {
     if (step === 4) return formData.pickupMethod !== "";
     if (step === 5) return formData.ashesDelivery !== "";
     if (step === 6 && needsZone) return formData.zone !== "";
-    const dataStep = needsZone ? 7 : 6;
     if (step === dataStep) {
       return (
         formData.petName.trim() !== "" &&
@@ -67,53 +67,50 @@ export default function QuotePage() {
     return true;
   };
 
-const handleNext = async () => {
-  if (!canContinue()) return;
+  const handleNext = async () => {
+    if (!canContinue()) return;
 
-  const dataStep = needsZone ? 7 : 6;
-  const successStep = needsZone ? 8 : 7;
+    if (step === dataStep) {
+      const selectedService = services.find((s) => s.id === formData.service);
+      const selectedSize = sizes.find((s) => s.id === formData.size);
+      const selectedPickup = pickupMethods.find((p) => p.id === formData.pickupMethod);
+      const selectedZone = zones.find((z) => z.id === formData.zone);
 
-  if (step === dataStep) {
-    const selectedService = services.find((s) => s.id === formData.service);
-    const selectedSize = sizes.find((s) => s.id === formData.size);
-    const selectedPickup = pickupMethods.find((p) => p.id === formData.pickupMethod);
-    const selectedZone = zones.find((z) => z.id === formData.zone);
+      const resumen = [
+        selectedService?.title,
+        selectedSize?.title,
+        selectedPickup?.title?.replace("\n", " "),
+        selectedZone ? "Zona: " + selectedZone.title : null,
+        "Mascota: " + formData.petName + " (" + formData.petType + ")",
+      ].filter(Boolean).join(" · ");
 
-    const resumen = [
-      selectedService?.title,
-      selectedSize?.title,
-      selectedPickup?.title?.replace("\n", " "),
-      selectedZone ? "Zona: " + selectedZone.title : null,
-      "Mascota: " + formData.petName + " (" + formData.petType + ")",
-    ].filter(Boolean).join(" · ");
+      try {
+        await fetch(CRM_API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            nombre: formData.ownerName,
+            telefono: formData.phone,
+            email: formData.email,
+            origen: "cotizador",
+            mensaje: resumen,
+          }),
+        });
+      } catch (err) {
+        console.error("Error creando lead en CRM:", err);
+      }
 
-    try {
-      await fetch(CRM_API_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          nombre: formData.ownerName,
-          telefono: formData.phone,
-          email: formData.email,
-          origen: "cotizador",
-          mensaje: resumen,
-        }),
-      });
-    } catch (err) {
-      console.error("Error creando lead en CRM:", err);
+      goTo(successStep);
+      return;
     }
 
-    goTo(successStep);  // ← ir al resumen
-    return;             // ← cortar acá
-  }
+    if (step === 5 && !needsZone) {
+      goTo(6);
+      return;
+    }
 
-  if (step === 5 && !needsZone) {
-    goTo(6);
-    return;
-  }
-
-  if (step < effectiveTotalSteps) goTo(step + 1);
-};
+    if (step < totalSteps) goTo(step + 1);
+  };
 
   const handleBack = () => {
     if (step === 1 && showOtherPetTypes) {
@@ -138,7 +135,6 @@ const handleNext = async () => {
 
   const selectedService = services.find((s) => s.id === formData.service);
 
-  // ── STEP 1: tipo de mascota ──────────────────────────────────────────────
   const renderStep1 = () => (
     <div className="section-block">
       <p className="section-block__title">
@@ -178,7 +174,6 @@ const handleNext = async () => {
     </div>
   );
 
-  // ── STEP 2: tamaño ───────────────────────────────────────────────────────
   const renderStep2 = () => (
     <div className="section-block">
       <p className="section-block__title">¿De qué tamaño es tu mascota?</p>
@@ -198,7 +193,6 @@ const handleNext = async () => {
     </div>
   );
 
-  // ── STEP 3: servicio ─────────────────────────────────────────────────────
   const renderStep3 = () => (
     <div className="section-block">
       <p className="section-block__title">Elegí el servicio que te gustaría ofrecerle</p>
@@ -236,7 +230,6 @@ const handleNext = async () => {
     </div>
   );
 
-  // ── STEP 4: retiro ───────────────────────────────────────────────────────
   const renderStep4 = () => (
     <div className="section-block">
       <p className="section-block__title">¿Cómo preferís que recibamos a tu mascota?</p>
@@ -266,7 +259,6 @@ const handleNext = async () => {
     </div>
   );
 
-  // ── STEP 5: cenizas ──────────────────────────────────────────────────────
   const renderStep5 = () => (
     <div className="section-block">
       <p className="section-block__title">¿Dónde querés recibir las cenizas?</p>
@@ -286,7 +278,6 @@ const handleNext = async () => {
     </div>
   );
 
-  // ── STEP 6: zona ─────────────────────────────────────────────────────────
   const renderStep6 = () => (
     <div className="section-block">
       <p className="section-block__title">Indicá la zona donde vamos a buscar a tu mascota</p>
@@ -305,7 +296,6 @@ const handleNext = async () => {
     </div>
   );
 
-  // ── DATOS ────────────────────────────────────────────────────────────────
   const renderDatos = () => (
     <div className="section-block">
       <p className="section-block__title" style={{ fontSize: 20, marginBottom: 6 }}>
@@ -316,58 +306,33 @@ const handleNext = async () => {
       </p>
       <div className="form-minimal">
         <div>
-          <input
-            className="form-minimal__input"
-            type="text"
-            placeholder="Nombre completo"
-            value={formData.ownerName}
-            onChange={(e) => setFormData((p) => ({ ...p, ownerName: e.target.value }))}
-          />
+          <input className="form-minimal__input" type="text" placeholder="Nombre completo"
+            value={formData.ownerName} onChange={(e) => setFormData((p) => ({ ...p, ownerName: e.target.value }))} />
         </div>
         <div>
-          <input
-            className="form-minimal__input"
-            type="email"
-            placeholder="Email"
-            value={formData.email}
-            onChange={(e) => setFormData((p) => ({ ...p, email: e.target.value }))}
-          />
+          <input className="form-minimal__input" type="email" placeholder="Email"
+            value={formData.email} onChange={(e) => setFormData((p) => ({ ...p, email: e.target.value }))} />
         </div>
         <div>
-          <input
-            className="form-minimal__input"
-            type="text"
-            placeholder="Nombre de tu mascota"
-            value={formData.petName}
-            onChange={(e) => setFormData((p) => ({ ...p, petName: e.target.value }))}
-          />
+          <input className="form-minimal__input" type="text" placeholder="Nombre de tu mascota"
+            value={formData.petName} onChange={(e) => setFormData((p) => ({ ...p, petName: e.target.value }))} />
         </div>
         <div>
-          <input
-            className="form-minimal__input"
-            type="tel"
-            placeholder="Teléfono"
-            value={formData.phone}
-            onChange={(e) => setFormData((p) => ({ ...p, phone: e.target.value }))}
-          />
-          <p className="form-minimal__hint">
-            Con código de área, sin 0 ni 15. Ej: 3411234567
-          </p>
+          <input className="form-minimal__input" type="tel" placeholder="Teléfono"
+            value={formData.phone} onChange={(e) => setFormData((p) => ({ ...p, phone: e.target.value }))} />
+          <p className="form-minimal__hint">Con código de área, sin 0 ni 15. Ej: 3411234567</p>
         </div>
       </div>
     </div>
   );
 
-  // ── PANTALLA FINAL ───────────────────────────────────────────────────────
   const renderSuccess = () => {
     const waText = encodeURIComponent(
       "Hola, quiero consultar sobre el servicio " +
       (selectedService?.title || "cremación") +
-      " para " +
-      (formData.petName || "mi mascota")
+      " para " + (formData.petName || "mi mascota")
     );
     const waUrl = "https://wa.me/5493410000000?text=" + waText;
-
     return (
       <div className="success">
         <div className="success__check">✓</div>
@@ -378,9 +343,7 @@ const handleNext = async () => {
         </p>
         {selectedService && (
           <>
-            <p style={{ fontSize: 13, color: "var(--text-soft)", margin: 0 }}>
-              El servicio seleccionado es:
-            </p>
+            <p style={{ fontSize: 13, color: "var(--text-soft)", margin: 0 }}>El servicio seleccionado es:</p>
             <div className="success__service-box">
               <div className="success__service-name">{selectedService.title}</div>
               <div className="success__service-desc">{selectedService.desc}</div>
@@ -388,12 +351,7 @@ const handleNext = async () => {
           </>
         )}
         <div className="success__actions">
-          <a
-            href={waUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="btn btn--whatsapp"
-          >
+          <a href={waUrl} target="_blank" rel="noopener noreferrer" className="btn btn--whatsapp">
             💬 Confirmar por WhatsApp
           </a>
           <button type="button" className="btn btn--secondary" onClick={resetFlow}>
@@ -403,11 +361,6 @@ const handleNext = async () => {
       </div>
     );
   };
-
-  // ── RENDER ───────────────────────────────────────────────────────────────
-  const dataStep = needsZone ? 7 : 6;
-  const successStep = needsZone ? 8 : 7;
-  const isFinal = step === successStep;
 
   const renderCurrentStep = () => {
     if (step === 1) return renderStep1();
