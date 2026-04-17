@@ -5,11 +5,21 @@ import { eq, asc } from 'drizzle-orm'
 import { crearLeadAutomatico } from '@/lib/leads/crearLeadAutomatico'
 import type { OrigenLead } from '@/lib/leads/crearLeadAutomatico'
 
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type',
+}
+
+export async function OPTIONS() {
+  return NextResponse.json({}, { headers: corsHeaders })
+}
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
     if (!body.nombre || !body.telefono) {
-      return NextResponse.json({ error: 'Nombre y teléfono son requeridos' }, { status: 400 })
+      return NextResponse.json({ error: 'Nombre y teléfono son requeridos' }, { status: 400, headers: corsHeaders })
     }
     const { lead, esNuevo } = await crearLeadAutomatico({
       nombre: body.nombre,
@@ -19,10 +29,10 @@ export async function POST(request: NextRequest) {
       origen: (body.origen as OrigenLead) ?? 'directo',
       veterinariaId: body.veterinariaId,
     })
-    return NextResponse.json(lead, { status: esNuevo ? 201 : 200 })
+    return NextResponse.json(lead, { status: esNuevo ? 201 : 200, headers: corsHeaders })
   } catch (error) {
     console.error('Error creando lead:', error)
-    return NextResponse.json({ error: 'Error interno del servidor' }, { status: 500 })
+    return NextResponse.json({ error: 'Error interno del servidor' }, { status: 500, headers: corsHeaders })
   }
 }
 
@@ -33,9 +43,9 @@ export async function GET(request: NextRequest) {
     const data = agenteId
       ? await db.select().from(leads).where(eq(leads.asignadoAId, agenteId)).orderBy(asc(leads.creadoEn))
       : await db.select().from(leads).orderBy(asc(leads.creadoEn))
-    return NextResponse.json(data)
+    return NextResponse.json(data, { headers: corsHeaders })
   } catch (error) {
     console.error('Error obteniendo leads:', error)
-    return NextResponse.json({ error: 'Error interno del servidor' }, { status: 500 })
+    return NextResponse.json({ error: 'Error interno del servidor' }, { status: 500, headers: corsHeaders })
   }
 }
