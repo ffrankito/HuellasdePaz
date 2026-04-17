@@ -4,6 +4,7 @@ import { leads } from '@/db/schema'
 import { eq, asc } from 'drizzle-orm'
 import { crearLeadAutomatico } from '@/lib/leads/crearLeadAutomatico'
 import type { OrigenLead } from '@/lib/leads/crearLeadAutomatico'
+import { createClient } from '@/lib/supabase/server'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -40,9 +41,22 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
     const agenteId = searchParams.get('agenteId')
-    const data = agenteId
-      ? await db.select().from(leads).where(eq(leads.asignadoAId, agenteId)).orderBy(asc(leads.creadoEn))
-      : await db.select().from(leads).orderBy(asc(leads.creadoEn))
+    const misLeads = searchParams.get('misLeads')
+
+    let userId: string | null = null
+
+    if (misLeads === 'true') {
+      const supabase = await createClient()
+      const { data: { user } } = await supabase.auth.getUser()
+      userId = user?.id ?? null
+    }
+
+    const data = userId
+      ? await db.select().from(leads).where(eq(leads.asignadoAId, userId)).orderBy(asc(leads.creadoEn))
+      : agenteId
+        ? await db.select().from(leads).where(eq(leads.asignadoAId, agenteId)).orderBy(asc(leads.creadoEn))
+        : await db.select().from(leads).orderBy(asc(leads.creadoEn))
+
     return NextResponse.json(data, { headers: corsHeaders })
   } catch (error) {
     console.error('Error obteniendo leads:', error)
