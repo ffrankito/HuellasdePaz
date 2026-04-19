@@ -7,9 +7,18 @@ export const estadoConvenioEnum = pgEnum('estado_convenio', [
   'pausado',
 ])
 
-export const veterinarias = pgTable('veterinarias', {
+export const tipoConvenioEnum = pgEnum('tipo_convenio', [
+  'veterinaria',
+  'petshop',
+  'refugio',
+  'clinica',
+  'otro',
+])
+
+export const convenios = pgTable('convenios', {
   id: uuid('id').primaryKey().defaultRandom(),
   nombre: text('nombre').notNull(),
+  tipo: tipoConvenioEnum('tipo').notNull().default('veterinaria'),
   direccion: text('direccion'),
   telefono: text('telefono'),
   email: text('email'),
@@ -26,5 +35,10 @@ export const veterinarias = pgTable('veterinarias', {
   actualizadoEn: timestamp('actualizado_en').defaultNow().notNull(),
 })
 
-export type Veterinaria = typeof veterinarias.$inferSelect
-export type NuevaVeterinaria = typeof veterinarias.$inferInsert
+export type Convenio = typeof convenios.$inferSelect
+export type NuevoConvenio = typeof convenios.$inferInsert
+
+// Alias para compatibilidad con código existente
+export const veterinarias = convenios
+export type Veterinaria = Convenio
+export type NuevaVeterinaria = NuevoConvenio

@@ -13,7 +13,7 @@ const navAdmin = [
   { label: 'Servicios', href: '/dashboard/servicios' },
   { label: 'Planes', href: '/dashboard/planes' },
   { label: 'Agenda', href: '/dashboard/agenda' },
-  { label: 'Veterinarias', href: '/dashboard/veterinarias' },
+  { label: 'Convenios', href: '/dashboard/convenios' },
   { label: 'Comunicación', href: '/dashboard/comunicacion' },
   { label: 'Inventario', href: '/dashboard/inventario' },
   { label: 'Cobranzas', href: '/dashboard/cobranzas' },
@@ -73,6 +73,7 @@ const navPorRol: Record<string, { label: string; href: string }[]> = {
 
 const navGestionEquipo = [
   { label: 'Leads', href: '/dashboard/leads' },
+  { label: 'Importar leads', href: '/dashboard/configuracion/importar-leads' },
   { label: 'Agentes', href: '/dashboard/manager/agentes' },
   { label: 'Rendimiento equipo', href: '/dashboard/manager/rendimiento' },
   { label: 'Reportes equipo', href: '/dashboard/manager/reportes' },

@@ -1,5 +1,5 @@
 import { db } from '@/db'
-import { veterinarias, leads, clientes } from '@/db/schema'
+import { convenios, leads, clientes } from '@/db/schema'
 import { eq, count } from 'drizzle-orm'
 import Link from 'next/link'
 
@@ -10,8 +10,8 @@ const estadoColors: Record<string, { bg: string; color: string; label: string }>
   pausado: { bg: '#fef2f2', color: '#dc2626', label: 'Pausado' },
 }
 
-export default async function VeterinariasPage() {
-  const data = await db.select().from(veterinarias)
+export default async function ConveniosPage() {
+  const data = await db.select().from(convenios)
 
   const conMetricas = await Promise.all(
     data.map(async (v) => {
@@ -34,23 +34,23 @@ export default async function VeterinariasPage() {
     <div className="page-container">
       <div className="page-header">
         <div>
-          <h1 style={{ fontSize: 24, fontWeight: 600, color: '#111827', margin: 0 }}>Veterinarias</h1>
+          <h1 style={{ fontSize: 24, fontWeight: 600, color: '#111827', margin: 0 }}>Convenios</h1>
           <p style={{ fontSize: 14, color: '#6b7280', marginTop: 4, marginBottom: 0 }}>
-            {data.length} registradas · {activas} con convenio activo · {enNegociacion} en negociación
+            {data.length} registrados · {activas} con convenio activo · {enNegociacion} en negociación
           </p>
         </div>
-        <Link href="/dashboard/veterinarias/nueva" style={{
+        <Link href="/dashboard/convenios/nueva" style={{
           background: '#111827', color: 'white', padding: '10px 20px',
           borderRadius: 10, fontSize: 14, fontWeight: 500, textDecoration: 'none',
         }}>
-          + Nueva veterinaria
+          + Nuevo convenio
         </Link>
       </div>
 
       {/* Métricas rápidas */}
       <div className="grid-4" style={{ marginBottom: 24 }}>
         <div style={{ background: 'white', borderRadius: 14, border: '1px solid #f3f4f6', padding: '18px 20px', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
-          <p style={{ fontSize: 12, color: '#6b7280', margin: '0 0 6px' }}>Total registradas</p>
+          <p style={{ fontSize: 12, color: '#6b7280', margin: '0 0 6px' }}>Total registrados</p>
           <p style={{ fontSize: 28, fontWeight: 700, color: '#111827', margin: 0 }}>{data.length}</p>
         </div>
         <div style={{ background: '#f0fdf4', borderRadius: 14, border: '1px solid #bbf7d0', padding: '18px 20px' }}>
@@ -74,7 +74,7 @@ export default async function VeterinariasPage() {
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead>
             <tr style={{ borderBottom: '1px solid #f3f4f6' }}>
-              {['Veterinaria', 'Responsable', 'Contacto', 'Convenio', 'Beneficio', 'Leads', 'Clientes', ''].map(col => (
+              {['Convenio', 'Tipo', 'Responsable', 'Contacto', 'Estado', 'Beneficio', 'Leads', 'Clientes', ''].map(col => (
                 <th key={col} style={{ padding: '12px 20px', textAlign: 'left', fontSize: 12, fontWeight: 500, color: '#9ca3af', letterSpacing: '0.05em' }}>
                   {col.toUpperCase()}
                 </th>
@@ -84,8 +84,8 @@ export default async function VeterinariasPage() {
           <tbody>
             {conMetricas.length === 0 ? (
               <tr>
-                <td colSpan={8} style={{ padding: '48px 20px', textAlign: 'center', fontSize: 14, color: '#9ca3af' }}>
-                  No hay veterinarias registradas todavía
+                <td colSpan={9} style={{ padding: '48px 20px', textAlign: 'center', fontSize: 14, color: '#9ca3af' }}>
+                  No hay convenios registrados todavía
                 </td>
               </tr>
             ) : (
@@ -96,6 +96,9 @@ export default async function VeterinariasPage() {
                     <td style={{ padding: '14px 20px' }}>
                       <p style={{ fontSize: 14, fontWeight: 600, color: '#111827', margin: 0 }}>{v.nombre}</p>
                       {v.direccion && <p style={{ fontSize: 12, color: '#9ca3af', margin: 0 }}>{v.direccion}</p>}
+                    </td>
+                    <td style={{ padding: '14px 20px', fontSize: 13, color: '#6b7280', textTransform: 'capitalize' }}>
+                      {v.tipo ?? '—'}
                     </td>
                     <td style={{ padding: '14px 20px', fontSize: 14, color: '#4b5563' }}>
                       {v.responsable ?? '—'}
@@ -130,7 +133,7 @@ export default async function VeterinariasPage() {
                       {v.totalClientes}
                     </td>
                     <td style={{ padding: '14px 20px', textAlign: 'right' }}>
-                      <Link href={`/dashboard/veterinarias/${v.id}`} style={{ fontSize: 13, color: '#6b7280', textDecoration: 'none', fontWeight: 500 }}>
+                      <Link href={`/dashboard/convenios/${v.id}`} style={{ fontSize: 13, color: '#6b7280', textDecoration: 'none', fontWeight: 500 }}>
                         Ver →
                       </Link>
                     </td>

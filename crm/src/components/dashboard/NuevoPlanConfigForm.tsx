@@ -2,11 +2,18 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { type PlanConfig } from '@/db/schema'
 
-export function NuevoPlanConfigForm() {
+type Props = {
+  planExistente?: PlanConfig
+  onCancelar?: () => void
+}
+
+export function NuevoPlanConfigForm({ planExistente, onCancelar }: Props) {
   const router = useRouter()
+  const esEdicion = !!planExistente
   const [loading, setLoading] = useState(false)
-  const [abierto, setAbierto] = useState(false)
+  const [abierto, setAbierto] = useState(esEdicion)
   const [error, setError] = useState<string | null>(null)
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -19,12 +26,14 @@ export function NuevoPlanConfigForm() {
       nombre: (form.elements.namedItem('nombre') as HTMLInputElement).value,
       descripcion: (form.elements.namedItem('descripcion') as HTMLInputElement).value || null,
       cuotaMensual: (form.elements.namedItem('cuotaMensual') as HTMLInputElement).value,
-      cuotasTotales: parseInt((form.elements.namedItem('cuotasTotales') as HTMLInputElement).value),
       activo: true,
     }
 
-    const res = await fetch('/api/configuracion/planes', {
-      method: 'POST',
+    const url = esEdicion ? `/api/configuracion/planes/${planExistente.id}` : '/api/configuracion/planes'
+    const method = esEdicion ? 'PATCH' : 'POST'
+
+    const res = await fetch(url, {
+      method,
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
     })
@@ -37,6 +46,7 @@ export function NuevoPlanConfigForm() {
 
     setAbierto(false)
     setLoading(false)
+    if (onCancelar) onCancelar()
     router.refresh()
   }
 
@@ -45,7 +55,6 @@ export function NuevoPlanConfigForm() {
     color: '#111827', background: 'white', border: '1px solid #e5e7eb',
     borderRadius: 10, outline: 'none', boxSizing: 'border-box' as const,
   }
-
   const labelStyle = { display: 'block', fontSize: 13, fontWeight: 500, color: '#374151', marginBottom: 6 }
 
   if (!abierto) {
@@ -61,40 +70,36 @@ export function NuevoPlanConfigForm() {
 
   return (
     <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16, background: '#f9fafb', borderRadius: 12, padding: '20px', border: '1px solid #f3f4f6' }}>
-      <p style={{ fontSize: 14, fontWeight: 600, color: '#111827', margin: 0 }}>Nuevo plan de previsión</p>
+      <p style={{ fontSize: 14, fontWeight: 600, color: '#111827', margin: 0 }}>
+        {esEdicion ? `Editar plan: ${planExistente.nombre}` : 'Nuevo plan de previsión'}
+      </p>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
         <div>
           <label style={labelStyle}>Nombre *</label>
-          <input name="nombre" required style={inputStyle} placeholder="Plan Básico" />
+          <input name="nombre" required style={inputStyle} placeholder="Plan Básico" defaultValue={planExistente?.nombre ?? ''} />
         </div>
         <div>
           <label style={labelStyle}>Descripción</label>
-          <input name="descripcion" style={inputStyle} placeholder="Descripción breve" />
+          <input name="descripcion" style={inputStyle} placeholder="Descripción breve" defaultValue={planExistente?.descripcion ?? ''} />
         </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-        <div>
-          <label style={labelStyle}>Cuota mensual (ARS) *</label>
-          <input name="cuotaMensual" type="number" min="0" required style={inputStyle} placeholder="15000" />
-        </div>
-        <div>
-          <label style={labelStyle}>Total de cuotas *</label>
-          <input name="cuotasTotales" type="number" min="1" required style={inputStyle} placeholder="12" />
-        </div>
+      <div>
+        <label style={labelStyle}>Cuota mensual (ARS) *</label>
+        <input name="cuotaMensual" type="number" min="0" required style={inputStyle} placeholder="15000" defaultValue={planExistente ? Number(planExistente.cuotaMensual).toString() : ''} />
       </div>
 
       {error && <p style={{ fontSize: 13, color: '#dc2626', margin: 0 }}>{error}</p>}
 
       <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
-        <button type="button" onClick={() => setAbierto(false)}
+        <button type="button" onClick={() => { setAbierto(false); if (onCancelar) onCancelar() }}
           style={{ padding: '8px 16px', borderRadius: 8, fontSize: 13, border: '1px solid #e5e7eb', background: 'white', color: '#374151', cursor: 'pointer' }}>
           Cancelar
         </button>
         <button type="submit" disabled={loading}
           style={{ padding: '8px 16px', borderRadius: 8, fontSize: 13, border: 'none', background: '#111827', color: 'white', cursor: 'pointer', opacity: loading ? 0.6 : 1 }}>
-          {loading ? 'Guardando...' : 'Guardar'}
+          {loading ? 'Guardando...' : esEdicion ? 'Guardar cambios' : 'Guardar'}
         </button>
       </div>
     </form>

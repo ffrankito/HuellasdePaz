@@ -18,7 +18,7 @@ export const planes = pgTable('planes', {
   estado: estadoPlanEnum('estado').notNull().default('activo'),
   cuotasMensual: numeric('cuota_mensual', { precision: 10, scale: 2 }).notNull(),
   cuotasPagadas: integer('cuotas_pagadas').default(0).notNull(),
-  cuotasTotales: integer('cuotas_totales').notNull(),
+  cuotasTotales: integer('cuotas_totales').notNull().default(0),
   porcentajeCobertura: numeric('porcentaje_cobertura', { precision: 5, scale: 2 }).default('0'),
   mascotaAdicional: boolean('mascota_adicional').default(false).notNull(),
   notas: text('notas'),

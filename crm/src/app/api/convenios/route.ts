@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/db'
-import { veterinarias } from '@/db/schema'
+import { convenios } from '@/db/schema'
 
 export async function GET() {
   try {
-    const data = await db.select().from(veterinarias)
+    const data = await db.select().from(convenios)
     return NextResponse.json(data)
   } catch (error) {
-    console.error('Error obteniendo veterinarias:', error)
+    console.error('Error obteniendo convenios:', error)
     return NextResponse.json({ error: 'Error interno' }, { status: 500 })
   }
 }
@@ -20,8 +20,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Nombre requerido' }, { status: 400 })
     }
 
-    const [vet] = await db.insert(veterinarias).values({
+    const [convenio] = await db.insert(convenios).values({
       nombre: body.nombre,
+      tipo: body.tipo ?? 'veterinaria',
       direccion: body.direccion || null,
       telefono: body.telefono || null,
       email: body.email || null,
@@ -36,9 +37,9 @@ export async function POST(request: NextRequest) {
       notas: body.notas || null,
     }).returning()
 
-    return NextResponse.json(vet, { status: 201 })
+    return NextResponse.json(convenio, { status: 201 })
   } catch (error) {
-    console.error('Error creando veterinaria:', error)
+    console.error('Error creando convenio:', error)
     return NextResponse.json({ error: 'Error interno' }, { status: 500 })
   }
 }

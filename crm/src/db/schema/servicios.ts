@@ -25,7 +25,7 @@ export const servicios = pgTable('servicios', {
   id: uuid('id').primaryKey().defaultRandom(),
   numero: integer('numero').notNull(),
   clienteId: uuid('cliente_id').notNull().references(() => clientes.id),
-  mascotaId: uuid('mascota_id').notNull().references(() => mascotas.id),
+  mascotaId: uuid('mascota_id').references(() => mascotas.id),
   tipo: tipoServicioEnum('tipo').notNull(),
   estado: estadoServicioEnum('estado').notNull().default('ingresado'),
   precio: numeric('precio', { precision: 10, scale: 2 }),

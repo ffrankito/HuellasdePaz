@@ -1,5 +1,5 @@
 import { db } from '@/db'
-import { veterinarias, leads, clientes, servicios } from '@/db/schema'
+import { convenios, leads, clientes } from '@/db/schema'
 import { eq, count, and } from 'drizzle-orm'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
@@ -11,18 +11,18 @@ const estadoColors: Record<string, { bg: string; color: string; label: string }>
   pausado: { bg: '#fef2f2', color: '#dc2626', label: 'Pausado' },
 }
 
-export default async function VeterinariaDetallePage({
+export default async function ConvenioDetallePage({
   params,
 }: {
   params: Promise<{ id: string }>
 }) {
   const { id } = await params
 
-  const vet = await db.query.veterinarias.findFirst({
-    where: eq(veterinarias.id, id),
+  const convenio = await db.query.convenios.findFirst({
+    where: eq(convenios.id, id),
   })
 
-  if (!vet) notFound()
+  if (!convenio) notFound()
 
   const [
     totalLeads,
@@ -44,24 +44,23 @@ export default async function VeterinariaDetallePage({
     ? Math.round((leadsConvertidos[0].count / totalLeads[0].count) * 100)
     : 0
 
-  const badge = estadoColors[vet.estadoConvenio] ?? estadoColors.sin_convenio
+  const badge = estadoColors[convenio.estadoConvenio] ?? estadoColors.sin_convenio
 
   return (
     <div className="page-container">
-      {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 32 }}>
         <div>
-          <Link href="/dashboard/veterinarias" style={{ fontSize: 13, color: '#6b7280', textDecoration: 'none' }}>
-            ← Veterinarias
+          <Link href="/dashboard/convenios" style={{ fontSize: 13, color: '#6b7280', textDecoration: 'none' }}>
+            ← Convenios
           </Link>
           <h1 style={{ fontSize: 24, fontWeight: 600, color: '#111827', margin: '4px 0 8px' }}>
-            {vet.nombre}
+            {convenio.nombre}
           </h1>
           <span style={{ background: badge.bg, color: badge.color, padding: '4px 12px', borderRadius: 20, fontSize: 13, fontWeight: 600 }}>
             {badge.label}
           </span>
         </div>
-        <Link href={`/dashboard/veterinarias/${id}/editar`} style={{
+        <Link href={`/dashboard/convenios/${id}/editar`} style={{
           background: '#111827', color: 'white', padding: '10px 20px',
           borderRadius: 10, fontSize: 14, fontWeight: 500, textDecoration: 'none',
         }}>
@@ -70,61 +69,40 @@ export default async function VeterinariaDetallePage({
       </div>
 
       <div className="grid-2">
-        {/* Columna izquierda */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-
-          {/* Datos de contacto */}
           <div style={{ background: 'white', borderRadius: 16, border: '1px solid #f3f4f6', padding: '24px', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
             <h2 style={{ fontSize: 15, fontWeight: 600, color: '#111827', margin: '0 0 16px' }}>Datos de contacto</h2>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-              <InfoRow label="Responsable" value={vet.responsable ?? '—'} />
-              <InfoRow label="Teléfono" value={vet.telefono ?? '—'} />
-              <InfoRow label="Email" value={vet.email ?? '—'} />
-              <InfoRow label="Dirección" value={vet.direccion ?? '—'} />
-              {vet.instagram && <InfoRow label="Instagram" value={vet.instagram} />}
-              {vet.web && <InfoRow label="Web" value={vet.web} />}
+              <InfoRow label="Tipo" value={convenio.tipo ?? '—'} />
+              <InfoRow label="Responsable" value={convenio.responsable ?? '—'} />
+              <InfoRow label="Teléfono" value={convenio.telefono ?? '—'} />
+              <InfoRow label="Email" value={convenio.email ?? '—'} />
+              <InfoRow label="Dirección" value={convenio.direccion ?? '—'} />
+              {convenio.instagram && <InfoRow label="Instagram" value={convenio.instagram} />}
+              {convenio.web && <InfoRow label="Web" value={convenio.web} />}
             </div>
           </div>
 
-          {/* Convenio */}
           <div style={{ background: 'white', borderRadius: 16, border: '1px solid #f3f4f6', padding: '24px', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
             <h2 style={{ fontSize: 15, fontWeight: 600, color: '#111827', margin: '0 0 16px' }}>Convenio</h2>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               <InfoRow label="Estado" value={badge.label} />
-              <InfoRow
-                label="Descuento"
-                value={Number(vet.descuentoPorcentaje) > 0 ? `${Number(vet.descuentoPorcentaje)}%` : '—'}
-              />
-              {vet.beneficioDescripcion && (
-                <InfoRow label="Beneficio" value={vet.beneficioDescripcion} />
-              )}
-              {vet.fechaInicioConvenio && (
-                <InfoRow
-                  label="Inicio convenio"
-                  value={new Date(vet.fechaInicioConvenio).toLocaleDateString('es-AR')}
-                />
-              )}
-              {vet.fechaVencimientoConvenio && (
-                <InfoRow
-                  label="Vencimiento"
-                  value={new Date(vet.fechaVencimientoConvenio).toLocaleDateString('es-AR')}
-                />
-              )}
+              <InfoRow label="Descuento" value={Number(convenio.descuentoPorcentaje) > 0 ? `${Number(convenio.descuentoPorcentaje)}%` : '—'} />
+              {convenio.beneficioDescripcion && <InfoRow label="Beneficio" value={convenio.beneficioDescripcion} />}
+              {convenio.fechaInicioConvenio && <InfoRow label="Inicio" value={new Date(convenio.fechaInicioConvenio).toLocaleDateString('es-AR')} />}
+              {convenio.fechaVencimientoConvenio && <InfoRow label="Vencimiento" value={new Date(convenio.fechaVencimientoConvenio).toLocaleDateString('es-AR')} />}
             </div>
           </div>
 
-          {vet.notas && (
+          {convenio.notas && (
             <div style={{ background: 'white', borderRadius: 16, border: '1px solid #f3f4f6', padding: '24px', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
               <h2 style={{ fontSize: 15, fontWeight: 600, color: '#111827', margin: '0 0 8px' }}>Notas</h2>
-              <p style={{ fontSize: 14, color: '#4b5563', margin: 0, lineHeight: 1.6 }}>{vet.notas}</p>
+              <p style={{ fontSize: 14, color: '#4b5563', margin: 0, lineHeight: 1.6 }}>{convenio.notas}</p>
             </div>
           )}
         </div>
 
-        {/* Columna derecha — métricas */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-
-          {/* Métricas */}
           <div className="grid-2">
             <div style={{ background: '#f0fdf4', borderRadius: 14, border: '1px solid #bbf7d0', padding: '18px 20px' }}>
               <p style={{ fontSize: 12, color: '#15803d', margin: '0 0 6px' }}>Clientes derivados</p>
@@ -144,13 +122,10 @@ export default async function VeterinariaDetallePage({
             </div>
           </div>
 
-          {/* Últimos leads */}
           <div style={{ background: 'white', borderRadius: 16, border: '1px solid #f3f4f6', padding: '24px', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
               <h2 style={{ fontSize: 15, fontWeight: 600, color: '#111827', margin: 0 }}>Últimos leads</h2>
-              <Link href={`/dashboard/leads?veterinariaId=${id}`} style={{ fontSize: 13, color: '#6b7280', textDecoration: 'none' }}>
-                Ver todos →
-              </Link>
+              <Link href={`/dashboard/leads?veterinariaId=${id}`} style={{ fontSize: 13, color: '#6b7280', textDecoration: 'none' }}>Ver todos →</Link>
             </div>
             {ultimosLeads.length === 0 ? (
               <p style={{ fontSize: 14, color: '#9ca3af', margin: 0 }}>Sin leads todavía</p>
@@ -162,22 +137,17 @@ export default async function VeterinariaDetallePage({
                       <p style={{ fontSize: 14, fontWeight: 500, color: '#111827', margin: 0 }}>{l.nombre}</p>
                       <p style={{ fontSize: 12, color: '#9ca3af', margin: 0 }}>{l.telefono}</p>
                     </div>
-                    <span style={{ fontSize: 12, color: '#6b7280', background: '#f3f4f6', padding: '2px 8px', borderRadius: 20 }}>
-                      {l.estado}
-                    </span>
+                    <span style={{ fontSize: 12, color: '#6b7280', background: '#f3f4f6', padding: '2px 8px', borderRadius: 20 }}>{l.estado}</span>
                   </div>
                 ))}
               </div>
             )}
           </div>
 
-          {/* Últimos clientes */}
           <div style={{ background: 'white', borderRadius: 16, border: '1px solid #f3f4f6', padding: '24px', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
               <h2 style={{ fontSize: 15, fontWeight: 600, color: '#111827', margin: 0 }}>Clientes derivados</h2>
-              <Link href={`/dashboard/clientes?veterinariaId=${id}`} style={{ fontSize: 13, color: '#6b7280', textDecoration: 'none' }}>
-                Ver todos →
-              </Link>
+              <Link href={`/dashboard/clientes?veterinariaId=${id}`} style={{ fontSize: 13, color: '#6b7280', textDecoration: 'none' }}>Ver todos →</Link>
             </div>
             {ultimosClientes.length === 0 ? (
               <p style={{ fontSize: 14, color: '#9ca3af', margin: 0 }}>Sin clientes todavía</p>
@@ -189,9 +159,7 @@ export default async function VeterinariaDetallePage({
                       <p style={{ fontSize: 14, fontWeight: 500, color: '#111827', margin: 0 }}>{c.nombre} {c.apellido}</p>
                       <p style={{ fontSize: 12, color: '#9ca3af', margin: 0 }}>{c.telefono}</p>
                     </div>
-                    <Link href={`/dashboard/clientes/${c.id}`} style={{ fontSize: 12, color: '#6b7280', textDecoration: 'none' }}>
-                      Ver →
-                    </Link>
+                    <Link href={`/dashboard/clientes/${c.id}`} style={{ fontSize: 12, color: '#6b7280', textDecoration: 'none' }}>Ver →</Link>
                   </div>
                 ))}
               </div>

@@ -18,7 +18,6 @@ export default async function PlanesPage() {
       estado: planes.estado,
       cuotasMensual: planes.cuotasMensual,
       cuotasPagadas: planes.cuotasPagadas,
-      cuotasTotales: planes.cuotasTotales,
       porcentajeCobertura: planes.porcentajeCobertura,
       mascotaAdicional: planes.mascotaAdicional,
       creadoEn: planes.creadoEn,
@@ -78,7 +77,7 @@ export default async function PlanesPage() {
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead>
             <tr style={{ borderBottom: '1px solid #f3f4f6' }}>
-              {['#', 'Cliente', 'Mascota', 'Cuota', 'Cuotas', 'Cobertura', 'Estado', ''].map(col => (
+              {['#', 'Cliente', 'Mascota', 'Cuota mensual', 'Cuotas pagadas', 'Cobertura', 'Estado', ''].map(col => (
                 <th key={col} style={{ padding: '12px 20px', textAlign: 'left', fontSize: 12, fontWeight: 500, color: '#9ca3af', letterSpacing: '0.05em' }}>
                   {col.toUpperCase()}
                 </th>
@@ -95,7 +94,6 @@ export default async function PlanesPage() {
             ) : (
               data.map(p => {
                 const badge = estadoColors[p.estado] ?? { bg: '#f3f4f6', color: '#374151' }
-                const progreso = Math.round((p.cuotasPagadas / p.cuotasTotales) * 100)
                 return (
                   <tr key={p.id} style={{ borderBottom: '1px solid #f9fafb' }}>
                     <td style={{ padding: '14px 20px' }}>
@@ -119,15 +117,8 @@ export default async function PlanesPage() {
                     <td style={{ padding: '14px 20px', fontSize: 14, fontWeight: 600, color: '#111827' }}>
                       ${Number(p.cuotasMensual).toLocaleString('es-AR')}
                     </td>
-                    <td style={{ padding: '14px 20px' }}>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: 4, minWidth: 80 }}>
-                        <span style={{ fontSize: 13, color: '#374151' }}>
-                          {p.cuotasPagadas}/{p.cuotasTotales}
-                        </span>
-                        <div style={{ height: 4, background: '#f3f4f6', borderRadius: 2, overflow: 'hidden' }}>
-                          <div style={{ width: `${progreso}%`, height: '100%', background: '#111827', borderRadius: 2 }} />
-                        </div>
-                      </div>
+                    <td style={{ padding: '14px 20px', fontSize: 14, color: '#374151' }}>
+                      {p.cuotasPagadas} pagadas
                     </td>
                     <td style={{ padding: '14px 20px', fontSize: 14, color: '#4b5563' }}>
                       {Number(p.porcentajeCobertura)}%
@@ -137,10 +128,15 @@ export default async function PlanesPage() {
                         {p.estado}
                       </span>
                     </td>
-                    <td style={{ padding: '14px 20px', textAlign: 'right' }}>
-                      <Link href={`/dashboard/planes/${p.id}`} style={{ fontSize: 13, color: '#6b7280', textDecoration: 'none', fontWeight: 500 }}>
-                        Ver →
-                      </Link>
+                    <td style={{ padding: '14px 20px' }}>
+                      <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end', alignItems: 'center' }}>
+                        <Link href={`/dashboard/planes/${p.id}/editar`} style={{ fontSize: 13, color: '#1d4ed8', textDecoration: 'none', fontWeight: 500 }}>
+                          Editar
+                        </Link>
+                        <Link href={`/dashboard/planes/${p.id}`} style={{ fontSize: 13, color: '#6b7280', textDecoration: 'none', fontWeight: 500 }}>
+                          Ver →
+                        </Link>
+                      </div>
                     </td>
                   </tr>
                 )

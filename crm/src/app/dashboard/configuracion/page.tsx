@@ -6,6 +6,7 @@ import { NuevoPlanConfigForm } from '@/components/dashboard/NuevoPlanConfigForm'
 import { NuevoTemplateMsgForm } from '@/components/dashboard/NuevoTemplateMsgForm'
 import { EditarConfigListaForm } from '@/components/dashboard/EditarConfigListaForm'
 import { GestionPermisosUsuario } from '@/components/configuracion/GestionPermisosUsuario'
+import { EditarPlanConfigInline } from '@/components/configuracion/EditarPlanConfigInline'
 
 const rolLabel: Record<string, string> = {
   admin: 'Administrador',
@@ -48,7 +49,6 @@ export default async function ConfiguracionPage() {
     esAdmin ? db.select().from(usuarios) : Promise.resolve([]),
   ])
 
-  // Usuarios que no son admin (admin ya tiene todo, no necesita permisos extra)
   const usuariosConPermisos = todosUsuarios.filter(u => u.rol !== 'admin')
 
   return (
@@ -71,7 +71,6 @@ export default async function ConfiguracionPage() {
             <p style={{ fontSize: 13, color: '#6b7280', margin: '0 0 24px' }}>
               Asigná permisos adicionales a los usuarios sin cambiar su rol operativo.
             </p>
-
             {usuariosConPermisos.length === 0 ? (
               <p style={{ fontSize: 14, color: '#9ca3af', margin: 0 }}>
                 No hay otros usuarios registrados todavía.
@@ -82,7 +81,6 @@ export default async function ConfiguracionPage() {
                   const badge = rolColor[u.rol] ?? { bg: '#f3f4f6', color: '#374151' }
                   return (
                     <div key={u.id} style={{ borderBottom: '1px solid #f3f4f6', paddingBottom: 24 }}>
-                      {/* Header del usuario */}
                       <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
                         <div style={{ width: 40, height: 40, borderRadius: '50%', background: '#111827', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                           <span style={{ fontSize: 15, fontWeight: 600, color: 'white' }}>
@@ -102,8 +100,6 @@ export default async function ConfiguracionPage() {
                           {rolLabel[u.rol] ?? u.rol}
                         </span>
                       </div>
-
-                      {/* Toggles de permisos */}
                       <GestionPermisosUsuario usuario={u} />
                     </div>
                   )
@@ -121,25 +117,7 @@ export default async function ConfiguracionPage() {
           ) : (
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, marginBottom: 24 }}>
               {planesData.map(p => (
-                <div key={p.id} style={{ background: '#f9fafb', borderRadius: 12, padding: '18px 20px', border: '1px solid #f3f4f6' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
-                    <p style={{ fontSize: 14, fontWeight: 600, color: '#111827', margin: 0 }}>{p.nombre}</p>
-                    <span style={{ fontSize: 11, background: p.activo ? '#f0fdf4' : '#fef2f2', color: p.activo ? '#15803d' : '#dc2626', padding: '2px 8px', borderRadius: 20, fontWeight: 500 }}>
-                      {p.activo ? 'Activo' : 'Inactivo'}
-                    </span>
-                  </div>
-                  {p.descripcion && <p style={{ fontSize: 13, color: '#6b7280', margin: '0 0 12px' }}>{p.descripcion}</p>}
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13 }}>
-                      <span style={{ color: '#9ca3af' }}>Cuota mensual</span>
-                      <span style={{ fontWeight: 600, color: '#111827' }}>${Number(p.cuotaMensual).toLocaleString('es-AR')}</span>
-                    </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13 }}>
-                      <span style={{ color: '#9ca3af' }}>Total cuotas</span>
-                      <span style={{ fontWeight: 600, color: '#111827' }}>{p.cuotasTotales}</span>
-                    </div>
-                  </div>
-                </div>
+                <EditarPlanConfigInline key={p.id} plan={p} />
               ))}
             </div>
           )}
