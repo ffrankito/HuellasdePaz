@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
+import { EmailLeadForm } from '@/components/leads/EmailLeadForm'
 
 type Lead = {
   id: string
@@ -11,6 +12,13 @@ type Lead = {
   estado: string
   mensaje: string | null
   creadoEn: string
+}
+
+type PlanConfig = {
+  id: string
+  nombre: string
+  cuotaMensual: string
+  activo: boolean
 }
 
 type ModalConversion = {
@@ -36,14 +44,7 @@ const ESTADOS = [
 const TIPOS_SERVICIO = [
   { id: 'cremacion_individual', label: 'Cremación individual' },
   { id: 'cremacion_comunitaria', label: 'Cremación comunitaria' },
-  { id: 'entierro_parcela', label: 'Entierro en parcela' },
-  { id: 'entierro_nicho', label: 'Entierro en nicho' },
-]
-
-const TIPOS_PLAN = [
-  { id: 'huellitas', label: 'Huellitas' },
-  { id: 'amigos_para_siempre', label: 'Amigos para siempre' },
-  { id: 'amigos_de_verdad', label: 'Amigos de verdad' },
+  { id: 'jardin_del_recuerdo', label: 'Jardín del Recuerdo' },
 ]
 
 function parsearMensaje(mensaje: string): { label: string; value: string }[] | null {
@@ -52,7 +53,7 @@ function parsearMensaje(mensaje: string): { label: string; value: string }[] | n
   return partes.map(parte => {
     if (parte.startsWith('Zona:')) return { label: 'Zona', value: parte.replace('Zona: ', '') }
     if (parte.startsWith('Mascota:')) return { label: 'Mascota', value: parte.replace('Mascota: ', '') }
-    if (['HUELLITAS', 'AMIGOS PARA SIEMPRE', 'AMIGOS DE VERDAD'].some(s => parte.includes(s))) return { label: 'Servicio', value: parte }
+    if (['HUELLITAS', 'AMIGOS PARA SIEMPRE', 'AMIGOS DE VERDAD', 'COMPAÑEROS', 'SIEMPRE JUNTOS'].some(s => parte.toUpperCase().includes(s))) return { label: 'Servicio', value: parte }
     if (['PEQUEÑO', 'MEDIANO', 'GRANDE', 'EXTRA GRANDE'].some(s => parte.toUpperCase().includes(s))) return { label: 'Tamaño', value: parte }
     if (['TRAERLA', 'RETIREN', 'SUCURSAL', 'DOMICILIO'].some(s => parte.toUpperCase().includes(s))) return { label: 'Retiro', value: parte }
     return { label: 'Detalle', value: parte }
@@ -90,6 +91,7 @@ const modalInicial: ModalConversion = {
 
 export default function MisLeadsPage() {
   const [leads, setLeads] = useState<Lead[]>([])
+  const [planesConfig, setPlanesConfig] = useState<PlanConfig[]>([])
   const [loading, setLoading] = useState(true)
   const [indiceActual, setIndiceActual] = useState(0)
   const [leadAbierto, setLeadAbierto] = useState(false)
@@ -109,6 +111,10 @@ export default function MisLeadsPage() {
         setLeads(activos)
         setLoading(false)
       })
+
+    fetch('/api/configuracion/planes')
+      .then(r => r.json())
+      .then(data => setPlanesConfig(data.filter((p: PlanConfig) => p.activo)))
   }, [])
 
   const leadActual = leads[indiceActual]
@@ -137,7 +143,6 @@ export default function MisLeadsPage() {
       return
     }
 
-    // Si seleccionó "convertido", abrir modal de conversión
     if (nuevoEstado === 'convertido') {
       setModal(prev => ({ ...prev, abierto: true, email: leadActual.email ?? '' }))
       return
@@ -157,14 +162,12 @@ export default function MisLeadsPage() {
     if (!modal.tipo) return
     setGuardandoConversion(true)
 
-    // 1. Actualizar estado del lead
     await fetch(`/api/leads/${leadActual.id}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ estado: 'convertido', nota: reporte }),
     })
 
-    // 2. Crear cliente + servicio/plan
     await fetch('/api/leads/convertir', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -211,114 +214,57 @@ export default function MisLeadsPage() {
           <div style={{ background: 'white', borderRadius: 20, padding: 32, maxWidth: 520, width: '100%', boxShadow: '0 20px 60px rgba(0,0,0,0.2)' }}>
             <h2 style={{ fontSize: 20, fontWeight: 700, color: '#111827', margin: '0 0 6px' }}>🎉 ¡Convirtió! Crear cliente</h2>
             <p style={{ fontSize: 14, color: '#6b7280', margin: '0 0 24px' }}>Completá los datos para crear el cliente y su servicio/plan.</p>
-
             <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-
-              {/* Apellido */}
               <div>
                 <label style={{ fontSize: 13, fontWeight: 600, color: '#374151', display: 'block', marginBottom: 6 }}>Apellido</label>
-                <input
-                  type="text" placeholder="Apellido"
-                  value={modal.apellido}
-                  onChange={e => setModal(p => ({ ...p, apellido: e.target.value }))}
-                  style={{ width: '100%', border: '1px solid #e5e7eb', borderRadius: 10, padding: '10px 12px', fontSize: 14, outline: 'none', boxSizing: 'border-box' }}
-                />
+                <input type="text" placeholder="Apellido" value={modal.apellido} onChange={e => setModal(p => ({ ...p, apellido: e.target.value }))} style={{ width: '100%', border: '1px solid #e5e7eb', borderRadius: 10, padding: '10px 12px', fontSize: 14, outline: 'none', boxSizing: 'border-box' }} />
               </div>
-
-              {/* Email y Localidad */}
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
                 <div>
                   <label style={{ fontSize: 13, fontWeight: 600, color: '#374151', display: 'block', marginBottom: 6 }}>Email</label>
-                  <input
-                    type="email" placeholder="Email"
-                    value={modal.email}
-                    onChange={e => setModal(p => ({ ...p, email: e.target.value }))}
-                    style={{ width: '100%', border: '1px solid #e5e7eb', borderRadius: 10, padding: '10px 12px', fontSize: 14, outline: 'none', boxSizing: 'border-box' }}
-                  />
+                  <input type="email" placeholder="Email" value={modal.email} onChange={e => setModal(p => ({ ...p, email: e.target.value }))} style={{ width: '100%', border: '1px solid #e5e7eb', borderRadius: 10, padding: '10px 12px', fontSize: 14, outline: 'none', boxSizing: 'border-box' }} />
                 </div>
                 <div>
                   <label style={{ fontSize: 13, fontWeight: 600, color: '#374151', display: 'block', marginBottom: 6 }}>Localidad</label>
-                  <input
-                    type="text" placeholder="Ciudad"
-                    value={modal.localidad}
-                    onChange={e => setModal(p => ({ ...p, localidad: e.target.value }))}
-                    style={{ width: '100%', border: '1px solid #e5e7eb', borderRadius: 10, padding: '10px 12px', fontSize: 14, outline: 'none', boxSizing: 'border-box' }}
-                  />
+                  <input type="text" placeholder="Ciudad" value={modal.localidad} onChange={e => setModal(p => ({ ...p, localidad: e.target.value }))} style={{ width: '100%', border: '1px solid #e5e7eb', borderRadius: 10, padding: '10px 12px', fontSize: 14, outline: 'none', boxSizing: 'border-box' }} />
                 </div>
               </div>
-
-              {/* Tipo de compra */}
               <div>
                 <label style={{ fontSize: 13, fontWeight: 600, color: '#374151', display: 'block', marginBottom: 8 }}>¿Qué compró?</label>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-                  <button
-                    onClick={() => setModal(p => ({ ...p, tipo: 'servicio' }))}
-                    style={{ padding: '12px', borderRadius: 10, border: '2px solid', borderColor: modal.tipo === 'servicio' ? '#111827' : '#e5e7eb', background: modal.tipo === 'servicio' ? '#111827' : 'white', color: modal.tipo === 'servicio' ? 'white' : '#374151', fontWeight: 600, fontSize: 14, cursor: 'pointer' }}
-                  >
-                    Servicio
-                  </button>
-                  <button
-                    onClick={() => setModal(p => ({ ...p, tipo: 'plan' }))}
-                    style={{ padding: '12px', borderRadius: 10, border: '2px solid', borderColor: modal.tipo === 'plan' ? '#111827' : '#e5e7eb', background: modal.tipo === 'plan' ? '#111827' : 'white', color: modal.tipo === 'plan' ? 'white' : '#374151', fontWeight: 600, fontSize: 14, cursor: 'pointer' }}
-                  >
-                    Plan
-                  </button>
+                  <button onClick={() => setModal(p => ({ ...p, tipo: 'servicio', tipoPlan: '' }))} style={{ padding: '12px', borderRadius: 10, border: '2px solid', borderColor: modal.tipo === 'servicio' ? '#111827' : '#e5e7eb', background: modal.tipo === 'servicio' ? '#111827' : 'white', color: modal.tipo === 'servicio' ? 'white' : '#374151', fontWeight: 600, fontSize: 14, cursor: 'pointer' }}>Servicio</button>
+                  <button onClick={() => setModal(p => ({ ...p, tipo: 'plan', tipoServicio: '' }))} style={{ padding: '12px', borderRadius: 10, border: '2px solid', borderColor: modal.tipo === 'plan' ? '#111827' : '#e5e7eb', background: modal.tipo === 'plan' ? '#111827' : 'white', color: modal.tipo === 'plan' ? 'white' : '#374151', fontWeight: 600, fontSize: 14, cursor: 'pointer' }}>Plan</button>
                 </div>
               </div>
-
-              {/* Tipo específico */}
               {modal.tipo === 'servicio' && (
                 <div>
                   <label style={{ fontSize: 13, fontWeight: 600, color: '#374151', display: 'block', marginBottom: 6 }}>Tipo de servicio</label>
-                  <select
-                    value={modal.tipoServicio}
-                    onChange={e => setModal(p => ({ ...p, tipoServicio: e.target.value }))}
-                    style={{ width: '100%', border: '1px solid #e5e7eb', borderRadius: 10, padding: '10px 12px', fontSize: 14, outline: 'none', background: 'white' }}
-                  >
+                  <select value={modal.tipoServicio} onChange={e => setModal(p => ({ ...p, tipoServicio: e.target.value }))} style={{ width: '100%', border: '1px solid #e5e7eb', borderRadius: 10, padding: '10px 12px', fontSize: 14, outline: 'none', background: 'white' }}>
                     <option value="">Seleccioná...</option>
                     {TIPOS_SERVICIO.map(t => <option key={t.id} value={t.id}>{t.label}</option>)}
                   </select>
                 </div>
               )}
-
               {modal.tipo === 'plan' && (
                 <div>
                   <label style={{ fontSize: 13, fontWeight: 600, color: '#374151', display: 'block', marginBottom: 6 }}>Plan</label>
-                  <select
-                    value={modal.tipoPlan}
-                    onChange={e => setModal(p => ({ ...p, tipoPlan: e.target.value }))}
-                    style={{ width: '100%', border: '1px solid #e5e7eb', borderRadius: 10, padding: '10px 12px', fontSize: 14, outline: 'none', background: 'white' }}
-                  >
+                  <select value={modal.tipoPlan} onChange={e => setModal(p => ({ ...p, tipoPlan: e.target.value }))} style={{ width: '100%', border: '1px solid #e5e7eb', borderRadius: 10, padding: '10px 12px', fontSize: 14, outline: 'none', background: 'white' }}>
                     <option value="">Seleccioná...</option>
-                    {TIPOS_PLAN.map(t => <option key={t.id} value={t.id}>{t.label}</option>)}
+                    {planesConfig.map(p => (
+                      <option key={p.id} value={p.id}>
+                        {p.nombre} — ${Number(p.cuotaMensual).toLocaleString('es-AR')}/mes
+                      </option>
+                    ))}
                   </select>
                 </div>
               )}
-
-              {/* Notas */}
               <div>
                 <label style={{ fontSize: 13, fontWeight: 600, color: '#374151', display: 'block', marginBottom: 6 }}>Notas adicionales</label>
-                <textarea
-                  placeholder="Detalles de la venta..."
-                  value={modal.notas}
-                  onChange={e => setModal(p => ({ ...p, notas: e.target.value }))}
-                  rows={3}
-                  style={{ width: '100%', border: '1px solid #e5e7eb', borderRadius: 10, padding: '10px 12px', fontSize: 14, outline: 'none', resize: 'vertical', fontFamily: 'inherit', boxSizing: 'border-box' }}
-                />
+                <textarea placeholder="Detalles de la venta..." value={modal.notas} onChange={e => setModal(p => ({ ...p, notas: e.target.value }))} rows={3} style={{ width: '100%', border: '1px solid #e5e7eb', borderRadius: 10, padding: '10px 12px', fontSize: 14, outline: 'none', resize: 'vertical', fontFamily: 'inherit', boxSizing: 'border-box' }} />
               </div>
-
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginTop: 4 }}>
-                <button
-                  onClick={() => setModal(modalInicial)}
-                  style={{ padding: '12px', borderRadius: 10, border: '1px solid #e5e7eb', background: 'white', color: '#374151', fontWeight: 600, fontSize: 14, cursor: 'pointer' }}
-                >
-                  Cancelar
-                </button>
-                <button
-                  onClick={confirmarConversion}
-                  disabled={!modal.tipo || guardandoConversion}
-                  style={{ padding: '12px', borderRadius: 10, border: 'none', background: !modal.tipo ? '#9ca3af' : '#15803d', color: 'white', fontWeight: 600, fontSize: 14, cursor: !modal.tipo ? 'not-allowed' : 'pointer' }}
-                >
+                <button onClick={() => setModal(modalInicial)} style={{ padding: '12px', borderRadius: 10, border: '1px solid #e5e7eb', background: 'white', color: '#374151', fontWeight: 600, fontSize: 14, cursor: 'pointer' }}>Cancelar</button>
+                <button onClick={confirmarConversion} disabled={!modal.tipo || guardandoConversion} style={{ padding: '12px', borderRadius: 10, border: 'none', background: !modal.tipo ? '#9ca3af' : '#15803d', color: 'white', fontWeight: 600, fontSize: 14, cursor: !modal.tipo ? 'not-allowed' : 'pointer' }}>
                   {guardandoConversion ? 'Guardando...' : 'Crear cliente ✓'}
                 </button>
               </div>
@@ -330,18 +276,12 @@ export default function MisLeadsPage() {
       {/* Header */}
       <div style={{ marginBottom: 24 }}>
         <h1 style={{ fontSize: 24, fontWeight: 600, color: '#111827', margin: '0 0 4px' }}>Mis leads</h1>
-        <p style={{ fontSize: 14, color: '#6b7280', margin: 0 }}>
-          Lead {indiceActual + 1} de {leads.length} pendientes
-        </p>
+        <p style={{ fontSize: 14, color: '#6b7280', margin: 0 }}>Lead {indiceActual + 1} de {leads.length} pendientes</p>
       </div>
 
       {/* Barra de progreso */}
       <div style={{ background: '#f3f4f6', borderRadius: 999, height: 6, marginBottom: 28 }}>
-        <div style={{
-          background: '#111827', height: 6, borderRadius: 999,
-          width: `${((indiceActual) / leads.length) * 100}%`,
-          transition: 'width 0.3s',
-        }} />
+        <div style={{ background: '#111827', height: 6, borderRadius: 999, width: `${((indiceActual) / leads.length) * 100}%`, transition: 'width 0.3s' }} />
       </div>
 
       {!leadAbierto ? (
@@ -351,11 +291,7 @@ export default function MisLeadsPage() {
             <h2 style={{ fontSize: 22, fontWeight: 700, color: '#111827', margin: '0 0 8px' }}>{leadActual?.nombre}</h2>
             <p style={{ fontSize: 15, color: '#6b7280', margin: '0 0 4px' }}>{leadActual?.telefono}</p>
             {leadActual?.email && <p style={{ fontSize: 14, color: '#9ca3af', margin: '0 0 16px' }}>{leadActual.email}</p>}
-            {leadActual?.origen && (
-              <span style={{ fontSize: 12, background: '#f3f4f6', color: '#6b7280', padding: '4px 12px', borderRadius: 20 }}>
-                {leadActual.origen}
-              </span>
-            )}
+            {leadActual?.origen && <span style={{ fontSize: 12, background: '#f3f4f6', color: '#6b7280', padding: '4px 12px', borderRadius: 20 }}>{leadActual.origen}</span>}
             {selecciones && (
               <div style={{ marginTop: 20, textAlign: 'left' }}>
                 <p style={{ fontSize: 12, color: '#9ca3af', marginBottom: 8, textTransform: 'uppercase', letterSpacing: 1 }}>Seleccionó en el cotizador</p>
@@ -367,10 +303,7 @@ export default function MisLeadsPage() {
                 ))}
               </div>
             )}
-            <button
-              onClick={abrirLead}
-              style={{ marginTop: 28, width: '100%', background: '#111827', color: 'white', border: 'none', borderRadius: 12, padding: '14px', fontSize: 15, fontWeight: 600, cursor: 'pointer' }}
-            >
+            <button onClick={abrirLead} style={{ marginTop: 28, width: '100%', background: '#111827', color: 'white', border: 'none', borderRadius: 12, padding: '14px', fontSize: 15, fontWeight: 600, cursor: 'pointer' }}>
               Iniciar gestión →
             </button>
           </div>
@@ -403,6 +336,7 @@ export default function MisLeadsPage() {
                   </div>
                 )}
               </div>
+
               <a
                 href={`https://wa.me/549${leadActual.telefono.replace(/\D/g, '')}?text=Hola%20${encodeURIComponent(leadActual.nombre)}%2C%20te%20contactamos%20de%20Huellas%20de%20Paz`}
                 target="_blank" rel="noopener noreferrer"
@@ -410,6 +344,14 @@ export default function MisLeadsPage() {
               >
                 💬 Contactar por WhatsApp
               </a>
+
+              {leadActual.email && (
+                <EmailLeadForm
+                  leadId={leadActual.id}
+                  emailDestinatario={leadActual.email}
+                  nombreDestinatario={leadActual.nombre}
+                />
+              )}
             </div>
 
             {selecciones && (

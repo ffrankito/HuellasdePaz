@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { type Veterinaria } from '@/db/schema'
+import { type Convenio } from '@/db/schema'
 
 const inputStyle = {
   display: 'block',
@@ -25,28 +25,29 @@ const labelStyle = {
   marginBottom: 6,
 } as const
 
-export function VeterinariaForm({ veterinaria }: { veterinaria?: Veterinaria }) {
+export function ConvenioForm({ convenio }: { convenio?: Convenio }) {
   const router = useRouter()
-  const esEdicion = !!veterinaria
+  const esEdicion = !!convenio
 
   const [form, setForm] = useState({
-    nombre: veterinaria?.nombre ?? '',
-    direccion: veterinaria?.direccion ?? '',
-    telefono: veterinaria?.telefono ?? '',
-    email: veterinaria?.email ?? '',
-    responsable: veterinaria?.responsable ?? '',
-    instagram: veterinaria?.instagram ?? '',
-    web: veterinaria?.web ?? '',
-    estadoConvenio: veterinaria?.estadoConvenio ?? 'sin_convenio',
-    descuentoPorcentaje: veterinaria?.descuentoPorcentaje ?? '0',
-    beneficioDescripcion: veterinaria?.beneficioDescripcion ?? '',
-    fechaInicioConvenio: veterinaria?.fechaInicioConvenio
-      ? new Date(veterinaria.fechaInicioConvenio).toISOString().split('T')[0]
+    nombre: convenio?.nombre ?? '',
+    tipo: convenio?.tipo ?? 'veterinaria',
+    direccion: convenio?.direccion ?? '',
+    telefono: convenio?.telefono ?? '',
+    email: convenio?.email ?? '',
+    responsable: convenio?.responsable ?? '',
+    instagram: convenio?.instagram ?? '',
+    web: convenio?.web ?? '',
+    estadoConvenio: convenio?.estadoConvenio ?? 'sin_convenio',
+    descuentoPorcentaje: convenio?.descuentoPorcentaje ?? '0',
+    beneficioDescripcion: convenio?.beneficioDescripcion ?? '',
+    fechaInicioConvenio: convenio?.fechaInicioConvenio
+      ? new Date(convenio.fechaInicioConvenio).toISOString().split('T')[0]
       : '',
-    fechaVencimientoConvenio: veterinaria?.fechaVencimientoConvenio
-      ? new Date(veterinaria.fechaVencimientoConvenio).toISOString().split('T')[0]
+    fechaVencimientoConvenio: convenio?.fechaVencimientoConvenio
+      ? new Date(convenio.fechaVencimientoConvenio).toISOString().split('T')[0]
       : '',
-    notas: veterinaria?.notas ?? '',
+    notas: convenio?.notas ?? '',
   })
 
   const [loading, setLoading] = useState(false)
@@ -67,8 +68,8 @@ export function VeterinariaForm({ veterinaria }: { veterinaria?: Veterinaria }) 
     setError(null)
 
     const url = esEdicion
-      ? `/api/veterinarias/${veterinaria.id}`
-      : '/api/veterinarias'
+      ? `/api/convenios/${convenio.id}`
+      : '/api/convenios'
 
     const res = await fetch(url, {
       method: esEdicion ? 'PATCH' : 'POST',
@@ -88,7 +89,7 @@ export function VeterinariaForm({ veterinaria }: { veterinaria?: Veterinaria }) 
     }
 
     const data = await res.json()
-    router.push(`/dashboard/veterinarias/${data.id}`)
+    router.push(`/dashboard/convenios/${data.id}`)
     router.refresh()
   }
 
@@ -105,14 +106,24 @@ export function VeterinariaForm({ veterinaria }: { veterinaria?: Veterinaria }) 
 
       {/* Datos básicos */}
       <div style={seccionStyle}>
-        <h2 style={{ fontSize: 15, fontWeight: 600, color: '#111827', margin: '0 0 20px' }}>Datos de la veterinaria</h2>
+        <h2 style={{ fontSize: 15, fontWeight: 600, color: '#111827', margin: '0 0 20px' }}>Datos del convenio</h2>
         <div className="grid-2" style={{ gap: 16 }}>
           <div>
             <label style={labelStyle}>Nombre *</label>
             <input name="nombre" value={form.nombre} onChange={handleChange} required style={inputStyle} placeholder="Ej: Veterinaria San Martín" />
           </div>
           <div>
-            <label style={labelStyle}>Responsable / Veterinario</label>
+            <label style={labelStyle}>Tipo</label>
+            <select name="tipo" value={form.tipo} onChange={handleChange} style={inputStyle}>
+              <option value="veterinaria">Veterinaria</option>
+              <option value="petshop">Petshop</option>
+              <option value="refugio">Refugio</option>
+              <option value="clinica">Clínica</option>
+              <option value="otro">Otro</option>
+            </select>
+          </div>
+          <div>
+            <label style={labelStyle}>Responsable</label>
             <input name="responsable" value={form.responsable} onChange={handleChange} style={inputStyle} placeholder="Dr. Juan Pérez" />
           </div>
           <div>
@@ -121,7 +132,7 @@ export function VeterinariaForm({ veterinaria }: { veterinaria?: Veterinaria }) 
           </div>
           <div>
             <label style={labelStyle}>Email</label>
-            <input name="email" type="email" value={form.email} onChange={handleChange} style={inputStyle} placeholder="vet@ejemplo.com" />
+            <input name="email" type="email" value={form.email} onChange={handleChange} style={inputStyle} placeholder="contacto@ejemplo.com" />
           </div>
           <div>
             <label style={labelStyle}>Dirección</label>
@@ -129,11 +140,11 @@ export function VeterinariaForm({ veterinaria }: { veterinaria?: Veterinaria }) 
           </div>
           <div>
             <label style={labelStyle}>Instagram</label>
-            <input name="instagram" value={form.instagram} onChange={handleChange} style={inputStyle} placeholder="@veterinariasanmartin" />
+            <input name="instagram" value={form.instagram} onChange={handleChange} style={inputStyle} placeholder="@convenio" />
           </div>
           <div>
             <label style={labelStyle}>Web</label>
-            <input name="web" value={form.web} onChange={handleChange} style={inputStyle} placeholder="www.vetsanmartin.com.ar" />
+            <input name="web" value={form.web} onChange={handleChange} style={inputStyle} placeholder="www.ejemplo.com.ar" />
           </div>
         </div>
       </div>
@@ -153,26 +164,11 @@ export function VeterinariaForm({ veterinaria }: { veterinaria?: Veterinaria }) 
           </div>
           <div>
             <label style={labelStyle}>Descuento (%)</label>
-            <input
-              name="descuentoPorcentaje"
-              type="number"
-              min="0"
-              max="100"
-              value={form.descuentoPorcentaje}
-              onChange={handleChange}
-              style={inputStyle}
-              placeholder="0"
-            />
+            <input name="descuentoPorcentaje" type="number" min="0" max="100" value={form.descuentoPorcentaje} onChange={handleChange} style={inputStyle} placeholder="0" />
           </div>
           <div style={{ gridColumn: '1 / -1' }}>
             <label style={labelStyle}>Descripción del beneficio</label>
-            <input
-              name="beneficioDescripcion"
-              value={form.beneficioDescripcion}
-              onChange={handleChange}
-              style={inputStyle}
-              placeholder="Ej: 10% de descuento en cremación individual"
-            />
+            <input name="beneficioDescripcion" value={form.beneficioDescripcion} onChange={handleChange} style={inputStyle} placeholder="Ej: 10% de descuento en cremación individual" />
           </div>
           <div>
             <label style={labelStyle}>Inicio del convenio</label>
@@ -193,7 +189,7 @@ export function VeterinariaForm({ veterinaria }: { veterinaria?: Veterinaria }) 
           value={form.notas}
           onChange={handleChange}
           rows={3}
-          placeholder="Notas sobre la veterinaria, acuerdos informales, contactos alternativos..."
+          placeholder="Notas sobre el convenio, acuerdos informales, contactos alternativos..."
           style={{ ...inputStyle, resize: 'vertical', fontFamily: 'inherit' }}
         />
       </div>
@@ -205,19 +201,13 @@ export function VeterinariaForm({ veterinaria }: { veterinaria?: Veterinaria }) 
       )}
 
       <div style={{ display: 'flex', gap: 12 }}>
-        <button
-          type="button"
-          onClick={() => router.back()}
-          style={{ padding: '11px 20px', borderRadius: 10, fontSize: 14, fontWeight: 500, border: '1px solid #e5e7eb', background: 'white', color: '#374151', cursor: 'pointer' }}
-        >
+        <button type="button" onClick={() => router.back()}
+          style={{ padding: '11px 20px', borderRadius: 10, fontSize: 14, fontWeight: 500, border: '1px solid #e5e7eb', background: 'white', color: '#374151', cursor: 'pointer' }}>
           Cancelar
         </button>
-        <button
-          type="submit"
-          disabled={loading}
-          style={{ padding: '11px 24px', borderRadius: 10, fontSize: 14, fontWeight: 500, border: 'none', background: '#111827', color: 'white', cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.6 : 1 }}
-        >
-          {loading ? 'Guardando...' : esEdicion ? 'Guardar cambios' : 'Crear veterinaria'}
+        <button type="submit" disabled={loading}
+          style={{ padding: '11px 24px', borderRadius: 10, fontSize: 14, fontWeight: 500, border: 'none', background: '#111827', color: 'white', cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.6 : 1 }}>
+          {loading ? 'Guardando...' : esEdicion ? 'Guardar cambios' : 'Crear convenio'}
         </button>
       </div>
     </form>

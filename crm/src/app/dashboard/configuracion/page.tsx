@@ -40,12 +40,13 @@ export default async function ConfiguracionPage() {
 
   const esAdmin = usuarioActual?.rol === 'admin'
 
-  const [planesData, templatesData, tiposServicio, origenes, especies, todosUsuarios] = await Promise.all([
+  const [planesData, templatesData, tiposServicio, origenes, especies, tiposConvenio, todosUsuarios] = await Promise.all([
     db.select().from(planesConfig),
     db.select().from(templatesMsg),
     getConfig('tipos_servicio'),
     getConfig('origenes_lead'),
     getConfig('especies_mascota'),
+    getConfig('tipos_convenio'),
     esAdmin ? db.select().from(usuarios) : Promise.resolve([]),
   ])
 
@@ -148,12 +149,16 @@ export default async function ConfiguracionPage() {
           <NuevoTemplateMsgForm />
         </div>
 
-        {/* ── Listas configurables ── */}
-        <div className="grid-3">
-          <EditarConfigListaForm clave="tipos_servicio" titulo="Tipos de servicio" valores={tiposServicio} />
-          <EditarConfigListaForm clave="origenes_lead" titulo="Orígenes de leads" valores={origenes} />
-          <EditarConfigListaForm clave="especies_mascota" titulo="Especies de mascotas" valores={especies} />
-        </div>
+       {/* ── Listas configurables ── */}
+<div className="grid-3">
+  <EditarConfigListaForm clave="tipos_servicio" titulo="Tipos de servicio" valores={tiposServicio} />
+  <EditarConfigListaForm clave="origenes_lead" titulo="Orígenes de leads" valores={origenes} />
+  <EditarConfigListaForm clave="especies_mascota" titulo="Especies de mascotas" valores={especies} />
+</div>
+
+<div className="grid-1" style={{ maxWidth: '33%' }}>
+  <EditarConfigListaForm clave="tipos_convenio" titulo="Tipos de convenio" valores={tiposConvenio} />
+</div>
 
       </div>
     </div>
