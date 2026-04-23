@@ -1,17 +1,31 @@
 ---
 const WHATSAPP_NUMBER = '5493XXXXXXXXX'
 const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}?text=Hola%2C%20quiero%20consultar%20sobre%20Huellas%20de%20Paz`
+
+const fotos = [
+  { src: 'https://images.unsplash.com/photo-1450778869180-41d0601e046e?w=1600&q=80&fit=crop', alt: 'Perro y gato juntos', pos: 'center 40%' },
+  { src: 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=1600&q=80&fit=crop', alt: 'Golden retriever', pos: 'center 35%' },
+  { src: 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=1600&q=80&fit=crop', alt: 'Gato naranja', pos: 'center 30%' },
+  { src: 'https://images.unsplash.com/photo-1425082661705-1834bfd09dca?w=1600&q=80&fit=crop', alt: 'Conejo blanco', pos: 'center 50%' },
+  { src: 'https://images.unsplash.com/photo-1552053831-71594a27632d?w=1600&q=80&fit=crop', alt: 'Cachorro golden', pos: 'center 40%' },
+  { src: 'https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=1600&q=80&fit=crop', alt: 'Dos perros juntos', pos: 'center 35%' },
+  { src: 'https://images.unsplash.com/photo-1444464666168-49d633b86797?w=1600&q=80&fit=crop', alt: 'Loro colorido', pos: 'center 40%' },
+]
 ---
 
 <section class="relative min-h-screen flex items-center pt-16 overflow-hidden">
 
-  <!-- Imagen de fondo -->
+  <!-- Slideshow de fondo -->
   <div class="absolute inset-0 z-0">
-    <img
-      src="https://images.unsplash.com/photo-1450778869180-41d0601e046e?w=1600&q=80&fit=crop"
-      alt="Perro y gato juntos"
-      class="w-full h-full object-cover object-center"
-    />
+    {fotos.map((foto, i) => (
+      <img
+        src={foto.src}
+        alt={foto.alt}
+        class="hero-slide"
+        style={`opacity:${i === 0 ? 1 : 0};object-position:${foto.pos}`}
+        loading={i === 0 ? 'eager' : 'lazy'}
+      />
+    ))}
     <div class="absolute inset-0 bg-gradient-to-r from-stone-900/85 via-stone-900/60 to-stone-900/20"></div>
   </div>
 
@@ -111,6 +125,17 @@ const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}?text=Hola%2C%20quiero%20c
 </div>
 
 <style>
+  /* ── SLIDESHOW ── */
+  .hero-slide {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    transition: opacity 1.5s ease-in-out;
+  }
+
   /* ── HUELLAS FLOTANTES ── */
   .paws-container { position: absolute; inset: 0; z-index: 1; overflow: hidden; pointer-events: none; }
   .paw { position: absolute; color: white; opacity: 0; animation: paw-float linear infinite; }
@@ -196,6 +221,17 @@ const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}?text=Hola%2C%20quiero%20c
 </style>
 
 <script>
+  /* Slideshow */
+  const slides = document.querySelectorAll('.hero-slide') as NodeListOf<HTMLElement>
+  let current = 0
+  if (slides.length > 1) {
+    setInterval(() => {
+      slides[current].style.opacity = '0'
+      current = (current + 1) % slides.length
+      slides[current].style.opacity = '1'
+    }, 5000)
+  }
+
   /* Contadores animados — arrancan cuando entran al viewport */
   const counters = document.querySelectorAll('.counter')
   const observer = new IntersectionObserver((entries) => {

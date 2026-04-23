@@ -1,9 +1,8 @@
 ---
 const planes = [
-  { id:'huellitas', nombre:'Plan Huellitas', subtitulo:'Cremación comunitaria · Plan básico', precio:'$90.000', descripcion:'Un adiós sencillo y respetuoso.', beneficios:['Retiro en habitáculo rotulado con su nombre','Cremación comunitaria','Sin devolución de cenizas','Certificado de cremación'], destacado:false, emoji:'🐾' },
-  { id:'companeros', nombre:'Plan Compañeros', subtitulo:'Cremación individual con entrega diferida', precio:'$120.000', descripcion:'Un homenaje completo y personalizado. El más elegido.', beneficios:['Retiro en habitáculo rotulado con su nombre','Cremación individual','Entrega diferida entre 2 y 5 días hábiles','Urna biodegradable o grabada (costo adicional)','Certificado de cremación'], destacado:true, emoji:'💛' },
-  { id:'siempre-juntos', nombre:'Plan Siempre Juntos', subtitulo:'Cremación individual presencial', precio:'$140.000', descripcion:'La opción más completa. Podés acompañar a tu mascota.', beneficios:['Retiro en habitáculo rotulado con su nombre','Cremación individual presencial','Podés acompañarla y esperar las cenizas','Urna biodegradable o grabada (costo adicional)','Certificado de cremación'], destacado:false, emoji:'🕊️' },
-  { id:'jardin', nombre:'Jardín del Recuerdo', subtitulo:'Urnas · Parcelas', precio:'$110.000', descripcion:'Un espacio de paz para su último adiós.', beneficios:['Espacio especial para su último adiós','Lugar de paz rodeado de amor','Parcelas con mantenimiento anual de $140.000','Visitas libres para tu familia'], destacado:false, emoji:'🌸' },
+  { id:'huellita', nombre:'Plan Huellita', subtitulo:'Cremación comunitaria', precioMensual:'$3.000', precioAnual:'$33.000', descripcion:'Un adiós sencillo y respetuoso.', beneficios:['Atención 24/7','Retiro de mascota','Sin devolución de cenizas','Cremación comunitaria','Certificado de cremación'], destacado:false, emoji:'🐾' },
+  { id:'companeros', nombre:'Plan Compañeros', subtitulo:'El más ofrecido', precioMensual:'$6.000', precioAnual:'$66.000', descripcion:'Un homenaje completo y personalizado. El más elegido.', beneficios:['Atención 24/7','Retiro de mascota','Cremación individual','Entrega de cenizas entre 2 y 5 días hábiles en urna biodegradable','Certificado de cremación'], destacado:true, emoji:'💛' },
+  { id:'siempre-juntos', nombre:'Plan Siempre Juntos', subtitulo:'Cremación individual presencial', precioMensual:'$10.000', precioAnual:'$110.000', descripcion:'La opción más completa. Podés acompañar a tu mascota.', beneficios:['Atención 24/7','Retiro de mascota','Cremación individual','Entrega de cenizas INMEDIATA','Acompañamiento presencial','Certificado de cremación'], destacado:false, emoji:'🕊️' },
 ]
 const WHATSAPP_NUMBER = '5493XXXXXXXXX'
 const pasos = [
@@ -77,7 +76,8 @@ const pts = [
             <span style="font-size:2rem;display:block;margin-bottom:10px">{plan.emoji}</span>
             <h3 class="font-display" style="font-size:1rem;font-weight:600;color:#1c1917;margin:0 0 4px">{plan.nombre}</h3>
             <p style="font-size:0.6875rem;color:#a89f94;text-transform:uppercase;letter-spacing:0.05em;margin:0 0 6px">{plan.subtitulo}</p>
-            <p style="font-family:var(--font-display,'Playfair Display',serif);font-size:1.5rem;font-weight:700;color:#2d8a54;margin:0 0 8px">{plan.precio}</p>
+            <p style="font-family:var(--font-display,'Playfair Display',serif);font-size:1.75rem;font-weight:700;color:#2d8a54;margin:0 2px 0">{plan.precioMensual}<span style="font-size:0.875rem;font-weight:400;color:#a89f94">/mes</span></p>
+            <p style="font-size:0.75rem;color:#a89f94;margin:2px 0 10px">{plan.precioAnual} anual <span style="color:#2d8a54;font-weight:600">(-1 cuota)</span></p>
             <p style="font-size:0.875rem;color:#78716c;margin:0">{plan.descripcion}</p>
           </div>
           <ul style="list-style:none;padding:0;margin:14px 0 0;display:flex;flex-direction:column;gap:7px;flex:1">
@@ -99,8 +99,7 @@ const pts = [
 </section>
 
 <style>
-  @media(min-width:768px){ #planes [style*="grid-template-columns:repeat(1"]{grid-template-columns:repeat(2,1fr)!important} }
-  @media(min-width:1024px){ #planes [style*="grid-template-columns:repeat(1"]{grid-template-columns:repeat(4,1fr)!important} }
+  @media(min-width:768px){ #planes [style*="grid-template-columns:repeat(1"]{grid-template-columns:repeat(3,1fr)!important} }
 
   .timeline { display:grid; grid-template-columns:repeat(3,1fr); }
   @media(max-width:640px){ .timeline{grid-template-columns:1fr;gap:2rem} }
@@ -110,8 +109,19 @@ const pts = [
   .timeline-line { position:absolute; top:24px; left:calc(50% + 24px); right:calc(-50% + 24px); height:2px; background:linear-gradient(to right,#aadfc2,#d6f0e0); }
   @media(max-width:640px){ .timeline-line{display:none} }
 
-  .plan-card { position:relative; background:rgba(255,255,255,0.88); backdrop-filter:blur(8px); border-radius:1.5rem; border:1px solid #e7e5e4; padding:1.75rem; display:flex; flex-direction:column; overflow:hidden; transition:transform 0.3s,box-shadow 0.3s,border-color 0.3s; }
-  .plan-card:hover { transform:translateY(-5px); box-shadow:0 4px 6px -1px rgba(0,0,0,0.04),0 10px 24px -4px rgba(45,138,84,0.10); border-color:#aadfc2; }
+  .plan-card { position:relative; background:rgba(255,255,255,0.88); backdrop-filter:blur(8px); border-radius:1.5rem; border:1px solid #e7e5e4; padding:1.75rem; display:flex; flex-direction:column; overflow:visible; transition:transform 0.3s,box-shadow 0.3s,border-color 0.3s; }
+  .plan-card:hover { transform:translateY(-6px); border-color:transparent; }
+
+  /* Borde gradiente animado en hover (no aplica al destacado que ya tiene el suyo) */
+  .plan-card:not(.plan-card--destacado)::before {
+    content:""; position:absolute; inset:0; border-radius:1.5rem; padding:1.5px;
+    background:linear-gradient(135deg,#aadfc2 0%,#2d8a54 55%,#1a5233 100%);
+    -webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
+    -webkit-mask-composite:xor; mask-composite:exclude;
+    opacity:0; transition:opacity 0.4s; pointer-events:none;
+  }
+  .plan-card:not(.plan-card--destacado):hover::before { opacity:1; }
+
   .plan-card--destacado { border-color:transparent; background:linear-gradient(rgba(255,255,255,0.93),rgba(255,255,255,0.93)) padding-box,conic-gradient(from var(--ba),#aadfc2,#2d8a54 25%,#4db87a 50%,#2d8a54 75%,#aadfc2) border-box; animation:ba-spin 4s linear infinite; }
   @property --ba { syntax:'<angle>'; initial-value:0deg; inherits:false; }
   @keyframes ba-spin { to{--ba:360deg} }

@@ -214,11 +214,9 @@ const renderStep3 = () => (
             {item.badge && <div className="service-card__badge">{item.badge}</div>}
             <div className="service-card__name">{item.title}</div>
             {item.subtitle && <div className="service-card__subtitle">{item.subtitle}</div>}
-            {item.price && (
-              <div className="service-card__price">
-                ${item.price.toLocaleString('es-AR')}
-              </div>
-            )}
+            <div className="service-card__price">
+              {item.price ? `$${item.price.toLocaleString('es-AR')}` : 'Consultar precio'}
+            </div>
             <div className="service-card__desc">{item.desc}</div>
             <button
               type="button"

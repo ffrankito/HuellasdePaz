@@ -53,7 +53,7 @@ function parsearMensaje(mensaje: string): { label: string; value: string }[] | n
   return partes.map(parte => {
     if (parte.startsWith('Zona:')) return { label: 'Zona', value: parte.replace('Zona: ', '') }
     if (parte.startsWith('Mascota:')) return { label: 'Mascota', value: parte.replace('Mascota: ', '') }
-    if (['HUELLITAS', 'AMIGOS PARA SIEMPRE', 'AMIGOS DE VERDAD', 'COMPAÑEROS', 'SIEMPRE JUNTOS'].some(s => parte.toUpperCase().includes(s))) return { label: 'Servicio', value: parte }
+    if (['HUELLITA', 'COMPAÑERO', 'SIEMPRE JUNTO', 'JARDÍN', 'JARDIN', 'CREMACIÓN', 'CREMACION', 'INHUMACIÓN', 'INHUMACION'].some(s => parte.toUpperCase().includes(s))) return { label: 'Servicio', value: parte }
     if (['PEQUEÑO', 'MEDIANO', 'GRANDE', 'EXTRA GRANDE'].some(s => parte.toUpperCase().includes(s))) return { label: 'Tamaño', value: parte }
     if (['TRAERLA', 'RETIREN', 'SUCURSAL', 'DOMICILIO'].some(s => parte.toUpperCase().includes(s))) return { label: 'Retiro', value: parte }
     return { label: 'Detalle', value: parte }

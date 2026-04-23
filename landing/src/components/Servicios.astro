@@ -1,8 +1,9 @@
 ---
 const servicios = [
-  { id: 'cremacion-individual', titulo: 'Cremación individual', descripcion: 'Tu mascota es cremada sola, de manera privada. Recibís sus cenizas en una urna sellada con identificación, con la certeza absoluta de que son las de tu compañero.', detalle: ['Proceso individual y privado','Urna biodegradable o a tu elección (grabada a pedido)','Certificado de cremación','Entrega diferida en 2 a 5 días hábiles o presencial'], destacado: true, imagen: 'https://images.unsplash.com/photo-1592194996308-7b43878e84a6?w=600&q=80&fit=crop', emoji: '🕊️', alt: 'Gato naranja mirando a cámara' },
-  { id: 'cremacion-comunitaria', titulo: 'Cremación comunitaria', descripcion: 'Una opción más accesible, con el mismo respeto y cuidado. Ideal para quienes buscan un adiós digno sin la devolución de cenizas.', detalle: ['Retiro en habitáculo rotulado con su nombre','Proceso grupal respetuoso','Sin devolución de cenizas','Certificado de cremación'], destacado: false, imagen: 'https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=600&q=80&fit=crop', emoji: '🌿', alt: 'Perro feliz al aire libre' },
-  { id: 'jardin-del-recuerdo', titulo: 'Jardín del Recuerdo', descripcion: 'Una manera cálida y serena de despedir a tu mascota, permitiéndole descansar en un lugar de paz, rodeado de amor y recuerdo.', detalle: ['Parcela individual en espacio natural','Lugar de paz para visitar cuando quieras','Mantenimiento anual incluido','Placa de identificación'], destacado: false, imagen: 'https://images.unsplash.com/photo-1425082661705-1834bfd09dca?w=600&q=80&fit=crop', emoji: '🌸', alt: 'Conejo blanco en jardín' },
+  { id: 'cremacion-huellita',      titulo: 'Cremación Huellita',              precio: '$90.000',   descripcion: 'Una opción accesible, con el mismo respeto y cuidado de siempre. Ideal para quienes buscan un adiós digno sin la devolución de cenizas.', detalle: ['Atención 24/7','Retiro de mascota','Sin devolución de cenizas','Cremación comunitaria','Certificado de cremación'],                                                           destacado: false, pos: 'center 30%', imagen: 'https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=600&q=80&fit=crop',      emoji: '🌿', alt: 'Perro feliz al aire libre' },
+  { id: 'cremacion-companeros',    titulo: 'Cremación Compañeros',            precio: '$120.000',  descripcion: 'Tu mascota es cremada sola, de manera individual y privada. Recibís sus cenizas con la certeza absoluta de que son las de tu compañero.',   detalle: ['Atención 24/7','Retiro de mascota','Cremación individual','Entrega diferida entre 2 y 5 días hábiles en urna biodegradable','Certificado de cremación'], destacado: true,  pos: 'center 20%', imagen: 'https://images.unsplash.com/photo-1592194996308-7b43878e84a6?w=600&q=80&fit=crop',      emoji: '🕊️', alt: 'Gato naranja mirando a cámara' },
+  { id: 'cremacion-siempre-juntos',titulo: 'Cremación Siempre Juntos',        precio: '$140.000',  descripcion: 'La opción más completa. Podés acompañar a tu mascota y recibir sus cenizas en el momento, sin esperas.',                                      detalle: ['Atención 24/7','Retiro de mascota','Cremación individual','Entrega de cenizas INMEDIATA','Acompañamiento presencial','Certificado de cremación'],          destacado: false, pos: 'center 40%', imagen: 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=600&q=80&fit=crop',      emoji: '✨', alt: 'Golden retriever' },
+  { id: 'jardin-del-recuerdo',     titulo: 'Inhumación Jardín del Recuerdo', precio: 'Consultar', descripcion: 'Una manera cálida y serena de despedir a tu mascota, permitiéndole descansar en un lugar de paz, rodeado de amor y recuerdo.',              detalle: ['Parcela individual en espacio natural','Lugar de paz para visitar cuando quieras','Mantenimiento anual incluido','Placa de identificación'],                destacado: false, pos: 'center 60%', imagen: 'https://images.unsplash.com/photo-1425082661705-1834bfd09dca?w=600&q=80&fit=crop',      emoji: '🌸', alt: 'Jardín de mascotas' },
 ]
 ---
 
@@ -28,11 +29,11 @@ const servicios = [
       </p>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
       {servicios.map((s, i) => (
         <div class={`servicio-card reveal-item rounded-3xl overflow-hidden border flex flex-col ${s.destacado ? 'border-brand-300 shadow-md' : 'border-stone-200'}`} style={`--reveal-delay:${i*0.14}s`}>
           <div class="servicio-img-wrap" style="position:relative;height:13rem;overflow:hidden">
-            <img src={s.imagen} alt={s.alt} class="servicio-img" style="width:100%;height:100%;object-fit:cover;transition:transform 0.6s ease" loading="lazy" />
+            <img src={s.imagen} alt={s.alt} class="servicio-img" style={`width:100%;height:100%;object-fit:cover;object-position:${s.pos};transition:transform 0.6s ease`} loading="lazy" />
             <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.35),transparent)"></div>
             {s.destacado && <span style="position:absolute;top:14px;left:14px;background:#2d8a54;color:white;font-size:0.6875rem;font-weight:600;padding:4px 12px;border-radius:9999px;z-index:2">Más elegido</span>}
             <span class="servicio-emoji" style="position:absolute;bottom:14px;right:14px;font-size:1.4rem;z-index:2;transition:opacity 0.3s,transform 0.3s">{s.emoji}</span>
@@ -49,7 +50,8 @@ const servicios = [
           </div>
           <div style={`padding:1.5rem 2rem;display:flex;flex-direction:column;gap:1rem;flex:1;background:${s.destacado ? '#f0faf4' : 'rgba(255,255,255,0.92)'};backdrop-filter:blur(4px)`}>
             <div>
-              <h3 class="font-display" style="font-size:1.125rem;font-weight:600;color:#1c1917;margin:0 0 8px">{s.titulo}</h3>
+              <h3 class="font-display" style="font-size:1.125rem;font-weight:600;color:#1c1917;margin:0 0 4px">{s.titulo}</h3>
+              <p style="font-family:var(--font-display,'Playfair Display',serif);font-size:1.25rem;font-weight:700;color:#2d8a54;margin:0 0 8px">{s.precio}</p>
               <p style="font-size:0.875rem;color:#57534e;line-height:1.6;margin:0">{s.descripcion}</p>
             </div>
             <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:7px;margin-top:auto">
@@ -68,7 +70,7 @@ const servicios = [
     <!-- CTA premium -->
     <div class="cta-premium reveal-item">
       <div class="cta-bg" aria-hidden="true">
-        <img src="https://images.unsplash.com/photo-1450778869180-41d0601e046e?w=1400&q=80&fit=crop&fp-y=0.38" alt="" loading="lazy" />
+        <img src="https://images.unsplash.com/photo-1518717758536-85ae29035b6d?w=1400&q=80&fit=crop" alt="" loading="lazy" style="object-position:center 30%" />
         <div class="cta-overlay"></div>
       </div>
       <div class="cta-glow-border" aria-hidden="true"></div>
@@ -104,8 +106,19 @@ const servicios = [
 <style>
   @media(min-width:768px){ #servicios .cta-row{flex-direction:row;text-align:left} }
 
-  .servicio-card { background:rgba(255,255,255,0.88); backdrop-filter:blur(6px); transition:transform 0.3s,box-shadow 0.3s; }
-  .servicio-card:hover { transform:translateY(-4px); box-shadow:0 12px 32px rgba(0,0,0,0.10); }
+  .servicio-card { background:rgba(255,255,255,0.88); backdrop-filter:blur(6px); position:relative; transition:transform 0.3s,box-shadow 0.3s; }
+  .servicio-card:hover { transform:translateY(-6px); box-shadow:0 0 0 1.5px #2d8a54, 0 8px 32px rgba(45,138,84,0.30), 0 20px 48px rgba(45,138,84,0.15); }
+
+  /* Borde gradiente en hover — usa ::before con mask (compatible con overflow:hidden) */
+  .servicio-card::before {
+    content:""; position:absolute; inset:0; z-index:4; pointer-events:none;
+    border-radius:inherit; padding:1.5px;
+    background:linear-gradient(135deg,#aadfc2 0%,#2d8a54 55%,#1a5233 100%);
+    -webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
+    -webkit-mask-composite:xor; mask-composite:exclude;
+    opacity:0; transition:opacity 0.4s;
+  }
+  .servicio-card:hover::before { opacity:1; }
   .servicio-card:hover .servicio-img { transform:scale(1.07) !important; }
   .servicio-card:hover .servicio-overlay { transform:translateY(0) !important; }
   .servicio-card:hover .servicio-emoji { opacity:0 !important; transform:scale(0.5) !important; }

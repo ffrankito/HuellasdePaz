@@ -1,0 +1,223 @@
+---
+const beneficios = [
+  {
+    titulo: 'Descuentos para tus clientes',
+    desc: 'Tus clientes referidos acceden a condiciones preferenciales en nuestros servicios.',
+    icon: '💳',
+  },
+  {
+    titulo: 'Comisión por derivación',
+    desc: 'Cada cliente que nos lleves genera una comisión directa para tu negocio.',
+    icon: '🤝',
+  },
+  {
+    titulo: 'Material de difusión',
+    desc: 'Te proveemos folletería, carteles y material digital para comunicar el convenio.',
+    icon: '📢',
+  },
+]
+---
+
+<section id="convenios" class="py-16 md:py-24" style="background:#f7f7f5;position:relative;overflow:hidden">
+
+  <div style="max-width:72rem;margin:0 auto;padding:0 1.5rem">
+
+    <div class="text-center mb-12 reveal-item">
+      <p class="text-brand-600 text-xs md:text-sm font-medium tracking-widest uppercase mb-3">Convenios B2B</p>
+      <h2 class="font-display text-3xl md:text-4xl font-semibold text-stone-900 mb-4">Sumate a nuestra red <br />de negocios aliados</h2>
+      <p class="text-stone-500 text-base leading-relaxed max-w-xl mx-auto">Veterinarias, petshops, clínicas y refugios que trabajan con nosotros brindan a sus clientes un acompañamiento completo ante la pérdida de una mascota.</p>
+    </div>
+
+    <!-- Beneficios -->
+    <div class="beneficios-grid mb-16">
+      {beneficios.map((b, i) => (
+        <div class="beneficio-card reveal-item" style={`--reveal-delay:${i * 0.12}s`}>
+          <span style="font-size:2rem;display:block;margin-bottom:12px">{b.icon}</span>
+          <h3 style="font-size:1rem;font-weight:600;color:#1c1917;margin:0 0 8px">{b.titulo}</h3>
+          <p style="font-size:0.875rem;color:#78716c;line-height:1.6;margin:0">{b.desc}</p>
+        </div>
+      ))}
+    </div>
+
+    <!-- Grid: info + formulario -->
+    <div class="convenio-grid">
+
+      <div class="reveal-item">
+        <h3 class="font-display text-2xl font-semibold text-stone-900 mb-6">¿Cómo funciona?</h3>
+        <div style="display:flex;flex-direction:column;gap:20px">
+          {[
+            { num:'1', titulo:'Completás el formulario', desc:'Nos contás sobre tu negocio y nos comunicamos para conocerte mejor.' },
+            { num:'2', titulo:'Acordamos las condiciones', desc:'Definimos comisiones, descuentos y materiales según el tipo de negocio.' },
+            { num:'3', titulo:'Empezamos a trabajar juntos', desc:'Tus clientes tienen un respaldo de calidad y vos generás un ingreso extra.' },
+          ].map(paso => (
+            <div style="display:flex;gap:14px;align-items:flex-start">
+              <div style="width:32px;height:32px;border-radius:50%;background:#f0faf4;border:1.5px solid #aadfc2;display:flex;align-items:center;justify-content:center;font-size:0.8125rem;font-weight:700;color:#2d8a54;flex-shrink:0">{paso.num}</div>
+              <div>
+                <p style="font-size:0.9375rem;font-weight:600;color:#1c1917;margin:0 0 3px">{paso.titulo}</p>
+                <p style="font-size:0.875rem;color:#78716c;margin:0;line-height:1.6">{paso.desc}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <!-- Formulario -->
+      <form id="convenio-form" class="reveal-item" style="display:flex;flex-direction:column;gap:1.25rem;--reveal-delay:0.15s">
+
+        <div class="float-field">
+          <input type="text" id="cv-nombre" name="nombre" required minlength="2" class="float-input" placeholder=" " />
+          <label for="cv-nombre" class="float-label">Nombre del negocio *</label>
+          <span class="float-line"></span>
+        </div>
+
+        <div class="float-field">
+          <select id="cv-tipo" name="tipo" required class="float-select">
+            <option value="">Tipo de negocio *</option>
+            <option value="veterinaria">Veterinaria</option>
+            <option value="petshop">Petshop</option>
+            <option value="refugio">Refugio / ONG</option>
+            <option value="clinica">Clínica veterinaria</option>
+            <option value="otro">Otro</option>
+          </select>
+          <span class="float-line"></span>
+        </div>
+
+        <div class="float-field">
+          <input type="text" id="cv-responsable" name="responsable" required class="float-input" placeholder=" " />
+          <label for="cv-responsable" class="float-label">Responsable del negocio *</label>
+          <span class="float-line"></span>
+        </div>
+
+        <div class="float-field">
+          <input type="tel" id="cv-telefono" name="telefono" required class="float-input" placeholder=" " />
+          <label for="cv-telefono" class="float-label">Teléfono *</label>
+          <span class="float-line"></span>
+          <p class="float-hint">Con código de área, sin 0. Ej: 341 555-1234</p>
+        </div>
+
+        <div class="float-field">
+          <input type="email" id="cv-email" name="email" class="float-input" placeholder=" " />
+          <label for="cv-email" class="float-label">Email (opcional)</label>
+          <span class="float-line"></span>
+        </div>
+
+        <div class="float-field">
+          <textarea id="cv-mensaje" name="mensaje" rows="3" class="float-input float-textarea" placeholder=" "></textarea>
+          <label for="cv-mensaje" class="float-label">Contanos sobre tu negocio (opcional)</label>
+          <span class="float-line"></span>
+        </div>
+
+        <button type="submit" id="cv-submit" class="btn-submit">
+          <span class="btn-submit__text">Enviar postulación</span>
+          <span class="btn-submit__loader" aria-hidden="true">
+            <svg class="btn-submit__spinner" viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="40 60"/>
+            </svg>
+          </span>
+          <span class="btn-submit__shimmer" aria-hidden="true"></span>
+        </button>
+
+        <div id="cv-success" style="display:none;align-items:center;gap:8px;font-size:0.875rem;color:#2d8a54;background:#f0faf4;border:1px solid #aadfc2;border-radius:10px;padding:12px 16px">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>
+          ¡Gracias! Recibimos tu postulación y te contactamos pronto.
+        </div>
+        <div id="cv-error" style="display:none;font-size:0.875rem;color:#dc2626;background:#fef2f2;border:1px solid #fecaca;border-radius:10px;padding:12px 16px">
+          Hubo un error. Intentá de nuevo o escribinos por WhatsApp.
+        </div>
+
+      </form>
+
+    </div>
+
+  </div>
+</section>
+
+<style>
+  .beneficios-grid { display:grid; grid-template-columns:1fr; gap:1rem; }
+  @media(min-width:768px){ .beneficios-grid { grid-template-columns:repeat(3,1fr); } }
+
+  .beneficio-card { background:white; border:1px solid #e7e5e4; border-radius:1.25rem; padding:1.5rem; transition:transform 0.3s,box-shadow 0.3s,border-color 0.3s; }
+  .beneficio-card:hover { transform:translateY(-4px); box-shadow:0 8px 24px rgba(45,138,84,0.1); border-color:#aadfc2; }
+
+  .convenio-grid { display:grid; grid-template-columns:1fr; gap:3rem; align-items:start; }
+  @media(min-width:768px){ .convenio-grid { grid-template-columns:1fr 1fr; } }
+
+  .float-field { position:relative; padding-top:6px; }
+  .float-input { width:100%; background:transparent; border:none; border-bottom:1.5px solid #d6d3d1; padding:14px 2px 8px; font-size:0.9375rem; color:#1c1917; font-family:inherit; outline:none; transition:border-color 0.3s; resize:none; box-sizing:border-box; }
+  .float-textarea { padding-top:18px; }
+  .float-line { position:absolute; bottom:0; left:0; width:0; height:2px; background:#2d8a54; transition:width 0.35s; pointer-events:none; border-radius:2px; }
+  .float-input:focus ~ .float-line, .float-input:valid ~ .float-line { width:100%; }
+  .float-label { position:absolute; left:2px; top:22px; font-size:0.9375rem; color:#78716c; pointer-events:none; transition:transform 0.3s,font-size 0.3s,color 0.3s; transform-origin:left top; }
+  .float-input:focus ~ .float-label, .float-input:not(:placeholder-shown) ~ .float-label { transform:translateY(-22px); font-size:0.75rem; color:#2d8a54; }
+  .float-hint { font-size:0.75rem; color:#a8a29e; margin-top:5px; padding-left:2px; }
+  .float-select { width:100%; background:transparent; border:none; border-bottom:1.5px solid #d6d3d1; padding:14px 2px 8px; font-size:0.9375rem; color:#78716c; font-family:inherit; outline:none; cursor:pointer; appearance:none; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2378716c' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 8px center; box-sizing:border-box; }
+  .float-select:focus { color:#1c1917; border-bottom-color:transparent; }
+  .float-select:focus ~ .float-line { width:100%; }
+
+  .btn-submit { position:relative; display:flex; align-items:center; justify-content:center; background:#2d8a54; color:white; font-size:0.9375rem; font-weight:500; padding:14px 32px; border-radius:9999px; border:none; cursor:pointer; overflow:hidden; transition:background-color 0.25s,transform 0.2s; font-family:inherit; width:100%; }
+  .btn-submit:hover:not(:disabled) { background:#1a5233; transform:translateY(-1px); }
+  .btn-submit:disabled { cursor:not-allowed; opacity:0.8; }
+  .btn-submit__shimmer { position:absolute; top:0; left:-100%; width:60%; height:100%; background:linear-gradient(120deg,transparent 20%,rgba(255,255,255,0.28) 50%,transparent 80%); pointer-events:none; transition:left 0.55s; }
+  .btn-submit:hover .btn-submit__shimmer { left:150%; }
+  .btn-submit__loader { display:none; width:20px; height:20px; }
+  .btn-submit__spinner { width:20px; height:20px; animation:spin 0.8s linear infinite; }
+  @keyframes spin { to{transform:rotate(360deg)} }
+  .btn-submit.is-loading .btn-submit__text { display:none; }
+  .btn-submit.is-loading .btn-submit__loader { display:flex; align-items:center; justify-content:center; }
+
+  .reveal-item { opacity:0; transform:translateY(28px); transition:opacity 0.55s ease calc(var(--reveal-delay,0s)),transform 0.55s ease calc(var(--reveal-delay,0s)); }
+  .reveal-item.is-visible { opacity:1; transform:translateY(0); }
+
+  @media(prefers-reduced-motion:reduce){ .reveal-item{opacity:1;transform:none;transition:none} .beneficio-card{transition:none} }
+</style>
+
+<script>
+  const obs = new IntersectionObserver(
+    es => es.forEach(e => { if(e.isIntersecting){ e.target.classList.add('is-visible'); obs.unobserve(e.target) } }),
+    { threshold: 0.1 }
+  )
+  document.querySelectorAll('#convenios .reveal-item').forEach(el => obs.observe(el))
+
+  const form = document.getElementById('convenio-form') as HTMLFormElement
+  const btn  = document.getElementById('cv-submit') as HTMLButtonElement
+  const ok   = document.getElementById('cv-success') as HTMLElement
+  const err  = document.getElementById('cv-error') as HTMLElement
+
+  const API_URL = import.meta.env.PUBLIC_CRM_API_URL
+    .replace(/\/api\/.*$/, '/api/convenios/postulacion')
+
+  const get = (name: string) =>
+    (form.elements.namedItem(name) as HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement).value
+
+  form?.addEventListener('submit', async e => {
+    e.preventDefault()
+    btn.disabled = true
+    btn.classList.add('is-loading')
+    ok.style.display = 'none'
+    err.style.display = 'none'
+
+    const data = {
+      nombre:      get('nombre'),
+      tipo:        get('tipo'),
+      responsable: get('responsable'),
+      telefono:    get('telefono'),
+      email:       get('email') || null,
+      mensaje:     get('mensaje') || null,
+    }
+
+    try {
+      const res = await fetch(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      })
+      if (res.ok) { form.reset(); ok.style.display = 'flex' }
+      else throw new Error()
+    } catch {
+      err.style.display = 'block'
+    } finally {
+      btn.disabled = false
+      btn.classList.remove('is-loading')
+    }
+  })
+</script>
