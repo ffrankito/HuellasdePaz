@@ -8,6 +8,13 @@ const estadoColors: Record<string, { bg: string; color: string }> = {
   pausado: { bg: '#fefce8', color: '#a16207' },
   cancelado: { bg: '#fef2f2', color: '#dc2626' },
   utilizado: { bg: '#f3f4f6', color: '#6b7280' },
+  atrasado: { bg: '#fef2f2', color: '#dc2626' },
+}
+
+function calcularCobertura(cuotasPagadas: number): number {
+  if (cuotasPagadas < 6) return 0
+  if (cuotasPagadas < 12) return 50
+  return 100
 }
 
 export default async function PlanesPage() {
@@ -121,7 +128,7 @@ export default async function PlanesPage() {
                       {p.cuotasPagadas} pagadas
                     </td>
                     <td style={{ padding: '14px 20px', fontSize: 14, color: '#4b5563' }}>
-                      {Number(p.porcentajeCobertura)}%
+                      {calcularCobertura(p.cuotasPagadas ?? 0)}%
                     </td>
                     <td style={{ padding: '14px 20px' }}>
                       <span style={{ background: badge.bg, color: badge.color, padding: '3px 10px', borderRadius: 20, fontSize: 12, fontWeight: 500 }}>

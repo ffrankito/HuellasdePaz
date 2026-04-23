@@ -28,6 +28,9 @@ const initialOpenFeatures = {
 
 const CRM_API_URL = import.meta.env.VITE_CRM_API_URL || "https://huellasde-paz.vercel.app/api/leads";
 
+// Mascotas que no necesitan seleccionar tamaño
+const SIN_TALLA = ["felino", "mamifero-pequeno", "reptil", "ave-pez"];
+
 export default function QuotePage() {
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState(initialFormData);
@@ -36,9 +39,10 @@ export default function QuotePage() {
   const [animKey, setAnimKey] = useState(0);
 
   const needsZone = formData.pickupMethod === "domicilio";
-  const totalSteps = needsZone ? 8 : 7;
-  const dataStep = needsZone ? 7 : 6;
-  const successStep = needsZone ? 8 : 7;
+  const needsSize = !SIN_TALLA.includes(formData.petType);
+  const totalSteps = needsZone ? (needsSize ? 8 : 7) : (needsSize ? 7 : 6);
+  const dataStep = totalSteps - 1;
+  const successStep = totalSteps;
   const isFinal = step === successStep;
 
   const principalPetTypes = petTypes.filter((p) => p.group === "principal");
@@ -51,11 +55,11 @@ export default function QuotePage() {
 
   const canContinue = () => {
     if (step === 1) return formData.petType !== "";
-    if (step === 2) return formData.size !== "";
-    if (step === 3) return formData.service !== "";
-    if (step === 4) return formData.pickupMethod !== "";
-    if (step === 5) return formData.ashesDelivery !== "";
-    if (step === 6 && needsZone) return formData.zone !== "";
+    if (step === 2 && needsSize) return formData.size !== "";
+    if (step === (needsSize ? 3 : 2)) return formData.service !== "";
+    if (step === (needsSize ? 4 : 3)) return formData.pickupMethod !== "";
+    if (step === (needsSize ? 5 : 4)) return formData.ashesDelivery !== "";
+    if (needsZone && step === (needsSize ? 6 : 5)) return formData.zone !== "";
     if (step === dataStep) {
       return (
         formData.petName.trim() !== "" &&
@@ -78,7 +82,7 @@ export default function QuotePage() {
 
       const resumen = [
         selectedService?.title,
-        selectedSize?.title,
+        needsSize ? selectedSize?.title : null,
         selectedPickup?.title?.replace("\n", " "),
         selectedZone ? "Zona: " + selectedZone.title : null,
         "Mascota: " + formData.petName + " (" + formData.petType + ")",
@@ -104,8 +108,9 @@ export default function QuotePage() {
       return;
     }
 
-    if (step === 5 && !needsZone) {
-      goTo(6);
+    // Si no necesita talla, saltar paso 2
+    if (step === 1 && !needsSize) {
+      goTo(3);
       return;
     }
 
@@ -118,8 +123,9 @@ export default function QuotePage() {
       setFormData((p) => ({ ...p, petType: "" }));
       return;
     }
-    if (step === 6 && !needsZone) {
-      goTo(5);
+    // Si no necesita talla y estamos en paso 3, volver al paso 1
+    if (step === 3 && !needsSize) {
+      goTo(1);
       return;
     }
     if (step > 1) goTo(step - 1);
@@ -156,7 +162,7 @@ export default function QuotePage() {
                   setShowOtherPetTypes(true);
                   setFormData((p) => ({ ...p, petType: "" }));
                 } else {
-                  setFormData((p) => ({ ...p, petType: item.id }));
+                  setFormData((p) => ({ ...p, petType: item.id, size: "" }));
                 }
               }}
             >
@@ -193,42 +199,48 @@ export default function QuotePage() {
     </div>
   );
 
-  const renderStep3 = () => (
-    <div className="section-block">
-      <p className="section-block__title">Elegí el servicio que te gustaría ofrecerle</p>
-      <div className="service-grid">
-        {services.map((item) => {
-          const isOpen = openFeatures[item.id];
-          return (
-            <div
-              key={item.id}
-              className={"service-card" + (formData.service === item.id ? " selected" : "")}
-              onClick={() => setFormData((p) => ({ ...p, service: item.id }))}
+const renderStep3 = () => (
+  <div className="section-block">
+    <p className="section-block__title">Elegí el servicio que te gustaría ofrecerle</p>
+    <div className="service-grid">
+      {services.map((item) => {
+        const isOpen = openFeatures[item.id];
+        return (
+          <div
+            key={item.id}
+            className={"service-card" + (formData.service === item.id ? " selected" : "")}
+            onClick={() => setFormData((p) => ({ ...p, service: item.id }))}
+          >
+            {item.badge && <div className="service-card__badge">{item.badge}</div>}
+            <div className="service-card__name">{item.title}</div>
+            {item.subtitle && <div className="service-card__subtitle">{item.subtitle}</div>}
+            {item.price && (
+              <div className="service-card__price">
+                ${item.price.toLocaleString('es-AR')}
+              </div>
+            )}
+            <div className="service-card__desc">{item.desc}</div>
+            <button
+              type="button"
+              className="service-card__toggle"
+              onClick={(e) => {
+                e.stopPropagation();
+                setOpenFeatures((prev) => ({ ...prev, [item.id]: !prev[item.id] }));
+              }}
             >
-              {item.badge && <div className="service-card__badge">{item.badge}</div>}
-              <div className="service-card__name">{item.title}</div>
-              <div className="service-card__desc">{item.desc}</div>
-              <button
-                type="button"
-                className="service-card__toggle"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setOpenFeatures((prev) => ({ ...prev, [item.id]: !prev[item.id] }));
-                }}
-              >
-                Ver más {isOpen ? "▲" : "▼"}
-              </button>
-              {isOpen && item.features && (
-                <ul className="service-card__features">
-                  {item.features.map((f, i) => <li key={i}>{f}</li>)}
-                </ul>
-              )}
-            </div>
-          );
-        })}
-      </div>
+              Ver más {isOpen ? "▲" : "▼"}
+            </button>
+            {isOpen && item.features && (
+              <ul className="service-card__features">
+                {item.features.map((f, i) => <li key={i}>{f}</li>)}
+              </ul>
+            )}
+          </div>
+        );
+      })}
     </div>
-  );
+  </div>
+);
 
   const renderStep4 = () => (
     <div className="section-block">
@@ -364,12 +376,18 @@ export default function QuotePage() {
 
   const renderCurrentStep = () => {
     if (step === 1) return renderStep1();
-    if (step === 2) return renderStep2();
-    if (step === 3) return renderStep3();
-    if (step === 4) return renderStep4();
-    if (step === 5) return renderStep5();
-    if (step === 6 && needsZone) return renderStep6();
-    if (step === dataStep) return renderDatos();
+    if (step === 2 && needsSize) return renderStep2();
+    if (step === 2 && !needsSize) return renderStep3();
+    if (step === 3 && needsSize) return renderStep3();
+    if (step === 3 && !needsSize) return renderStep4();
+    if (step === 4 && needsSize) return renderStep4();
+    if (step === 4 && !needsSize) return renderStep5();
+    if (step === 5 && needsSize) return renderStep5();
+    if (step === 5 && !needsSize) return needsZone ? renderStep6() : renderDatos();
+    if (step === 6 && needsSize && needsZone) return renderStep6();
+    if (step === 6 && needsSize && !needsZone) return renderDatos();
+    if (step === 6 && !needsSize) return renderDatos();
+    if (step === 7 && needsSize && needsZone) return renderDatos();
     if (isFinal) return renderSuccess();
     return null;
   };

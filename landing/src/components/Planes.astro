@@ -1,124 +1,94 @@
 ---
-const WHATSAPP_NUMBER = '5493XXXXXXXXX' // TODO: reemplazar
 const planes = [
-  {
-    id: 'huellitas',
-    nombre: 'Huellitas',
-    precio: 'Consultar',
-    descripcion: 'Un adiós sencillo y respetuoso. La opción más accesible para cuidar a tu compañero con dignidad.',
-    beneficios: [
-      'Cremación comunitaria incluida',
-      'Certificado de cremación',
-      'Cuotas mensuales fijas',
-      'Cobertura 100% desde el mes 13',
-    ],
-    destacado: false,
-    emoji: '🐾',
-  },
-  {
-    id: 'amigos-para-siempre',
-    nombre: 'Amigos para siempre',
-    precio: 'Consultar',
-    descripcion: 'Un homenaje completo y personalizado. El plan más elegido por las familias de Rosario.',
-    beneficios: [
-      'Cremación individual',
-      'Devolución de cenizas en urna',
-      'Despedida en nuestra sala',
-      'Custodia de hasta 30 días',
-      'Certificado de cremación',
-    ],
-    destacado: true,
-    emoji: '💛',
-  },
-  {
-    id: 'amigos-de-verdad',
-    nombre: 'Amigos de verdad',
-    precio: 'Consultar',
-    descripcion: 'La opción más completa para despedir a tu compañero con todo el amor que se merece.',
-    beneficios: [
-      'Cremación individual',
-      'Devolución de cenizas en urna',
-      'Despedida en nuestra sala',
-      'Custodia de hasta 30 días',
-      'Certificado de cremación',
-      'Urna personalizada + collar de recuerdo',
-    ],
-    destacado: false,
-    emoji: '🌟',
-  },
+  { id:'huellitas', nombre:'Plan Huellitas', subtitulo:'Cremación comunitaria · Plan básico', precio:'$90.000', descripcion:'Un adiós sencillo y respetuoso.', beneficios:['Retiro en habitáculo rotulado con su nombre','Cremación comunitaria','Sin devolución de cenizas','Certificado de cremación'], destacado:false, emoji:'🐾' },
+  { id:'companeros', nombre:'Plan Compañeros', subtitulo:'Cremación individual con entrega diferida', precio:'$120.000', descripcion:'Un homenaje completo y personalizado. El más elegido.', beneficios:['Retiro en habitáculo rotulado con su nombre','Cremación individual','Entrega diferida entre 2 y 5 días hábiles','Urna biodegradable o grabada (costo adicional)','Certificado de cremación'], destacado:true, emoji:'💛' },
+  { id:'siempre-juntos', nombre:'Plan Siempre Juntos', subtitulo:'Cremación individual presencial', precio:'$140.000', descripcion:'La opción más completa. Podés acompañar a tu mascota.', beneficios:['Retiro en habitáculo rotulado con su nombre','Cremación individual presencial','Podés acompañarla y esperar las cenizas','Urna biodegradable o grabada (costo adicional)','Certificado de cremación'], destacado:false, emoji:'🕊️' },
+  { id:'jardin', nombre:'Jardín del Recuerdo', subtitulo:'Urnas · Parcelas', precio:'$110.000', descripcion:'Un espacio de paz para su último adiós.', beneficios:['Espacio especial para su último adiós','Lugar de paz rodeado de amor','Parcelas con mantenimiento anual de $140.000','Visitas libres para tu familia'], destacado:false, emoji:'🌸' },
+]
+const WHATSAPP_NUMBER = '5493XXXXXXXXX'
+const pasos = [
+  { num:'01', titulo:'Elegís el plan', desc:'Seleccionás el plan que mejor se adapta a tu mascota y a lo que querés para ella.' },
+  { num:'02', titulo:'Pagás la cuota mensual', desc:'Cuotas accesibles todos los meses. Sin compromisos ni contratos complicados.' },
+  { num:'03', titulo:'Tu mascota queda cubierta', desc:'A partir del mes 13, cobertura del 100%. Cuando llegue el momento, estamos.' },
+]
+/* Partículas: left, size(px), duration(s), delay(s), dx */
+const pts = [
+  {l:'4%',s:4,d:14,dl:0,dx:'-15px'},{l:'11%',s:3,d:18,dl:2,dx:'20px'},
+  {l:'19%',s:5,d:12,dl:5,dx:'-10px'},{l:'27%',s:3,d:20,dl:1,dx:'25px'},
+  {l:'36%',s:4,d:16,dl:7,dx:'-20px'},{l:'44%',s:6,d:11,dl:3,dx:'15px'},
+  {l:'53%',s:3,d:19,dl:9,dx:'-25px'},{l:'61%',s:5,d:13,dl:4,dx:'10px'},
+  {l:'70%',s:4,d:17,dl:6,dx:'-18px'},{l:'78%',s:3,d:15,dl:8,dx:'22px'},
+  {l:'86%',s:5,d:21,dl:2.5,dx:'-12px'},{l:'93%',s:4,d:14,dl:10,dx:'18px'},
 ]
 ---
 
-<section id="planes" class="py-16 md:py-24 bg-planes">
-  <div class="max-w-6xl mx-auto px-5">
+<section id="planes" class="py-16 md:py-24" style="position:relative;overflow:hidden">
 
-    <!-- Header centrado -->
-    <div class="mb-12 md:mb-14 text-center">
+  <!-- Partículas que ascienden: almas que suben hacia la luz -->
+  <div aria-hidden="true" style="position:absolute;inset:0;pointer-events:none;z-index:0">
+    {pts.map(p => (
+      <span
+        class="particle"
+        style={`left:${p.l};bottom:-8px;width:${p.s}px;height:${p.s}px;background:radial-gradient(circle,rgba(45,138,84,0.6),rgba(77,184,122,0.3) 60%,transparent);animation-duration:${p.d}s;animation-delay:-${p.dl}s;--dx:${p.dx}`}
+      ></span>
+    ))}
+  </div>
+
+  <div style="position:relative;z-index:1;max-width:72rem;margin:0 auto;padding:0 1.25rem">
+
+    <div class="text-center mb-12 md:mb-14 reveal-item">
       <p class="text-brand-600 text-xs md:text-sm font-medium tracking-widest uppercase mb-3">Planes de previsión</p>
-      <h2 class="font-display text-3xl md:text-4xl font-semibold text-stone-900 mb-4">
-        Planeá con tiempo, <br />sin preocupaciones
-      </h2>
-      <p class="text-stone-500 text-base md:text-lg leading-relaxed max-w-xl mx-auto">
-        Tomá la decisión hoy, cuando hay calma para pensar. Cuotas mensuales accesibles con cobertura creciente.
-      </p>
+      <h2 class="font-display text-3xl md:text-4xl font-semibold text-stone-900 mb-4">Planeá con tiempo, <br />sin preocupaciones</h2>
+      <p class="text-stone-500 text-base md:text-lg leading-relaxed max-w-xl mx-auto">Tomá la decisión hoy, cuando hay calma para pensar. Cuotas mensuales accesibles con cobertura creciente.</p>
     </div>
 
-    <!-- Cobertura escalonada centrada -->
-    <div class="bg-white border border-stone-200 rounded-2xl p-5 md:p-6 mb-10 md:mb-12 max-w-lg mx-auto">
-      <p class="text-sm font-semibold text-stone-700 mb-4 text-center">Cómo funciona la cobertura</p>
-      <div class="grid grid-cols-3 gap-3 md:gap-4 text-center text-sm">
-        <div class="bg-stone-50 rounded-xl p-3 md:p-4">
-          <p class="text-xl md:text-2xl font-display font-semibold text-stone-400 mb-1">0%</p>
-          <p class="text-stone-500 text-xs">Meses 1–6</p>
-        </div>
-        <div class="bg-brand-50 rounded-xl p-3 md:p-4">
-          <p class="text-xl md:text-2xl font-display font-semibold text-brand-600 mb-1">50%</p>
-          <p class="text-stone-500 text-xs">Meses 7–12</p>
-        </div>
-        <div class="bg-brand-600 rounded-xl p-3 md:p-4">
-          <p class="text-xl md:text-2xl font-display font-semibold text-white mb-1">100%</p>
-          <p class="text-brand-100 text-xs">Desde mes 13</p>
-        </div>
-      </div>
-      <p class="text-xs text-stone-400 mt-3 text-center">* Mascota adicional: +50% sobre la cuota base.</p>
-    </div>
-
-    <!-- Cards de planes -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-5 md:gap-6">
-      {planes.map(plan => (
-        <div class={`rounded-3xl border p-6 md:p-8 flex flex-col gap-5 md:gap-6 bg-white transition-shadow hover:shadow-md ${plan.destacado ? 'border-brand-400 shadow-sm relative' : 'border-stone-200'}`}>
-
-          {plan.destacado && (
-            <div class="absolute -top-3 left-1/2 -translate-x-1/2">
-              <span class="bg-brand-600 text-white text-xs font-semibold px-4 py-1 rounded-full whitespace-nowrap">
-                Más elegido ✨
-              </span>
-            </div>
-          )}
-
-          <div class="text-center pt-2">
-            <span class="text-3xl md:text-4xl mb-3 block">{plan.emoji}</span>
-            <h3 class="font-display text-lg md:text-xl font-semibold text-stone-900 mb-1">{plan.nombre}</h3>
-            <p class="text-stone-500 text-sm leading-relaxed">{plan.descripcion}</p>
+    <!-- Timeline -->
+    <div class="reveal-item mb-12 md:mb-14" style="background:rgba(255,255,255,0.82);backdrop-filter:blur(10px);border:1px solid rgba(170,223,194,0.5);border-radius:1.5rem;padding:2rem">
+      <p style="text-align:center;font-size:0.75rem;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:#a89f94;margin-bottom:2rem">¿Cómo funciona?</p>
+      <div class="timeline">
+        {pasos.map((p, i) => (
+          <div class="timeline-step">
+            <div class="timeline-num">{p.num}</div>
+            {i < pasos.length - 1 && <div class="timeline-line"></div>}
+            <h4 style="font-size:0.9375rem;font-weight:600;color:#1c1917;margin:0 0 6px;text-align:center">{p.titulo}</h4>
+            <p style="font-size:0.8125rem;color:#78716c;line-height:1.6;text-align:center;margin:0">{p.desc}</p>
           </div>
+        ))}
+      </div>
+    </div>
 
-          <ul class="flex flex-col gap-2">
+    <!-- Cobertura -->
+    <div class="reveal-item" style="background:rgba(255,255,255,0.85);backdrop-filter:blur(8px);border:1px solid #e7e5e4;border-radius:1rem;padding:1.5rem;max-width:32rem;margin:0 auto 2.5rem">
+      <p style="font-size:0.875rem;font-weight:600;color:#44403c;text-align:center;margin:0 0 1rem">Cobertura por período</p>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;text-align:center">
+        <div style="background:#f5f5f4;border-radius:12px;padding:12px 8px"><p style="font-family:var(--font-display,'Playfair Display',serif);font-size:1.5rem;font-weight:700;color:#a89f94;margin:0 0 4px">0%</p><p style="font-size:0.75rem;color:#78716c;margin:0">Meses 1–6</p></div>
+        <div style="background:#f0faf4;border-radius:12px;padding:12px 8px"><p style="font-family:var(--font-display,'Playfair Display',serif);font-size:1.5rem;font-weight:700;color:#2d8a54;margin:0 0 4px">50%</p><p style="font-size:0.75rem;color:#78716c;margin:0">Meses 7–12</p></div>
+        <div style="background:#2d8a54;border-radius:12px;padding:12px 8px"><p style="font-family:var(--font-display,'Playfair Display',serif);font-size:1.5rem;font-weight:700;color:white;margin:0 0 4px">100%</p><p style="font-size:0.75rem;color:#d6f0e0;margin:0">Desde mes 13</p></div>
+      </div>
+      <p style="font-size:0.75rem;color:#a89f94;text-align:center;margin:10px 0 0">* Mascota adicional: +50% sobre la cuota base.</p>
+    </div>
+
+    <!-- Cards -->
+    <div style="display:grid;grid-template-columns:repeat(1,1fr);gap:1.25rem">
+      {planes.map((plan, i) => (
+        <div class={`plan-card reveal-item ${plan.destacado ? 'plan-card--destacado' : ''}`} style={`--reveal-delay:${i*0.12}s`}>
+          {plan.destacado && <div style="position:absolute;top:-1px;left:50%;transform:translateX(-50%);z-index:2"><span style="display:block;background:#2d8a54;color:white;font-size:0.6875rem;font-weight:600;padding:4px 14px;border-radius:0 0 12px 12px;white-space:nowrap">Más elegido ✨</span></div>}
+          <div style="text-align:center;padding-top:8px">
+            <span style="font-size:2rem;display:block;margin-bottom:10px">{plan.emoji}</span>
+            <h3 class="font-display" style="font-size:1rem;font-weight:600;color:#1c1917;margin:0 0 4px">{plan.nombre}</h3>
+            <p style="font-size:0.6875rem;color:#a89f94;text-transform:uppercase;letter-spacing:0.05em;margin:0 0 6px">{plan.subtitulo}</p>
+            <p style="font-family:var(--font-display,'Playfair Display',serif);font-size:1.5rem;font-weight:700;color:#2d8a54;margin:0 0 8px">{plan.precio}</p>
+            <p style="font-size:0.875rem;color:#78716c;margin:0">{plan.descripcion}</p>
+          </div>
+          <ul style="list-style:none;padding:0;margin:14px 0 0;display:flex;flex-direction:column;gap:7px;flex:1">
             {plan.beneficios.map(b => (
-              <li class="flex items-start gap-2 text-sm text-stone-600">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-brand-600 flex-shrink-0 mt-0.5">
-                  <polyline points="20 6 9 17 4 12"/>
-                </svg>
+              <li style="display:flex;align-items:flex-start;gap:8px;font-size:0.875rem;color:#57534e">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2d8a54" stroke-width="2.5" style="flex-shrink:0;margin-top:2px"><polyline points="20 6 9 17 4 12"/></svg>
                 {b}
               </li>
             ))}
           </ul>
-
-          <a
-            href={`https://wa.me/${WHATSAPP_NUMBER}?text=Hola%2C%20quiero%20info%20sobre%20el%20plan%20${encodeURIComponent(plan.nombre)}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            class={`mt-auto inline-flex items-center justify-center px-5 py-2.5 rounded-full text-sm font-medium transition-colors w-full ${plan.destacado ? 'bg-brand-600 hover:bg-brand-800 text-white' : 'border border-stone-300 hover:border-brand-600 text-stone-700 hover:text-brand-600'}`}
-          >
+          <a href={`https://wa.me/${WHATSAPP_NUMBER}?text=Hola%2C%20quiero%20info%20sobre%20el%20${encodeURIComponent(plan.nombre)}`} target="_blank" rel="noopener noreferrer" class={plan.destacado ? 'plan-cta plan-cta--primary' : 'plan-cta plan-cta--outline'}>
             Consultar este plan
           </a>
         </div>
@@ -127,3 +97,38 @@ const planes = [
 
   </div>
 </section>
+
+<style>
+  @media(min-width:768px){ #planes [style*="grid-template-columns:repeat(1"]{grid-template-columns:repeat(2,1fr)!important} }
+  @media(min-width:1024px){ #planes [style*="grid-template-columns:repeat(1"]{grid-template-columns:repeat(4,1fr)!important} }
+
+  .timeline { display:grid; grid-template-columns:repeat(3,1fr); }
+  @media(max-width:640px){ .timeline{grid-template-columns:1fr;gap:2rem} }
+  .timeline-step { position:relative; display:flex; flex-direction:column; align-items:center; padding:0 0.75rem; }
+  .timeline-num { width:48px; height:48px; border-radius:50%; background:#f0faf4; border:2px solid #aadfc2; display:flex; align-items:center; justify-content:center; font-family:var(--font-display,'Playfair Display',serif); font-size:1rem; font-weight:600; color:#2d8a54; margin-bottom:12px; position:relative; z-index:1; transition:background 0.3s,color 0.3s; }
+  .timeline-step:hover .timeline-num { background:#2d8a54; color:white; }
+  .timeline-line { position:absolute; top:24px; left:calc(50% + 24px); right:calc(-50% + 24px); height:2px; background:linear-gradient(to right,#aadfc2,#d6f0e0); }
+  @media(max-width:640px){ .timeline-line{display:none} }
+
+  .plan-card { position:relative; background:rgba(255,255,255,0.88); backdrop-filter:blur(8px); border-radius:1.5rem; border:1px solid #e7e5e4; padding:1.75rem; display:flex; flex-direction:column; overflow:hidden; transition:transform 0.3s,box-shadow 0.3s,border-color 0.3s; }
+  .plan-card:hover { transform:translateY(-5px); box-shadow:0 4px 6px -1px rgba(0,0,0,0.04),0 10px 24px -4px rgba(45,138,84,0.10); border-color:#aadfc2; }
+  .plan-card--destacado { border-color:transparent; background:linear-gradient(rgba(255,255,255,0.93),rgba(255,255,255,0.93)) padding-box,conic-gradient(from var(--ba),#aadfc2,#2d8a54 25%,#4db87a 50%,#2d8a54 75%,#aadfc2) border-box; animation:ba-spin 4s linear infinite; }
+  @property --ba { syntax:'<angle>'; initial-value:0deg; inherits:false; }
+  @keyframes ba-spin { to{--ba:360deg} }
+  .plan-cta { display:flex; align-items:center; justify-content:center; width:100%; padding:10px 20px; border-radius:9999px; font-size:0.875rem; font-weight:500; text-decoration:none; margin-top:18px; transition:background-color 0.2s,transform 0.15s; }
+  .plan-cta:hover { transform:translateY(-1px); }
+  .plan-cta--primary { background:#2d8a54; color:white; }
+  .plan-cta--primary:hover { background:#1a5233; }
+  .plan-cta--outline { border:1px solid #d6d3d1; color:#44403c; }
+  .plan-cta--outline:hover { border-color:#2d8a54; color:#2d8a54; }
+
+  .reveal-item { opacity:0; transform:translateY(28px); transition:opacity 0.55s ease calc(var(--reveal-delay,0s)),transform 0.55s ease calc(var(--reveal-delay,0s)); }
+  .reveal-item.is-visible { opacity:1; transform:translateY(0); }
+
+  @media(prefers-reduced-motion:reduce){ .reveal-item{opacity:1;transform:none;transition:none} .plan-card--destacado{animation:none;border-color:#aadfc2} }
+</style>
+
+<script>
+  const obs = new IntersectionObserver(es => es.forEach(e => { if(e.isIntersecting){e.target.classList.add('is-visible');obs.unobserve(e.target)} }), {threshold:0.1})
+  document.querySelectorAll('#planes .reveal-item').forEach(el => obs.observe(el))
+</script>

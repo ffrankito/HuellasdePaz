@@ -1,34 +1,7 @@
 export default function Header() {
   return (
-    <header className="site-header" style={{
-      background: 'linear-gradient(135deg, #f7f0e8 0%, #eef5ec 100%)',
-      borderBottom: '1px solid #e8e0d4',
-      position: 'sticky',
-      top: 0,
-      zIndex: 100,
-      boxShadow: '0 2px 12px rgba(0,0,0,0.06)',
-      overflow: 'hidden',
-    }}>
-
-      {/* Huellitas decorativas de fondo */}
-      <div style={{
-        position: 'absolute', inset: 0,
-        pointerEvents: 'none', userSelect: 'none',
-        overflow: 'hidden',
-      }}>
-        <span style={{ position: 'absolute', fontSize: 28, opacity: 0.08, top: '10%', left: '2%' }}>🐾</span>
-        <span style={{ position: 'absolute', fontSize: 22, opacity: 0.07, top: '50%', left: '8%' }}>🐾</span>
-        <span style={{ position: 'absolute', fontSize: 18, opacity: 0.06, bottom: '10%', left: '15%' }}>🐾</span>
-        <span style={{ position: 'absolute', fontSize: 24, opacity: 0.07, top: '15%', left: '25%' }}>🐾</span>
-        <span style={{ position: 'absolute', fontSize: 20, opacity: 0.06, bottom: '15%', left: '35%' }}>🐾</span>
-        <span style={{ position: 'absolute', fontSize: 26, opacity: 0.07, top: '20%', right: '30%' }}>🐾</span>
-        <span style={{ position: 'absolute', fontSize: 18, opacity: 0.06, bottom: '10%', right: '20%' }}>🐾</span>
-        <span style={{ position: 'absolute', fontSize: 22, opacity: 0.07, top: '10%', right: '10%' }}>🐾</span>
-        <span style={{ position: 'absolute', fontSize: 20, opacity: 0.06, bottom: '20%', right: '5%' }}>🐾</span>
-        <span style={{ position: 'absolute', fontSize: 16, opacity: 0.05, top: '40%', right: '3%' }}>🐾</span>
-      </div>
-
-      <div className="container" style={{ position: 'relative', zIndex: 1 }}>
+    <header className="site-header">
+      <div className="container">
         <div className="site-header__inner">
 
           <a
@@ -37,18 +10,16 @@ export default function Header() {
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Ir al sitio de Huellas de Paz"
-            style={{ textDecoration: 'none' }}
           >
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <span style={{ fontSize: 24 }}>🐾</span>
-              <span style={{
-                fontSize: 18,
-                fontWeight: 800,
-                color: '#2d6a4f',
-                letterSpacing: '-0.02em',
-              }}>
-                Huellas de Paz
-              </span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
+              <svg width="26" height="26" viewBox="0 0 40 40" fill="#2d8a54">
+                <ellipse cx="20" cy="26" rx="9" ry="7"/>
+                <ellipse cx="10" cy="17" rx="4" ry="3.5" transform="rotate(-15 10 17)"/>
+                <ellipse cx="17" cy="13" rx="3.5" ry="3" transform="rotate(-5 17 13)"/>
+                <ellipse cx="24" cy="13" rx="3.5" ry="3" transform="rotate(5 24 13)"/>
+                <ellipse cx="30" cy="17" rx="4" ry="3.5" transform="rotate(15 30 17)"/>
+              </svg>
+              <span className="site-header__logo-text">Huellas de Paz</span>
             </div>
           </a>
 
@@ -58,7 +29,6 @@ export default function Header() {
               className="site-header__nav-link site-header__nav-link--hidden-mobile"
               target="_blank"
               rel="noopener noreferrer"
-              style={{ color: '#2d6a4f' }}
             >
               Sitio principal
             </a>
@@ -66,7 +36,7 @@ export default function Header() {
               href="tel:+5493410000000"
               className="site-header__nav-link site-header__nav-link--phone"
             >
-              📞 341 000-0000
+              341 000-0000
             </a>
           </nav>
 

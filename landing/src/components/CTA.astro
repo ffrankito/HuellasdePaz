@@ -1,0 +1,285 @@
+---
+const WHATSAPP_NUMBER = '5493XXXXXXXXX'
+const WA_URL = `https://wa.me/${WHATSAPP_NUMBER}?text=Hola%2C%20quiero%20consultar%20sobre%20los%20servicios`
+---
+
+<!-- CTA premium — reemplaza el div oscuro al final de Servicios.astro -->
+<div class="cta-banner reveal-item">
+
+  <!-- Foto de fondo con overlay -->
+  <div class="cta-bg" aria-hidden="true">
+    <img
+      src="https://images.unsplash.com/photo-1450778869180-41d0601e046e?w=1400&q=80&fit=crop&fp-y=0.4"
+      alt=""
+      loading="lazy"
+    />
+    <div class="cta-overlay"></div>
+  </div>
+
+  <!-- Contenido -->
+  <div class="cta-content">
+
+    <!-- Izquierda -->
+    <div class="cta-left">
+      <span class="cta-badge">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        Atención personalizada
+      </span>
+      <h3 class="cta-title">¿No sabés qué<br/>opción elegir?</h3>
+      <p class="cta-desc">
+        Hablá con nosotros sin apuro. Te acompañamos a encontrar
+        la despedida que más resuene con lo que vivieron juntos.
+      </p>
+      <!-- Trust pills -->
+      <div class="cta-pills">
+        <span class="pill">Sin compromiso</span>
+        <span class="pill">Respuesta inmediata</span>
+        <span class="pill">+20 años de experiencia</span>
+      </div>
+    </div>
+
+    <!-- Derecha -->
+    <div class="cta-right">
+      <!-- Botón WhatsApp -->
+      <a href={WA_URL} target="_blank" rel="noopener noreferrer" class="btn-wa-cta">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" style="flex-shrink:0">
+          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
+          <path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.553 4.116 1.522 5.847L.057 23.852a.5.5 0 0 0 .611.61l6.074-1.47A11.95 11.95 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.9a9.9 9.9 0 0 1-5.031-1.372l-.36-.214-3.733.904.936-3.633-.234-.373A9.862 9.862 0 0 1 2.1 12C2.1 6.534 6.534 2.1 12 2.1c5.466 0 9.9 4.434 9.9 9.9 0 5.466-4.434 9.9-9.9 9.9z"/>
+        </svg>
+        Consultar por WhatsApp
+        <span class="btn-wa-cta__shimmer" aria-hidden="true"></span>
+      </a>
+
+      <!-- Botón secundario -->
+      <a href="#contacto" class="btn-secondary-cta">
+        Dejar mis datos
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+      </a>
+
+      <!-- Micro stat -->
+      <p class="cta-micro">Respondemos en menos de 2 horas</p>
+    </div>
+
+  </div>
+
+  <!-- Borde de luz corriendo (Uiverse technique) -->
+  <span class="cta-glow-border" aria-hidden="true"></span>
+
+</div>
+
+<style>
+  .cta-banner {
+    position: relative;
+    border-radius: 1.75rem;
+    overflow: hidden;
+    margin-top: 3rem;
+    isolation: isolate;
+    min-height: 220px;
+  }
+
+  /* Foto + overlay */
+  .cta-bg {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+  }
+  .cta-bg img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 40%;
+  }
+  .cta-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      105deg,
+      rgba(10,32,20,0.96) 0%,
+      rgba(15,51,32,0.92) 40%,
+      rgba(20,65,40,0.82) 65%,
+      rgba(30,80,50,0.70) 100%
+    );
+  }
+
+  /* Contenido */
+  .cta-content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    padding: 2.5rem 2.25rem;
+  }
+
+  @media (min-width: 768px) {
+    .cta-content {
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      padding: 3rem 3.5rem;
+    }
+  }
+
+  /* Izquierda */
+  .cta-left { flex: 1; max-width: 520px; }
+
+  .cta-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(77,184,122,0.18);
+    border: 1px solid rgba(77,184,122,0.35);
+    color: #aadfc2;
+    font-size: 0.75rem;
+    font-weight: 500;
+    padding: 4px 12px;
+    border-radius: 9999px;
+    letter-spacing: 0.04em;
+    margin-bottom: 1rem;
+    display: inline-flex;
+  }
+
+  .cta-title {
+    font-family: var(--font-display, 'Playfair Display', serif);
+    font-size: clamp(1.6rem, 3vw, 2.2rem);
+    font-weight: 600;
+    color: white;
+    line-height: 1.2;
+    margin: 0 0 0.875rem;
+  }
+
+  .cta-desc {
+    font-size: 0.9375rem;
+    color: rgba(255,255,255,0.72);
+    line-height: 1.65;
+    margin: 0 0 1.25rem;
+    max-width: 420px;
+  }
+
+  .cta-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .pill {
+    font-size: 0.75rem;
+    color: rgba(255,255,255,0.55);
+    border: 1px solid rgba(255,255,255,0.15);
+    padding: 3px 10px;
+    border-radius: 9999px;
+  }
+
+  /* Derecha */
+  .cta-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    flex-shrink: 0;
+  }
+  @media (min-width: 768px) {
+    .cta-right { align-items: flex-end; }
+  }
+
+  /* Botón WhatsApp grande */
+  .btn-wa-cta {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: #25D366;
+    color: white;
+    font-size: 1rem;
+    font-weight: 600;
+    padding: 14px 28px;
+    border-radius: 9999px;
+    text-decoration: none;
+    overflow: hidden;
+    white-space: nowrap;
+    transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 4px 24px rgba(37,211,102,0.35);
+    animation: wa-pulse 2.5s ease-out infinite;
+  }
+  .btn-wa-cta:hover {
+    background: #128C7E;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(37,211,102,0.45);
+    animation-play-state: paused;
+  }
+  .btn-wa-cta__shimmer {
+    position: absolute;
+    top: 0; left: -100%;
+    width: 60%; height: 100%;
+    background: linear-gradient(120deg, transparent 20%, rgba(255,255,255,0.3) 50%, transparent 80%);
+    transition: left 0.55s ease;
+    pointer-events: none;
+  }
+  .btn-wa-cta:hover .btn-wa-cta__shimmer { left: 140%; }
+
+  @keyframes wa-pulse {
+    0%   { box-shadow: 0 4px 24px rgba(37,211,102,0.35), 0 0 0 0 rgba(37,211,102,0.45); }
+    70%  { box-shadow: 0 4px 24px rgba(37,211,102,0.35), 0 0 0 14px rgba(37,211,102,0); }
+    100% { box-shadow: 0 4px 24px rgba(37,211,102,0.35), 0 0 0 0 rgba(37,211,102,0); }
+  }
+
+  /* Botón secundario */
+  .btn-secondary-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: rgba(255,255,255,0.75);
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-decoration: none;
+    padding: 10px 20px;
+    border-radius: 9999px;
+    border: 1px solid rgba(255,255,255,0.2);
+    transition: color 0.2s, border-color 0.2s, background 0.2s;
+  }
+  .btn-secondary-cta:hover {
+    color: white;
+    border-color: rgba(255,255,255,0.45);
+    background: rgba(255,255,255,0.07);
+  }
+
+  .cta-micro {
+    font-size: 0.75rem;
+    color: rgba(255,255,255,0.38);
+    margin: 0;
+    text-align: center;
+    width: 100%;
+  }
+
+  /* Borde de luz corriendo */
+  .cta-glow-border {
+    position: absolute;
+    inset: -2px;
+    border-radius: inherit;
+    background: conic-gradient(
+      from var(--gb-angle, 0deg),
+      transparent 0deg,
+      transparent 70deg,
+      rgba(77,184,122,0.8) 100deg,
+      rgba(255,255,255,0.5) 130deg,
+      rgba(77,184,122,0.8) 160deg,
+      transparent 190deg,
+      transparent 360deg
+    );
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    padding: 2px;
+    animation: gb-spin 5s linear infinite;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  @property --gb-angle { syntax: '<angle>'; initial-value: 0deg; inherits: false; }
+  @keyframes gb-spin { to { --gb-angle: 360deg; } }
+
+  @media (prefers-reduced-motion: reduce) {
+    .btn-wa-cta { animation: none; }
+    .cta-glow-border { animation: none; opacity: 0.3; }
+    .reveal-item { opacity: 1; transform: none; transition: none; }
+  }
+</style>

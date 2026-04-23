@@ -337,13 +337,16 @@ export default function MisLeadsPage() {
                 )}
               </div>
 
-              <a
-                href={`https://wa.me/549${leadActual.telefono.replace(/\D/g, '')}?text=Hola%20${encodeURIComponent(leadActual.nombre)}%2C%20te%20contactamos%20de%20Huellas%20de%20Paz`}
-                target="_blank" rel="noopener noreferrer"
-                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, marginTop: 16, background: '#25D366', color: 'white', borderRadius: 10, padding: '10px', fontSize: 14, fontWeight: 600, textDecoration: 'none' }}
+              <button
+                onClick={() => window.open(
+                  `https://wa.me/549${leadActual.telefono.replace(/\D/g, '')}?text=Hola%20${encodeURIComponent(leadActual.nombre)}%2C%20te%20contactamos%20de%20Huellas%20de%20Paz`,
+                  'whatsapp',
+                  'width=480,height=700,top=100,left=100'
+                )}
+                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, marginTop: 16, background: '#25D366', color: 'white', borderRadius: 10, padding: '10px', fontSize: 14, fontWeight: 600, cursor: 'pointer', border: 'none', width: '100%' }}
               >
                 💬 Contactar por WhatsApp
-              </a>
+              </button>
 
               {leadActual.email && (
                 <EmailLeadForm

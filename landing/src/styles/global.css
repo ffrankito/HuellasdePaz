@@ -32,43 +32,56 @@ body {
 
 h1, h2, h3 { font-family: var(--font-display); }
 
-/* ─── Fondos texturizados ─────────────────────────────────── */
-
-/* Puntos sutiles sobre crema */
-.bg-dots {
-  background-color: #f5f2ee;
-  background-image: radial-gradient(circle, #d6cfc6 1px, transparent 1px);
-  background-size: 22px 22px;
+.particle {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+  animation: particle-rise linear infinite;
+}
+@keyframes particle-rise {
+  0%   { transform: translateY(0) translateX(0) scale(1); opacity: 0; }
+  8%   { opacity: 1; }
+  85%  { opacity: 0.3; }
+  100% { transform: translateY(-95vh) translateX(var(--dx, 0px)) scale(0.4); opacity: 0; }
 }
 
-/* Puntos más claros sobre blanco */
-.bg-dots-light {
-  background-color: #faf9f7;
-  background-image: radial-gradient(circle, #e8e2da 1px, transparent 1px);
-  background-size: 20px 20px;
+.star {
+  position: absolute;
+  border-radius: 50%;
+  background: white;
+  pointer-events: none;
+  animation: star-twinkle ease-in-out infinite;
+  z-index: 1;
+}
+@keyframes star-twinkle {
+  0%, 100% { opacity: 0.07; transform: scale(1); }
+  50%       { opacity: 0.95; transform: scale(1.5); }
 }
 
-/* Degradado diagonal verde suave — para secciones de planes */
-.bg-planes {
-  background-color: #f0faf4;
-  background-image:
-    radial-gradient(ellipse at 0% 0%, rgba(45,138,84,0.08) 0%, transparent 60%),
-    radial-gradient(ellipse at 100% 100%, rgba(45,138,84,0.06) 0%, transparent 60%),
-    radial-gradient(circle, #c8e8d4 1px, transparent 1px);
-  background-size: auto, auto, 22px 22px;
+.shooting-star {
+  position: absolute;
+  height: 1.5px;
+  background: linear-gradient(to right, transparent, rgba(255,255,255,0.75), transparent);
+  border-radius: 999px;
+  pointer-events: none;
+  z-index: 1;
+  left: -200px;
+  animation: shoot linear infinite;
+  opacity: 0;
+}
+@keyframes shoot {
+  0%   { transform: translate(-200px, 0) rotate(-18deg); opacity: 0; }
+  4%   { opacity: 0.8; }
+  25%  { opacity: 0; }
+  100% { transform: translate(120vw, 120px) rotate(-18deg); opacity: 0; }
 }
 
-/* Degradado cálido — para sección de servicios */
-.bg-servicios {
-  background-color: #f7f3ee;
-  background-image:
-    radial-gradient(ellipse at 100% 0%, rgba(212,180,142,0.15) 0%, transparent 50%),
-    radial-gradient(ellipse at 0% 100%, rgba(45,138,84,0.06) 0%, transparent 50%),
-    radial-gradient(circle, #ddd6cc 1px, transparent 1px);
-  background-size: auto, auto, 22px 22px;
+@media (prefers-reduced-motion: reduce) {
+  .particle, .star, .shooting-star { animation: none !important; opacity: 0.1; }
+  .shooting-star { display: none; }
 }
 
-/* ─── Mobile ──────────────────────────────────────────────── */
 @media (max-width: 640px) {
   h1 { font-size: 2.25rem !important; line-height: 1.2 !important; }
   h2 { font-size: 1.875rem !important; }

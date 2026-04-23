@@ -4,12 +4,14 @@ import { eq } from 'drizzle-orm'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { RegistrarPagoButton } from '@/components/planes/RegistrarPagoButton'
+import { WhatsAppPlanButton } from '@/components/planes/WhatsAppPlanButton'
 
 const estadoColors: Record<string, { bg: string; color: string }> = {
   activo: { bg: '#f0fdf4', color: '#15803d' },
   pausado: { bg: '#fefce8', color: '#a16207' },
   cancelado: { bg: '#fef2f2', color: '#dc2626' },
   utilizado: { bg: '#f3f4f6', color: '#6b7280' },
+  atrasado: { bg: '#fef2f2', color: '#dc2626' },
 }
 
 export default async function DetallePlanPage({
@@ -32,6 +34,7 @@ export default async function DetallePlanPage({
       cuotasTotales: planes.cuotasTotales,
       porcentajeCobertura: planes.porcentajeCobertura,
       mascotaAdicional: planes.mascotaAdicional,
+      fechaUltimoPago: planes.fechaUltimoPago,
       notas: planes.notas,
       creadoEn: planes.creadoEn,
       actualizadoEn: planes.actualizadoEn,
@@ -106,6 +109,14 @@ export default async function DetallePlanPage({
             <Link href={`/dashboard/clientes/${plan.clienteId}`} style={{ display: 'block', marginTop: 16, fontSize: 13, color: '#1d4ed8', textDecoration: 'none' }}>
               Ver ficha del cliente →
             </Link>
+            {plan.clienteTelefono && (
+              <WhatsAppPlanButton
+                telefono={plan.clienteTelefono}
+                nombre={plan.clienteNombre ?? ''}
+                cuotasPagadas={plan.cuotasPagadas ?? 0}
+                planNombre={planConfig?.nombre ?? 'tu plan'}
+              />
+            )}
           </div>
 
           {/* Plan */}
@@ -117,6 +128,10 @@ export default async function DetallePlanPage({
               <InfoRow label="Vigencia" value="Indefinida hasta baja" />
               <InfoRow label="Cobertura actual" value={`${cobertura}%`} />
               <InfoRow label="Alta del plan" value={new Date(plan.creadoEn).toLocaleDateString('es-AR')} />
+              <InfoRow
+                label="Último pago"
+                value={plan.fechaUltimoPago ? new Date(plan.fechaUltimoPago).toLocaleDateString('es-AR') : 'Sin pagos registrados'}
+              />
             </div>
           </div>
 

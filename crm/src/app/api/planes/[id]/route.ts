@@ -35,13 +35,17 @@ export async function PATCH(
     if (body.notas !== undefined) updateData.notas = body.notas
     if (body.planConfigId !== undefined) updateData.planConfigId = body.planConfigId
     if (body.cuotasMensual !== undefined) updateData.cuotasMensual = body.cuotasMensual
+    if (body.fechaUltimoPago !== undefined) updateData.fechaUltimoPago = body.fechaUltimoPago
 
-    // Calcular porcentaje de cobertura según cuotas pagadas
+    // Cobertura escalonada: 0-5 cuotas = 0%, 6-11 cuotas = 50%, 12+ cuotas = 100%
     if (body.cuotasPagadas !== undefined) {
       const pagadas = Number(body.cuotasPagadas)
-      if (pagadas <= 6) updateData.porcentajeCobertura = '0'
-      else if (pagadas <= 12) updateData.porcentajeCobertura = '50'
+      updateData.fechaUltimoPago = new Date()
+      if (pagadas < 6) updateData.porcentajeCobertura = '0'
+      else if (pagadas < 12) updateData.porcentajeCobertura = '50'
       else updateData.porcentajeCobertura = '100'
+      // Si el plan estaba atrasado y ahora está al día, reactivar
+      if (body.estado === undefined) updateData.estado = 'activo'
     }
 
     const [planActualizado] = await db

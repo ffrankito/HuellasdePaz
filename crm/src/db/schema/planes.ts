@@ -7,6 +7,7 @@ export const estadoPlanEnum = pgEnum('estado_plan', [
   'pausado',
   'cancelado',
   'utilizado',
+  'atrasado',
 ])
 
 export const planes = pgTable('planes', {
@@ -21,6 +22,7 @@ export const planes = pgTable('planes', {
   cuotasTotales: integer('cuotas_totales').notNull().default(0),
   porcentajeCobertura: numeric('porcentaje_cobertura', { precision: 5, scale: 2 }).default('0'),
   mascotaAdicional: boolean('mascota_adicional').default(false).notNull(),
+  fechaUltimoPago: timestamp('fecha_ultimo_pago'),
   notas: text('notas'),
   creadoEn: timestamp('creado_en').defaultNow().notNull(),
   actualizadoEn: timestamp('actualizado_en').defaultNow().notNull(),

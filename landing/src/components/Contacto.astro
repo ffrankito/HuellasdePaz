@@ -1,135 +1,185 @@
 ---
-// El formulario envía a /api/leads del CRM
-// Fallback v1 temp: webhook Make → Google Sheets
-// TODO: configurar PUBLIC_CRM_API_URL en .env
+const testimonios = [
+  { texto:'Desde el primer llamado nos trataron con una calidez y un respeto que nunca olvidaremos. Nos acompañaron en cada detalle.', nombre:'María José R.', mascota:'Mamá de Canela, perrita mestiza', inicial:'MJ' },
+  { texto:'Elegimos la cremación individual y fue exactamente lo que necesitábamos. Las cenizas de Mochi llegaron con un certificado y una urna preciosa.', nombre:'Sebastián T.', mascota:'Papá de Mochi, gato persa', inicial:'ST' },
+  { texto:'Lo que más valoramos fue la seriedad y la habilitación formal. Sabíamos que estábamos haciendo lo correcto para nuestra Lola.', nombre:'Laura y Martín G.', mascota:'Familia de Lola, golden retriever', inicial:'LG' },
+]
 ---
 
-<section id="contacto" class="py-24 bg-white">
-  <div class="max-w-6xl mx-auto px-6 grid md:grid-cols-2 gap-16 items-start">
+<!-- Testimonios con aurora de fondo -->
+<section class="py-16 md:py-20" style="position:relative;overflow:hidden">
 
-    <div>
-      <p class="text-brand-600 text-sm font-medium tracking-wide uppercase mb-3">Contacto</p>
-      <h2 class="font-display text-4xl font-semibold text-stone-900 mb-4">
-        Tenés dudas? <br />Te llamamos nosotros
-      </h2>
-      <p class="text-stone-500 text-lg leading-relaxed mb-8">
-        Dejanos tus datos y un integrante del equipo se comunica con vos para responder todo sin apuro.
-      </p>
-      <div class="flex flex-col gap-3 text-sm text-stone-600">
-        <div class="flex items-center gap-3">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-brand-600 flex-shrink-0">
-            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
-          </svg>
-          <span>Dirección — pendiente</span>
+  <!-- Orbes aurora -->
+  <div aria-hidden="true" style="position:absolute;inset:0;pointer-events:none;z-index:0">
+    <div class="orb orb--aurora-1" style="width:500px;height:400px;top:-100px;left:-80px"></div>
+    <div class="orb orb--aurora-2" style="width:450px;height:350px;bottom:-80px;right:-60px"></div>
+  </div>
+
+  <div style="position:relative;z-index:1;max-width:72rem;margin:0 auto;padding:0 1.5rem">
+
+    <div class="text-center mb-12 reveal-item">
+      <p class="text-brand-600 text-xs md:text-sm font-medium tracking-widest uppercase mb-3">Testimonios</p>
+      <h2 class="font-display text-3xl md:text-4xl font-semibold text-stone-900">Lo que dicen las familias</h2>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr;gap:1.5rem">
+      {testimonios.map((t, i) => (
+        <div class="testi-card reveal-item" style={`--reveal-delay:${i*0.15}s`}>
+          <div class="testi-quote">"</div>
+          <p style="font-size:0.9375rem;color:#44403c;line-height:1.7;margin:0 0 1.25rem;position:relative;z-index:1;padding-top:1.5rem">{t.texto}</p>
+          <div style="display:flex;align-items:center;gap:12px">
+            <div style="width:40px;height:40px;border-radius:50%;background:#f0faf4;border:1.5px solid #aadfc2;display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:600;color:#2d8a54;flex-shrink:0">{t.inicial}</div>
+            <div>
+              <p style="font-size:0.875rem;font-weight:600;color:#1c1917;margin:0">{t.nombre}</p>
+              <p style="font-size:0.75rem;color:#78716c;margin:2px 0 0">{t.mascota}</p>
+            </div>
+          </div>
         </div>
-        <div class="flex items-center gap-3">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-brand-600 flex-shrink-0">
-            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1.25h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 8.37a16 16 0 0 0 6 6l.91-.91a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 21.73 16z"/>
-          </svg>
-          <span>Teléfono — pendiente</span>
+      ))}
+    </div>
+
+  </div>
+</section>
+
+<!-- Contacto con fondo que respira -->
+<section id="contacto" class="py-24">
+  <div style="max-width:72rem;margin:0 auto;padding:0 1.5rem;display:grid;grid-template-columns:1fr;gap:4rem;align-items:start">
+
+    <div class="reveal-item">
+      <p class="text-brand-600 text-sm font-medium tracking-wide uppercase mb-3">Contacto</p>
+      <h2 class="font-display text-4xl font-semibold text-stone-900 mb-4">¿Tenés dudas? <br />Te llamamos nosotros</h2>
+      <p class="text-stone-500 text-lg leading-relaxed mb-8">Dejanos tus datos y un integrante del equipo se comunica con vos para responder todo sin apuro.</p>
+      <div style="display:flex;flex-direction:column;gap:12px;font-size:0.875rem;color:#57534e">
+        <div style="display:flex;align-items:center;gap:12px">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2d8a54" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          Rosario, Santa Fe
+        </div>
+        <div style="display:flex;align-items:center;gap:12px">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2d8a54" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1.25h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 8.37a16 16 0 0 0 6 6l.91-.91a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 21.73 16z"/></svg>
+          Teléfono disponible próximamente
         </div>
       </div>
     </div>
 
-    <form id="contact-form" class="flex flex-col gap-5">
+    <form id="contact-form" class="reveal-item" style="display:flex;flex-direction:column;gap:1.5rem;--reveal-delay:0.15s">
 
-      <div class="flex flex-col gap-1.5">
-        <label for="nombre" class="text-sm font-medium text-stone-700">Nombre *</label>
-        <input type="text" id="nombre" name="nombre" required minlength="2" placeholder="Tu nombre completo"
-          class="border border-stone-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-brand-600 transition-colors" />
+      <div class="float-field">
+        <input type="text" id="nombre" name="nombre" required minlength="2" class="float-input" placeholder=" " />
+        <label for="nombre" class="float-label">Nombre completo *</label>
+        <span class="float-line"></span>
       </div>
-
-      <div class="flex flex-col gap-1.5">
-        <label for="telefono" class="text-sm font-medium text-stone-700">Teléfono *</label>
-        <input type="tel" id="telefono" name="telefono" required placeholder="Ej: 341 555-1234"
-          class="border border-stone-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-brand-600 transition-colors" />
-        <p class="text-xs text-stone-400">Te contactamos por WhatsApp.</p>
+      <div class="float-field">
+        <input type="tel" id="telefono" name="telefono" required class="float-input" placeholder=" " />
+        <label for="telefono" class="float-label">Teléfono *</label>
+        <span class="float-line"></span>
+        <p class="float-hint">Con código de área, sin 0. Ej: 341 555-1234</p>
       </div>
-
-      <div class="flex flex-col gap-1.5">
-        <label for="email" class="text-sm font-medium text-stone-700">Email <span class="text-stone-400 font-normal">(opcional)</span></label>
-        <input type="email" id="email" name="email" placeholder="tu@email.com"
-          class="border border-stone-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-brand-600 transition-colors" />
+      <div class="float-field">
+        <input type="email" id="email" name="email" class="float-input" placeholder=" " />
+        <label for="email" class="float-label">Email (opcional)</label>
+        <span class="float-line"></span>
       </div>
-
-      <div class="flex flex-col gap-1.5">
-        <label for="plan_interes" class="text-sm font-medium text-stone-700">Plan de interés <span class="text-stone-400 font-normal">(opcional)</span></label>
-        <select id="plan_interes" name="plan_interes"
-          class="border border-stone-300 rounded-xl px-4 py-3 text-sm bg-white focus:outline-none focus:border-brand-600 transition-colors">
-          <option value="">Seleccioná una opción</option>
-          <!-- TODO: reemplazar con nombres reales de los planes -->
-          <option value="plan_1">Plan 1</option>
-          <option value="plan_2">Plan 2</option>
-          <option value="plan_3">Plan 3</option>
+      <div class="float-field">
+        <select id="plan_interes" name="plan_interes" class="float-select">
+          <option value="">¿Qué plan te interesa?</option>
+          <option value="plan_huellitas">Plan Huellitas — $90.000</option>
+          <option value="plan_companeros">Plan Compañeros — $120.000</option>
+          <option value="plan_siempre_juntos">Plan Siempre Juntos — $140.000</option>
+          <option value="jardin_del_recuerdo">Jardín del Recuerdo — $110.000</option>
           <option value="servicio_directo">Servicio directo (sin plan)</option>
         </select>
+        <span class="float-line"></span>
+      </div>
+      <div class="float-field">
+        <textarea id="mensaje" name="mensaje" rows="3" class="float-input float-textarea" placeholder=" "></textarea>
+        <label for="mensaje" class="float-label">Mensaje (opcional)</label>
+        <span class="float-line"></span>
       </div>
 
-      <div class="flex flex-col gap-1.5">
-        <label for="mensaje" class="text-sm font-medium text-stone-700">Mensaje <span class="text-stone-400 font-normal">(opcional)</span></label>
-        <textarea id="mensaje" name="mensaje" rows="3" placeholder="En qué podemos ayudarte?"
-          class="border border-stone-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-brand-600 transition-colors resize-none"></textarea>
-      </div>
-
-      <button type="submit" id="submit-btn"
-        class="bg-brand-600 hover:bg-brand-800 text-white font-medium px-6 py-3 rounded-full transition-colors text-sm">
-        Enviar consulta
+      <button type="submit" id="submit-btn" class="btn-submit">
+        <span class="btn-submit__text">Enviar consulta</span>
+        <span class="btn-submit__loader" aria-hidden="true"><svg class="btn-submit__spinner" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="40 60"/></svg></span>
+        <span class="btn-submit__shimmer" aria-hidden="true"></span>
       </button>
 
-      <div id="form-success" class="hidden text-sm text-brand-600 text-center py-2">
-        Gracias! Te contactamos a la brevedad.
+      <div id="form-success" class="hidden" style="display:none;align-items:center;gap:8px;font-size:0.875rem;color:#2d8a54;background:#f0faf4;border:1px solid #aadfc2;border-radius:10px;padding:12px 16px">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>
+        ¡Gracias! Te contactamos a la brevedad.
       </div>
-      <div id="form-error" class="hidden text-sm text-red-500 text-center py-2">
-        Hubo un error. Por favor intentá de nuevo o escribinos por WhatsApp.
+      <div id="form-error" class="hidden" style="display:none;font-size:0.875rem;color:#dc2626;background:#fef2f2;border:1px solid #fecaca;border-radius:10px;padding:12px 16px">
+        Hubo un error. Intentá de nuevo o escribinos por WhatsApp.
       </div>
 
     </form>
   </div>
 </section>
 
+<style>
+  @media(min-width:768px){
+    section[id="contacto"] > div { grid-template-columns:1fr 1fr !important; }
+    section:not([id]) > div > div:first-child { display:grid; grid-template-columns:repeat(3,1fr) !important; }
+  }
+
+  .testi-card { background:rgba(255,255,255,0.82); backdrop-filter:blur(10px); border:1px solid #e7e5e4; border-radius:1.25rem; padding:1.75rem; position:relative; overflow:hidden; transition:transform 0.3s,box-shadow 0.3s,border-color 0.3s; }
+  .testi-card:hover { transform:translateY(-4px); box-shadow:0 12px 28px rgba(45,138,84,0.07); border-color:#aadfc2; }
+  .testi-quote { font-family:var(--font-display,'Playfair Display',serif); font-size:5rem; line-height:1; color:#d6f0e0; position:absolute; top:8px; left:18px; pointer-events:none; user-select:none; }
+
+  .float-field { position:relative; padding-top:6px; }
+  .float-input { width:100%; background:transparent; border:none; border-bottom:1.5px solid #d6d3d1; padding:14px 2px 8px; font-size:0.9375rem; color:#1c1917; font-family:inherit; outline:none; transition:border-color 0.3s; resize:none; box-sizing:border-box; }
+  .float-textarea { padding-top:18px; }
+  .float-line { position:absolute; bottom:0; left:0; width:0; height:2px; background:#2d8a54; transition:width 0.35s; pointer-events:none; border-radius:2px; }
+  .float-input:focus ~ .float-line, .float-input:valid ~ .float-line { width:100%; }
+  .float-label { position:absolute; left:2px; top:22px; font-size:0.9375rem; color:#78716c; pointer-events:none; transition:transform 0.3s,font-size 0.3s,color 0.3s; transform-origin:left top; }
+  .float-input:focus ~ .float-label, .float-input:not(:placeholder-shown) ~ .float-label { transform:translateY(-22px); font-size:0.75rem; color:#2d8a54; }
+  .float-hint { font-size:0.75rem; color:#a8a29e; margin-top:5px; padding-left:2px; }
+  .float-select { width:100%; background:transparent; border:none; border-bottom:1.5px solid #d6d3d1; padding:14px 2px 8px; font-size:0.9375rem; color:#78716c; font-family:inherit; outline:none; cursor:pointer; appearance:none; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2378716c' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 8px center; box-sizing:border-box; }
+  .float-select:focus { color:#1c1917; border-bottom-color:transparent; }
+  .float-select:focus ~ .float-line { width:100%; }
+
+  .btn-submit { position:relative; display:flex; align-items:center; justify-content:center; background:#2d8a54; color:white; font-size:0.9375rem; font-weight:500; padding:14px 32px; border-radius:9999px; border:none; cursor:pointer; overflow:hidden; transition:background-color 0.25s,transform 0.2s; font-family:inherit; width:100%; }
+  .btn-submit:hover:not(:disabled) { background:#1a5233; transform:translateY(-1px); }
+  .btn-submit:disabled { cursor:not-allowed; opacity:0.8; }
+  .btn-submit__shimmer { position:absolute; top:0; left:-100%; width:60%; height:100%; background:linear-gradient(120deg,transparent 20%,rgba(255,255,255,0.28) 50%,transparent 80%); pointer-events:none; transition:left 0.55s; }
+  .btn-submit:hover .btn-submit__shimmer { left:150%; }
+  .btn-submit__loader { display:none; width:20px; height:20px; }
+  .btn-submit__spinner { width:20px; height:20px; animation:spin 0.8s linear infinite; }
+  @keyframes spin { to{transform:rotate(360deg)} }
+  .btn-submit.is-loading .btn-submit__text { display:none; }
+  .btn-submit.is-loading .btn-submit__loader { display:flex; align-items:center; justify-content:center; }
+
+  .reveal-item { opacity:0; transform:translateY(28px); transition:opacity 0.55s ease calc(var(--reveal-delay,0s)),transform 0.55s ease calc(var(--reveal-delay,0s)); }
+  .reveal-item.is-visible { opacity:1; transform:translateY(0); }
+  .hidden { display:none !important; }
+
+  @media(prefers-reduced-motion:reduce){ .reveal-item{opacity:1;transform:none;transition:none} .testi-card{transition:none} }
+</style>
+
 <script>
+  const obs = new IntersectionObserver(es => es.forEach(e => { if(e.isIntersecting){e.target.classList.add('is-visible');obs.unobserve(e.target)} }), {threshold:0.1})
+  document.querySelectorAll('.reveal-item').forEach(el => obs.observe(el))
+
   const form = document.getElementById('contact-form') as HTMLFormElement
-  const submitBtn = document.getElementById('submit-btn') as HTMLButtonElement
-  const successMsg = document.getElementById('form-success')
-  const errorMsg = document.getElementById('form-error')
+  const btn = document.getElementById('submit-btn') as HTMLButtonElement
+  const ok = document.getElementById('form-success')
+  const err = document.getElementById('form-error')
+  const origen = new URLSearchParams(window.location.search).get('utm_source') || 'landing'
 
-  const params = new URLSearchParams(window.location.search)
-  const canalOrigen = params.get('utm_source') || 'directo'
-
-  form?.addEventListener('submit', async (e) => {
+  form?.addEventListener('submit', async e => {
     e.preventDefault()
-    submitBtn.disabled = true
-    submitBtn.textContent = 'Enviando...'
-    successMsg?.classList.add('hidden')
-    errorMsg?.classList.add('hidden')
-
+    btn.disabled = true; btn.classList.add('is-loading')
+    ok?.classList.add('hidden'); err?.classList.add('hidden')
     const data = {
       nombre: (form.elements.namedItem('nombre') as HTMLInputElement).value,
       telefono: (form.elements.namedItem('telefono') as HTMLInputElement).value,
       email: (form.elements.namedItem('email') as HTMLInputElement).value,
-      plan_interes: (form.elements.namedItem('plan_interes') as HTMLSelectElement).value,
-      mensaje: (form.elements.namedItem('mensaje') as HTMLTextAreaElement).value,
-      canal_origen: canalOrigen,
+      mensaje: `Plan: ${(form.elements.namedItem('plan_interes') as HTMLSelectElement).value} — ${(form.elements.namedItem('mensaje') as HTMLTextAreaElement).value}`,
+      origen,
     }
-
     try {
-      const CRM_API_URL = import.meta.env.PUBLIC_CRM_API_URL || 'https://crm.huellasdepaz.com.ar/api/leads'
-      const res = await fetch(CRM_API_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-      })
-      if (res.ok) {
-        form.reset()
-        successMsg?.classList.remove('hidden')
-      } else {
-        throw new Error('error')
-      }
-    } catch {
-      errorMsg?.classList.remove('hidden')
-    } finally {
-      submitBtn.disabled = false
-      submitBtn.textContent = 'Enviar consulta'
-    }
+      const res = await fetch(import.meta.env.PUBLIC_CRM_API_URL || 'https://huellasde-paz.vercel.app/api/leads', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)})
+      if(res.ok){ form.reset(); ok!.style.display='flex' }
+      else throw new Error()
+    } catch { err!.style.display='block' }
+    finally { btn.disabled=false; btn.classList.remove('is-loading') }
   })
 </script>
