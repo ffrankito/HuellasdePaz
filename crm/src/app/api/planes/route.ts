@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/db'
-import { planes } from '@/db/schema'
-import { sql } from 'drizzle-orm'
+import { planes, clientes } from '@/db/schema'
+import { sql, eq } from 'drizzle-orm'
 
 export async function POST(request: NextRequest) {
   try {
@@ -19,6 +19,12 @@ export async function POST(request: NextRequest) {
       estado: 'activo',
       notas: body.notas,
     }).returning()
+
+    if (body.convenioId && body.clienteId) {
+      await db.update(clientes)
+        .set({ veterinariaId: body.convenioId, actualizadoEn: new Date() })
+        .where(eq(clientes.id, body.clienteId))
+    }
 
     return NextResponse.json(plan, { status: 201 })
   } catch (error) {

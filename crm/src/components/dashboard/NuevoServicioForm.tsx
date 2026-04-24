@@ -1,8 +1,10 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { type Cliente, type Mascota } from '@/db/schema'
+
+type ConvenioActivo = { id: string; nombre: string; descuentoPorcentaje: string | null }
 
 const tipoLabel: Record<string, string> = {
   cremacion_individual: 'Cremación individual',
@@ -19,8 +21,17 @@ export function NuevoServicioForm({ clientes, mascotas, tiposServicio }: {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [clienteId, setClienteId] = useState('')
+  const [convenioId, setConvenioId] = useState('')
+  const [conveniosActivos, setConveniosActivos] = useState<ConvenioActivo[]>([])
 
   const mascotasFiltradas = mascotas.filter(m => m.clienteId === clienteId)
+
+  useEffect(() => {
+    fetch('/api/convenios?activos=true')
+      .then(r => r.ok ? r.json() : [])
+      .then(setConveniosActivos)
+      .catch(() => {})
+  }, [])
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -34,6 +45,7 @@ export function NuevoServicioForm({ clientes, mascotas, tiposServicio }: {
       tipo: (form.elements.namedItem('tipo') as HTMLSelectElement).value,
       fechaRetiro: (form.elements.namedItem('fechaRetiro') as HTMLInputElement).value || null,
       notas: (form.elements.namedItem('notas') as HTMLTextAreaElement).value || null,
+      convenioId: convenioId || null,
     }
 
     const res = await fetch('/api/servicios', {
@@ -105,6 +117,20 @@ export function NuevoServicioForm({ clientes, mascotas, tiposServicio }: {
         <label style={labelStyle}>Notas</label>
         <textarea name="notas" rows={3} style={{ ...inputStyle, resize: 'vertical' }} placeholder="Información adicional..." />
       </div>
+
+      {conveniosActivos.length > 0 && (
+        <div style={fieldStyle}>
+          <label style={labelStyle}>¿Vino por convenio?</label>
+          <select value={convenioId} onChange={e => setConvenioId(e.target.value)} style={inputStyle}>
+            <option value="">Sin convenio</option>
+            {conveniosActivos.map(c => (
+              <option key={c.id} value={c.id}>
+                {c.nombre}{c.descuentoPorcentaje && Number(c.descuentoPorcentaje) > 0 ? ` — ${c.descuentoPorcentaje}% desc.` : ''}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
 
       {error && (
         <div style={{ background: '#fef2f2', border: '1px solid #fee2e2', borderRadius: 10, padding: '12px 16px' }}>

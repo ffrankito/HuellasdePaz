@@ -1,5 +1,5 @@
 import { db } from '@/db'
-import { planes, clientes, mascotas } from '@/db/schema'
+import { planes, clientes, mascotas, planesConfig } from '@/db/schema'
 import { desc, eq } from 'drizzle-orm'
 import Link from 'next/link'
 
@@ -33,10 +33,12 @@ export default async function PlanesPage() {
       clienteTelefono: clientes.telefono,
       mascotaNombre: mascotas.nombre,
       mascotaEspecie: mascotas.especie,
+      planNombre: planesConfig.nombre,
     })
     .from(planes)
     .leftJoin(clientes, eq(planes.clienteId, clientes.id))
     .leftJoin(mascotas, eq(planes.mascotaId, mascotas.id))
+    .leftJoin(planesConfig, eq(planes.planConfigId, planesConfig.id))
     .orderBy(desc(planes.numero))
 
   const activos = data.filter(p => p.estado === 'activo').length
@@ -84,7 +86,7 @@ export default async function PlanesPage() {
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead>
             <tr style={{ borderBottom: '1px solid #f3f4f6' }}>
-              {['#', 'Cliente', 'Mascota', 'Cuota mensual', 'Cuotas pagadas', 'Cobertura', 'Estado', ''].map(col => (
+              {['#', 'Cliente', 'Mascota', 'Plan', 'Cuota mensual', 'Cuotas pagadas', 'Cobertura', 'Estado', ''].map(col => (
                 <th key={col} style={{ padding: '12px 20px', textAlign: 'left', fontSize: 12, fontWeight: 500, color: '#9ca3af', letterSpacing: '0.05em' }}>
                   {col.toUpperCase()}
                 </th>
@@ -94,7 +96,7 @@ export default async function PlanesPage() {
           <tbody>
             {data.length === 0 ? (
               <tr>
-                <td colSpan={8} style={{ padding: '48px 20px', textAlign: 'center', fontSize: 14, color: '#9ca3af' }}>
+                <td colSpan={9} style={{ padding: '48px 20px', textAlign: 'center', fontSize: 14, color: '#9ca3af' }}>
                   No hay planes registrados todavía
                 </td>
               </tr>
@@ -120,6 +122,9 @@ export default async function PlanesPage() {
                         {p.mascotaEspecie ?? ''}
                         {p.mascotaAdicional && <span style={{ marginLeft: 6, color: '#7e22ce' }}>+adicional</span>}
                       </p>
+                    </td>
+                    <td style={{ padding: '14px 20px', fontSize: 14, color: '#4b5563' }}>
+                      {p.planNombre ?? '—'}
                     </td>
                     <td style={{ padding: '14px 20px', fontSize: 14, fontWeight: 600, color: '#111827' }}>
                       ${Number(p.cuotasMensual).toLocaleString('es-AR')}

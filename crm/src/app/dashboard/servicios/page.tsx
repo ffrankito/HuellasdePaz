@@ -1,5 +1,5 @@
 import { db } from '@/db'
-import { servicios, clientes, mascotas } from '@/db/schema'
+import { servicios, clientes, mascotas, convenios } from '@/db/schema'
 import { desc, eq } from 'drizzle-orm'
 import Link from 'next/link'
 
@@ -29,14 +29,18 @@ export default async function ServiciosPage() {
       tipo: servicios.tipo,
       estado: servicios.estado,
       fechaRetiro: servicios.fechaRetiro,
+      precio: servicios.precio,
+      descuento: servicios.descuento,
       clienteNombre: clientes.nombre,
       clienteApellido: clientes.apellido,
       mascotaNombre: mascotas.nombre,
       mascotaEspecie: mascotas.especie,
+      convenioNombre: convenios.nombre,
     })
     .from(servicios)
     .leftJoin(clientes, eq(servicios.clienteId, clientes.id))
     .leftJoin(mascotas, eq(servicios.mascotaId, mascotas.id))
+    .leftJoin(convenios, eq(clientes.veterinariaId, convenios.id))
     .orderBy(desc(servicios.numero))
 
   return (
@@ -60,7 +64,7 @@ export default async function ServiciosPage() {
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead>
             <tr style={{ borderBottom: '1px solid #f3f4f6' }}>
-              {['#', 'Mascota', 'Cliente', 'Tipo', 'Estado', 'Fecha retiro', ''].map(col => (
+              {['#', 'Mascota', 'Cliente', 'Tipo', 'Convenio', 'Pagó', 'Estado', 'Fecha retiro', ''].map(col => (
                 <th key={col} style={{ padding: '12px 20px', textAlign: 'left', fontSize: 12, fontWeight: 500, color: '#9ca3af', letterSpacing: '0.05em' }}>
                   {col.toUpperCase()}
                 </th>
@@ -70,13 +74,16 @@ export default async function ServiciosPage() {
           <tbody>
             {data.length === 0 ? (
               <tr>
-                <td colSpan={7} style={{ padding: '48px 20px', textAlign: 'center', fontSize: 14, color: '#9ca3af' }}>
+                <td colSpan={9} style={{ padding: '48px 20px', textAlign: 'center', fontSize: 14, color: '#9ca3af' }}>
                   No hay servicios registrados todavía
                 </td>
               </tr>
             ) : (
               data.map(s => {
                 const badge = estadoColors[s.estado] ?? { bg: '#f3f4f6', color: '#374151' }
+                const neto = s.precio
+                  ? Number(s.precio) - Number(s.descuento ?? 0)
+                  : null
                 return (
                   <tr key={s.id} style={{ borderBottom: '1px solid #f9fafb' }}>
                     <td style={{ padding: '14px 20px' }}>
@@ -93,6 +100,18 @@ export default async function ServiciosPage() {
                     </td>
                     <td style={{ padding: '14px 20px', fontSize: 14, color: '#4b5563' }}>
                       {tipoLabel[s.tipo] ?? s.tipo}
+                    </td>
+                    <td style={{ padding: '14px 20px' }}>
+                      {s.convenioNombre
+                        ? <span style={{ fontSize: 13, color: '#7e22ce', fontWeight: 500 }}>{s.convenioNombre}</span>
+                        : <span style={{ fontSize: 13, color: '#d1d5db' }}>—</span>
+                      }
+                    </td>
+                    <td style={{ padding: '14px 20px' }}>
+                      {neto !== null
+                        ? <span style={{ fontSize: 14, fontWeight: 600, color: '#111827' }}>${neto.toLocaleString('es-AR')}</span>
+                        : <span style={{ fontSize: 14, color: '#d1d5db' }}>—</span>
+                      }
                     </td>
                     <td style={{ padding: '14px 20px' }}>
                       <span style={{ background: badge.bg, color: badge.color, padding: '3px 10px', borderRadius: 20, fontSize: 12, fontWeight: 500 }}>
