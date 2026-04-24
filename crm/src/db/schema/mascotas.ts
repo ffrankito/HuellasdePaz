@@ -1,4 +1,4 @@
-import { pgTable, uuid, text, timestamp, date } from 'drizzle-orm/pg-core'
+import { pgTable, uuid, text, timestamp, date, jsonb } from 'drizzle-orm/pg-core'
 import { clientes } from './clientes'
 
 export const mascotas = pgTable('mascotas', {
@@ -11,6 +11,7 @@ export const mascotas = pgTable('mascotas', {
   fechaNacimiento: date('fecha_nacimiento'),
   fechaFallecimiento: date('fecha_fallecimiento'),
   foto: text('foto'), // URL
+  galeria: jsonb('galeria').$type<string[]>().default([]),
   notas: text('notas'),
   creadoEn: timestamp('creado_en').defaultNow().notNull(),
   actualizadoEn: timestamp('actualizado_en').defaultNow().notNull(),
