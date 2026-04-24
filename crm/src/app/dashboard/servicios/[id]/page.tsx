@@ -4,7 +4,6 @@ import { eq } from 'drizzle-orm'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { ServicioEstadoForm } from '@/components/servicios/ServicioEstadoForm'
-import { ServicioConvenioForm } from '@/components/servicios/ServicioConvenioForm'
 import { ServicioPagoForm } from '@/components/servicios/ServicioPagoForm'
 
 const estadoColors: Record<string, { bg: string; color: string }> = {
@@ -189,11 +188,6 @@ export default async function ServicioDetallePage({ params }: { params: Promise<
             </div>
           )}
 
-          {/* Convenio */}
-          <div style={{ background: 'white', borderRadius: 16, border: '1px solid #f3f4f6', padding: '24px', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
-            <h2 style={{ fontSize: 15, fontWeight: 600, color: '#111827', marginBottom: 16, marginTop: 0 }}>¿Vino por convenio?</h2>
-            <ServicioConvenioForm servicioId={servicio.id} convenioIdActual={servicio.convenioId ?? null} />
-          </div>
         </div>
       </div>
     </div>
