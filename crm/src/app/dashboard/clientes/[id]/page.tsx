@@ -1,6 +1,6 @@
 import { db } from '@/db'
-import { clientes, mascotas, servicios, planes, usuarios } from '@/db/schema'
-import { eq } from 'drizzle-orm'
+import { clientes, mascotas, servicios, planes, usuarios, noticiasCementerio } from '@/db/schema'
+import { desc, eq } from 'drizzle-orm'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { AgregarMascotaForm } from '@/components/clientes/AgregarMascotaForm'
@@ -24,11 +24,12 @@ export default async function ClienteDetallePage({ params }: { params: Promise<{
     where: eq(usuarios.id, user!.id),
   })
 
-  const [mascotasData, serviciosData, planesData, especies] = await Promise.all([
+  const [mascotasData, serviciosData, planesData, especies, noticiasData] = await Promise.all([
     db.select().from(mascotas).where(eq(mascotas.clienteId, id)),
     db.select().from(servicios).where(eq(servicios.clienteId, id)),
     db.select().from(planes).where(eq(planes.clienteId, id)),
     getEspeciesMascota(),
+    db.select().from(noticiasCementerio).orderBy(desc(noticiasCementerio.creadoEn)).limit(5),
   ])
 
   return (
@@ -119,6 +120,25 @@ export default async function ClienteDetallePage({ params }: { params: Promise<{
         <div style={{ background: 'white', borderRadius: 16, border: '1px solid #f3f4f6', padding: '24px', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', marginTop: 20 }}>
           <h2 style={{ fontSize: 15, fontWeight: 600, color: '#111827', marginBottom: 8, marginTop: 0 }}>Notas</h2>
           <p style={{ fontSize: 14, color: '#4b5563', margin: 0, lineHeight: 1.6 }}>{cliente.notas}</p>
+        </div>
+      )}
+
+      {noticiasData.length > 0 && (
+        <div style={{ background: 'white', borderRadius: 16, border: '1px solid #f3f4f6', padding: '24px', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', marginTop: 20 }}>
+          <h2 style={{ fontSize: 15, fontWeight: 600, color: '#111827', marginBottom: 16, marginTop: 0 }}>Novedades del cementerio</h2>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            {noticiasData.map(n => (
+              <div key={n.id} style={{ padding: '14px 16px', background: '#f9fafb', borderRadius: 12, border: '1px solid #f3f4f6' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+                  <p style={{ fontSize: 14, fontWeight: 600, color: '#111827', margin: 0 }}>{n.titulo}</p>
+                  <span style={{ fontSize: 12, color: '#9ca3af', flexShrink: 0, marginLeft: 12 }}>
+                    {new Date(n.creadoEn).toLocaleDateString('es-AR', { day: 'numeric', month: 'long' })}
+                  </span>
+                </div>
+                <p style={{ fontSize: 13, color: '#6b7280', margin: 0, lineHeight: 1.5 }}>{n.contenido}</p>
+              </div>
+            ))}
+          </div>
         </div>
       )}
     </div>

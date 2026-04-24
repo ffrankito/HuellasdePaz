@@ -195,7 +195,7 @@ export default function MisLeadsPage() {
         tipoServicio: modal.tipoServicio,
         tipoPlan: modal.tipoPlan,
         notas: modal.notas,
-        convenioId: modal.convenioId || null,
+        convenioId: modal.tipo === 'servicio' ? modal.convenioId || null : null,
       }),
     })
 
@@ -276,7 +276,7 @@ export default function MisLeadsPage() {
                 <label style={{ fontSize: 13, fontWeight: 600, color: '#374151', display: 'block', marginBottom: 6 }}>Notas adicionales</label>
                 <textarea placeholder="Detalles de la venta..." value={modal.notas} onChange={e => setModal(p => ({ ...p, notas: e.target.value }))} rows={3} style={{ width: '100%', border: '1px solid #e5e7eb', borderRadius: 10, padding: '10px 12px', fontSize: 14, outline: 'none', resize: 'vertical', fontFamily: 'inherit', boxSizing: 'border-box' }} />
               </div>
-              {conveniosActivos.length > 0 && (
+              {modal.tipo === 'servicio' && conveniosActivos.length > 0 && (
                 <div>
                   <label style={{ fontSize: 13, fontWeight: 600, color: '#374151', display: 'block', marginBottom: 6 }}>¿Vino por convenio? <span style={{ fontWeight: 400, color: '#9ca3af' }}>(opcional)</span></label>
                   <select value={modal.convenioId} onChange={e => setModal(p => ({ ...p, convenioId: e.target.value }))} style={{ width: '100%', border: '1px solid #e5e7eb', borderRadius: 10, padding: '10px 12px', fontSize: 14, outline: 'none', background: 'white' }}>

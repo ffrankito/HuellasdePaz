@@ -10,7 +10,11 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
     const body = await request.json()
 
     const [servicio] = await db.update(servicios)
-      .set({ estado: body.estado, actualizadoEn: new Date() })
+      .set({
+        ...(body.estado !== undefined ? { estado: body.estado } : {}),
+        ...('convenioId' in body ? { convenioId: body.convenioId } : {}),
+        actualizadoEn: new Date(),
+      })
       .where(eq(servicios.id, id))
       .returning()
 

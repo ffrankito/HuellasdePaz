@@ -1,6 +1,7 @@
 import { pgTable, uuid, text, timestamp, numeric, integer, jsonb, boolean } from 'drizzle-orm/pg-core'
 import { clientes } from './clientes'
 import { servicios } from './servicios'
+import { usuarios } from './usuarios'
 
 export const planesConfig = pgTable('planes_config', {
   id: uuid('id').primaryKey().defaultRandom(),
@@ -51,7 +52,16 @@ export const configuracionGeneral = pgTable('configuracion_general', {
 export type ConfiguracionGeneral = typeof configuracionGeneral.$inferSelect
 export type NuevaConfiguracionGeneral = typeof configuracionGeneral.$inferInsert
 
+export const noticiasCementerio = pgTable('noticias_cementerio', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  titulo: text('titulo').notNull(),
+  contenido: text('contenido').notNull(),
+  creadoPorId: uuid('creado_por_id').references(() => usuarios.id),
+  creadoEn: timestamp('creado_en').defaultNow().notNull(),
+})
+
 export type PlanConfig = typeof planesConfig.$inferSelect
 export type NuevoPlanConfig = typeof planesConfig.$inferInsert
 export type TemplateMsg = typeof templatesMsg.$inferSelect
 export type NuevoTemplateMsg = typeof templatesMsg.$inferInsert
+export type NoticiaCementerio = typeof noticiasCementerio.$inferSelect

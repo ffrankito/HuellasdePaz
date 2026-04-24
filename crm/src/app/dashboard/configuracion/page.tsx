@@ -1,5 +1,6 @@
 import { db } from '@/db'
-import { planesConfig, templatesMsg, usuarios } from '@/db/schema'
+import { planesConfig, templatesMsg, usuarios, noticiasCementerio } from '@/db/schema'
+import { desc } from 'drizzle-orm'
 import { getConfig } from '@/lib/utils/config'
 import { createClient } from '@/lib/supabase/server'
 import { NuevoPlanConfigForm } from '@/components/dashboard/NuevoPlanConfigForm'
@@ -7,6 +8,7 @@ import { NuevoTemplateMsgForm } from '@/components/dashboard/NuevoTemplateMsgFor
 import { EditarConfigListaForm } from '@/components/dashboard/EditarConfigListaForm'
 import { GestionPermisosUsuario } from '@/components/configuracion/GestionPermisosUsuario'
 import { EditarPlanConfigInline } from '@/components/configuracion/EditarPlanConfigInline'
+import { NuevaNoticiaForm } from '@/components/configuracion/NuevaNoticiaForm'
 
 const rolLabel: Record<string, string> = {
   admin: 'Administrador',
@@ -40,7 +42,7 @@ export default async function ConfiguracionPage() {
 
   const esAdmin = usuarioActual?.rol === 'admin'
 
-  const [planesData, templatesData, tiposServicio, origenes, especies, tiposConvenio, todosUsuarios] = await Promise.all([
+  const [planesData, templatesData, tiposServicio, origenes, especies, tiposConvenio, todosUsuarios, noticiasData] = await Promise.all([
     db.select().from(planesConfig),
     db.select().from(templatesMsg),
     getConfig('tipos_servicio'),
@@ -48,6 +50,7 @@ export default async function ConfiguracionPage() {
     getConfig('especies_mascota'),
     getConfig('tipos_convenio'),
     esAdmin ? db.select().from(usuarios) : Promise.resolve([]),
+    db.select().from(noticiasCementerio).orderBy(desc(noticiasCementerio.creadoEn)),
   ])
 
   const usuariosConPermisos = todosUsuarios.filter(u => u.rol !== 'admin')
@@ -159,6 +162,32 @@ export default async function ConfiguracionPage() {
 <div className="grid-1" style={{ maxWidth: '33%' }}>
   <EditarConfigListaForm clave="tipos_convenio" titulo="Tipos de convenio" valores={tiposConvenio} />
 </div>
+
+        {/* ── Noticias del cementerio (solo admin) ── */}
+        {esAdmin && (
+          <div style={{ background: 'white', borderRadius: 16, border: '1px solid #f3f4f6', padding: '28px', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
+            <h2 style={{ fontSize: 16, fontWeight: 600, color: '#111827', margin: '0 0 6px' }}>Novedades del cementerio</h2>
+            <p style={{ fontSize: 13, color: '#6b7280', margin: '0 0 24px' }}>
+              Las noticias publicadas aparecen en la ficha de cada cliente.
+            </p>
+            <NuevaNoticiaForm />
+            {noticiasData.length > 0 && (
+              <div style={{ marginTop: 24, display: 'flex', flexDirection: 'column', gap: 10 }}>
+                {noticiasData.map(n => (
+                  <div key={n.id} style={{ padding: '14px 16px', background: '#f9fafb', borderRadius: 12, border: '1px solid #f3f4f6' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
+                      <p style={{ fontSize: 14, fontWeight: 600, color: '#111827', margin: 0 }}>{n.titulo}</p>
+                      <span style={{ fontSize: 12, color: '#9ca3af', flexShrink: 0, marginLeft: 12 }}>
+                        {new Date(n.creadoEn).toLocaleDateString('es-AR', { day: 'numeric', month: 'long', year: 'numeric' })}
+                      </span>
+                    </div>
+                    <p style={{ fontSize: 13, color: '#6b7280', margin: 0 }}>{n.contenido}</p>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
 
       </div>
     </div>

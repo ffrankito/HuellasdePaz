@@ -1,10 +1,8 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { type Cliente, type Mascota, type PlanConfig, type Plan } from '@/db/schema'
-
-type ConvenioActivo = { id: string; nombre: string; descuentoPorcentaje: string | null }
 
 type Props = {
   clientes: Cliente[]
@@ -23,19 +21,7 @@ export function NuevoPlanForm({ clientes, mascotas, planesConfig, planExistente 
   const [estado, setEstado] = useState(planExistente?.estado ?? 'activo')
   const [cuotasPagadas, setCuotasPagadas] = useState(planExistente?.cuotasPagadas?.toString() ?? '0')
   const [mascotaAdicional, setMascotaAdicional] = useState(planExistente?.mascotaAdicional ?? false)
-  const [convenioId, setConvenioId] = useState('')
-  const [conveniosActivos, setConveniosActivos] = useState<ConvenioActivo[]>([])
-
-  useEffect(() => {
-    if (!esEdicion) {
-      fetch('/api/convenios?activos=true')
-        .then(r => r.ok ? r.json() : [])
-        .then(setConveniosActivos)
-        .catch(() => {})
-    }
-  }, [esEdicion])
-
-  const mascotasFiltradas = mascotas.filter(m => m.clienteId === clienteId)
+const mascotasFiltradas = mascotas.filter(m => m.clienteId === clienteId)
   const planSeleccionado = planesConfig.find(p => p.id === planConfigId)
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -53,7 +39,6 @@ export function NuevoPlanForm({ clientes, mascotas, planesConfig, planExistente 
       cuotasPagadas: Number(cuotasPagadas),
       mascotaAdicional,
       notas: (form.elements.namedItem('notas') as HTMLTextAreaElement).value || null,
-      convenioId: convenioId || null,
     }
 
     const url = esEdicion ? `/api/planes/${planExistente.id}` : '/api/planes'
@@ -203,22 +188,8 @@ export function NuevoPlanForm({ clientes, mascotas, planesConfig, planExistente 
         />
       </div>
 
-      {/* Convenio — solo en alta */}
-      {!esEdicion && conveniosActivos.length > 0 && (
-        <div style={fieldStyle}>
-          <label style={labelStyle}>¿Vino por convenio?</label>
-          <select value={convenioId} onChange={e => setConvenioId(e.target.value)} style={inputStyle}>
-            <option value="">Sin convenio</option>
-            {conveniosActivos.map(c => (
-              <option key={c.id} value={c.id}>
-                {c.nombre}{c.descuentoPorcentaje && Number(c.descuentoPorcentaje) > 0 ? ` — ${c.descuentoPorcentaje}% desc.` : ''}
-              </option>
-            ))}
-          </select>
-        </div>
-      )}
 
-      {error && (
+{error && (
         <div style={{ background: '#fef2f2', border: '1px solid #fee2e2', borderRadius: 10, padding: '12px 16px' }}>
           <p style={{ fontSize: 14, color: '#dc2626', margin: 0 }}>{error}</p>
         </div>

@@ -2,6 +2,7 @@ import { pgTable, uuid, text, timestamp, numeric, integer, pgEnum } from 'drizzl
 import { clientes } from './clientes'
 import { mascotas } from './mascotas'
 import { usuarios } from './usuarios'
+import { convenios } from './veterinarias'
 
 export const estadoServicioEnum = pgEnum('estado_servicio', [
   'ingresado',
@@ -36,6 +37,7 @@ export const servicios = pgTable('servicios', {
   fechaRetiro: timestamp('fecha_retiro'),
   fechaCremacion: timestamp('fecha_cremacion'),
   fechaEntrega: timestamp('fecha_entrega'),
+  convenioId: uuid('convenio_id').references(() => convenios.id),
   notas: text('notas'),
   creadoEn: timestamp('creado_en').defaultNow().notNull(),
   actualizadoEn: timestamp('actualizado_en').defaultNow().notNull(),
