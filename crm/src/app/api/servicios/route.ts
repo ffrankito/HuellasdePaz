@@ -10,11 +10,14 @@ export async function POST(request: NextRequest) {
     const [servicio] = await db.insert(servicios).values({
       numero: sql`nextval('servicios_numero_seq')`,
       clienteId: body.clienteId,
-      mascotaId: body.mascotaId,
+      mascotaId: body.mascotaId || null,
       tipo: body.tipo,
       estado: 'ingresado',
-      fechaRetiro: body.fechaRetiro ? new Date(body.fechaRetiro) : null,
+      precio: body.precio || null,
+      descuento: body.descuento || '0',
+      servicioConfigId: body.servicioConfigId || null,
       convenioId: body.convenioId || null,
+      fechaRetiro: body.fechaRetiro ? new Date(body.fechaRetiro) : null,
       notas: body.notas,
     }).returning()
 

@@ -5,6 +5,7 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { ServicioEstadoForm } from '@/components/servicios/ServicioEstadoForm'
 import { ServicioConvenioForm } from '@/components/servicios/ServicioConvenioForm'
+import { ServicioPagoForm } from '@/components/servicios/ServicioPagoForm'
 
 const estadoColors: Record<string, { bg: string; color: string }> = {
   ingresado: { bg: '#eff6ff', color: '#1d4ed8' },
@@ -124,10 +125,15 @@ export default async function ServicioDetallePage({ params }: { params: Promise<
           <InfoRow label="Fecha de entrega" value={servicio.fechaEntrega ? new Date(servicio.fechaEntrega).toLocaleDateString('es-AR', { day: 'numeric', month: 'long', year: 'numeric' }) : '—'} />
           {convenioNombre && <InfoRow label="Convenio" value={convenioNombre} />}
           {neto !== null && (
-            <InfoRow
-              label="Precio"
-              value={`$${neto.toLocaleString('es-AR')}${Number(servicio.descuento) > 0 ? ` (desc. $${Number(servicio.descuento).toLocaleString('es-AR')})` : ''}`}
-            />
+            <>
+              {Number(servicio.descuento) > 0 && (
+                <InfoRow label="Precio base" value={`$${Number(servicio.precio).toLocaleString('es-AR')}`} />
+              )}
+              {Number(servicio.descuento) > 0 && (
+                <InfoRow label="Descuento convenio" value={`−$${Number(servicio.descuento).toLocaleString('es-AR')}`} />
+              )}
+              <InfoRow label="Total a cobrar" value={`$${neto.toLocaleString('es-AR')}`} />
+            </>
           )}
           {servicio.notas && (
             <div style={{ marginTop: 12, padding: '12px 14px', background: '#f9fafb', borderRadius: 10 }}>
@@ -174,6 +180,14 @@ export default async function ServicioDetallePage({ params }: { params: Promise<
             <h2 style={{ fontSize: 15, fontWeight: 600, color: '#111827', marginBottom: 16, marginTop: 0 }}>Cambiar estado</h2>
             <ServicioEstadoForm servicioId={servicio.id} estadoActual={servicio.estado} />
           </div>
+
+          {/* Pago */}
+          {neto !== null && (
+            <div style={{ background: 'white', borderRadius: 16, border: '1px solid #f3f4f6', padding: '24px', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
+              <h2 style={{ fontSize: 15, fontWeight: 600, color: '#111827', marginBottom: 16, marginTop: 0 }}>Estado de pago</h2>
+              <ServicioPagoForm servicioId={servicio.id} pagado={servicio.pagado} />
+            </div>
+          )}
 
           {/* Convenio */}
           <div style={{ background: 'white', borderRadius: 16, border: '1px solid #f3f4f6', padding: '24px', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>

@@ -31,6 +31,7 @@ export default async function ServiciosPage() {
       fechaRetiro: servicios.fechaRetiro,
       precio: servicios.precio,
       descuento: servicios.descuento,
+      pagado: servicios.pagado,
       clienteNombre: clientes.nombre,
       clienteApellido: clientes.apellido,
       mascotaNombre: mascotas.nombre,
@@ -108,10 +109,19 @@ export default async function ServiciosPage() {
                       }
                     </td>
                     <td style={{ padding: '14px 20px' }}>
-                      {neto !== null
-                        ? <span style={{ fontSize: 14, fontWeight: 600, color: '#111827' }}>${neto.toLocaleString('es-AR')}</span>
-                        : <span style={{ fontSize: 14, color: '#d1d5db' }}>—</span>
-                      }
+                      {neto !== null ? (
+                        <div>
+                          <span style={{ fontSize: 14, fontWeight: 600, color: '#111827' }}>${neto.toLocaleString('es-AR')}</span>
+                          <div style={{ marginTop: 4 }}>
+                            {s.pagado
+                              ? <span style={{ fontSize: 11, background: '#f0fdf4', color: '#15803d', padding: '2px 8px', borderRadius: 20, fontWeight: 600 }}>Pagado</span>
+                              : <span style={{ fontSize: 11, background: '#fefce8', color: '#a16207', padding: '2px 8px', borderRadius: 20, fontWeight: 600 }}>Pendiente</span>
+                            }
+                          </div>
+                        </div>
+                      ) : (
+                        <span style={{ fontSize: 14, color: '#d1d5db' }}>—</span>
+                      )}
                     </td>
                     <td style={{ padding: '14px 20px' }}>
                       <span style={{ background: badge.bg, color: badge.color, padding: '3px 10px', borderRadius: 20, fontSize: 12, fontWeight: 500 }}>

@@ -1,4 +1,4 @@
-import { pgTable, uuid, text, timestamp, numeric, integer, pgEnum } from 'drizzle-orm/pg-core'
+import { pgTable, uuid, text, timestamp, numeric, integer, boolean, pgEnum } from 'drizzle-orm/pg-core'
 import { clientes } from './clientes'
 import { mascotas } from './mascotas'
 import { usuarios } from './usuarios'
@@ -22,6 +22,20 @@ export const tipoServicioEnum = pgEnum('tipo_servicio', [
   'entierro',
 ])
 
+export const serviciosConfig = pgTable('servicios_config', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  nombre: text('nombre').notNull(),
+  tipo: tipoServicioEnum('tipo').notNull(),
+  precio: numeric('precio', { precision: 10, scale: 2 }),
+  descripcion: text('descripcion'),
+  activo: boolean('activo').default(true).notNull(),
+  creadoEn: timestamp('creado_en').defaultNow().notNull(),
+  actualizadoEn: timestamp('actualizado_en').defaultNow().notNull(),
+})
+
+export type ServicioConfig = typeof serviciosConfig.$inferSelect
+export type NuevoServicioConfig = typeof serviciosConfig.$inferInsert
+
 export const servicios = pgTable('servicios', {
   id: uuid('id').primaryKey().defaultRandom(),
   numero: integer('numero').notNull(),
@@ -38,6 +52,8 @@ export const servicios = pgTable('servicios', {
   fechaCremacion: timestamp('fecha_cremacion'),
   fechaEntrega: timestamp('fecha_entrega'),
   convenioId: uuid('convenio_id').references(() => convenios.id),
+  servicioConfigId: uuid('servicio_config_id').references(() => serviciosConfig.id),
+  pagado: boolean('pagado').default(false).notNull(),
   notas: text('notas'),
   creadoEn: timestamp('creado_en').defaultNow().notNull(),
   actualizadoEn: timestamp('actualizado_en').defaultNow().notNull(),

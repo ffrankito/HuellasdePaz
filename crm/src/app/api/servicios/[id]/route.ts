@@ -13,6 +13,7 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
       .set({
         ...(body.estado !== undefined ? { estado: body.estado } : {}),
         ...('convenioId' in body ? { convenioId: body.convenioId } : {}),
+        ...('pagado' in body ? { pagado: body.pagado } : {}),
         actualizadoEn: new Date(),
       })
       .where(eq(servicios.id, id))

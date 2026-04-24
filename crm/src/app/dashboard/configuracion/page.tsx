@@ -1,5 +1,5 @@
 import { db } from '@/db'
-import { planesConfig, templatesMsg, usuarios, noticiasCementerio } from '@/db/schema'
+import { planesConfig, templatesMsg, usuarios, noticiasCementerio, serviciosConfig } from '@/db/schema'
 import { desc } from 'drizzle-orm'
 import { getConfig } from '@/lib/utils/config'
 import { createClient } from '@/lib/supabase/server'
@@ -9,6 +9,8 @@ import { EditarConfigListaForm } from '@/components/dashboard/EditarConfigListaF
 import { GestionPermisosUsuario } from '@/components/configuracion/GestionPermisosUsuario'
 import { EditarPlanConfigInline } from '@/components/configuracion/EditarPlanConfigInline'
 import { NuevaNoticiaForm } from '@/components/configuracion/NuevaNoticiaForm'
+import { EditarServicioConfigInline } from '@/components/configuracion/EditarServicioConfigInline'
+import { NuevoServicioConfigForm } from '@/components/configuracion/NuevoServicioConfigForm'
 
 const rolLabel: Record<string, string> = {
   admin: 'Administrador',
@@ -42,8 +44,9 @@ export default async function ConfiguracionPage() {
 
   const esAdmin = usuarioActual?.rol === 'admin'
 
-  const [planesData, templatesData, tiposServicio, origenes, especies, tiposConvenio, todosUsuarios, noticiasData] = await Promise.all([
+  const [planesData, serviciosConfigData, templatesData, tiposServicio, origenes, especies, tiposConvenio, todosUsuarios, noticiasData] = await Promise.all([
     db.select().from(planesConfig),
+    db.select().from(serviciosConfig),
     db.select().from(templatesMsg),
     getConfig('tipos_servicio'),
     getConfig('origenes_lead'),
@@ -112,6 +115,22 @@ export default async function ConfiguracionPage() {
             )}
           </div>
         )}
+
+        {/* ── Servicios ── */}
+        <div style={{ background: 'white', borderRadius: 16, border: '1px solid #f3f4f6', padding: '28px', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
+          <h2 style={{ fontSize: 16, fontWeight: 600, color: '#111827', margin: '0 0 6px' }}>Servicios</h2>
+          <p style={{ fontSize: 13, color: '#6b7280', margin: '0 0 24px' }}>
+            Precios base de cada servicio. Al crear un servicio con convenio, el descuento se aplica automáticamente.
+          </p>
+          {serviciosConfigData.length > 0 && (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, marginBottom: 24 }}>
+              {serviciosConfigData.map(s => (
+                <EditarServicioConfigInline key={s.id} config={s} />
+              ))}
+            </div>
+          )}
+          <NuevoServicioConfigForm />
+        </div>
 
         {/* ── Planes de previsión ── */}
         <div style={{ background: 'white', borderRadius: 16, border: '1px solid #f3f4f6', padding: '28px', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
