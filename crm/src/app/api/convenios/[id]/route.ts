@@ -25,7 +25,26 @@ export async function PATCH(
   try {
     const { id } = await params
     const body = await request.json()
-    const [actualizado] = await db.update(convenios).set({ ...body, actualizadoEn: new Date() }).where(eq(convenios.id, id)).returning()
+
+    const [actualizado] = await db.update(convenios).set({
+      nombre: body.nombre,
+      tipo: body.tipo,
+      direccion: body.direccion || null,
+      telefono: body.telefono || null,
+      email: body.email || null,
+      responsable: body.responsable || null,
+      instagram: body.instagram || null,
+      web: body.web || null,
+      estadoConvenio: body.estadoConvenio,
+      descuentoPorcentaje: body.descuentoPorcentaje?.toString() ?? '0',
+      beneficioDescripcion: body.beneficioDescripcion || null,
+      fechaInicioConvenio: body.fechaInicioConvenio ? new Date(body.fechaInicioConvenio) : null,
+      fechaVencimientoConvenio: body.fechaVencimientoConvenio ? new Date(body.fechaVencimientoConvenio) : null,
+      notas: body.notas || null,
+      actualizadoEn: new Date(),
+    }).where(eq(convenios.id, id)).returning()
+
+    if (!actualizado) return NextResponse.json({ error: 'No encontrado' }, { status: 404 })
     return NextResponse.json(actualizado)
   } catch (error) {
     console.error('Error actualizando convenio:', error)
