@@ -1,9 +1,10 @@
 'use client'
 
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { type Usuario } from '@/db/schema'
+import { createClient } from '@/lib/supabase/client'
 
 // ─── Navegación por rol operativo ───────────────────────────────────────────
 
@@ -18,7 +19,6 @@ const navAdmin = [
   { label: 'Inventario', href: '/dashboard/inventario' },
   { label: 'Cobranzas', href: '/dashboard/cobranzas' },
   { label: 'Reportes', href: '/dashboard/reportes' },
-  { label: 'Configuración', href: '/dashboard/configuracion' },
 ]
 
 const navManager = [
@@ -111,7 +111,14 @@ function tienePermiso(usuario: Usuario, permiso: string): boolean {
 
 export function Sidebar({ usuario }: { usuario: Usuario }) {
   const pathname = usePathname()
+  const router = useRouter()
   const [abierto, setAbierto] = useState(false)
+
+  async function handleLogout() {
+    const supabase = createClient()
+    await supabase.auth.signOut()
+    router.push('/auth/login')
+  }
 
   const badge = rolColor[usuario.rol] ?? { bg: '#f3f4f6', color: '#374151' }
 
@@ -199,9 +206,41 @@ export function Sidebar({ usuario }: { usuario: Usuario }) {
       </nav>
 
       {/* Footer */}
-      <div style={{ padding: '14px 20px', borderTop: '1px solid #f3f4f6' }}>
-        <p style={{ fontSize: 14, fontWeight: 500, color: '#111827', margin: 0 }}>{usuario.nombre}</p>
-        <p style={{ fontSize: 12, color: '#9ca3af', marginTop: 2, marginBottom: 0 }}>{rolLabel[usuario.rol] ?? usuario.rol}</p>
+      <div style={{ padding: '12px 14px', borderTop: '1px solid #f3f4f6', display: 'flex', alignItems: 'center', gap: 8 }}>
+        {/* Avatar + nombre */}
+        <div style={{ width: 32, height: 32, borderRadius: '50%', background: '#111827', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+          <span style={{ fontSize: 12, fontWeight: 600, color: 'white' }}>{usuario.nombre.charAt(0).toUpperCase()}</span>
+        </div>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <p style={{ fontSize: 13, fontWeight: 500, color: '#111827', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{usuario.nombre}</p>
+          <p style={{ fontSize: 11, color: '#9ca3af', margin: 0 }}>{rolLabel[usuario.rol] ?? usuario.rol}</p>
+        </div>
+
+        {/* Configuración (solo admin) */}
+        {usuario.rol === 'admin' && (
+          <Link
+            href="/dashboard/configuracion"
+            title="Configuración"
+            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 30, height: 30, borderRadius: 8, color: pathname === '/dashboard/configuracion' ? '#111827' : '#9ca3af', background: pathname === '/dashboard/configuracion' ? '#f3f4f6' : 'transparent', textDecoration: 'none', transition: 'color 0.15s, background 0.15s', flexShrink: 0 }}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+            </svg>
+          </Link>
+        )}
+
+        {/* Cerrar sesión */}
+        <button
+          onClick={handleLogout}
+          title="Cerrar sesión"
+          style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 30, height: 30, borderRadius: 8, color: '#9ca3af', background: 'transparent', border: 'none', cursor: 'pointer', transition: 'color 0.15s, background 0.15s', flexShrink: 0 }}
+          onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.color = '#dc2626'; (e.currentTarget as HTMLButtonElement).style.background = '#fef2f2' }}
+          onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.color = '#9ca3af'; (e.currentTarget as HTMLButtonElement).style.background = 'transparent' }}
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
+          </svg>
+        </button>
       </div>
     </>
   )

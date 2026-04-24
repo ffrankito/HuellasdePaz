@@ -25,12 +25,19 @@ export async function updateSession(request: NextRequest) {
     }
   )
 
-  const { data: { user } } = await supabase.auth.getUser()
+  const { data: { user }, error } = await supabase.auth.getUser()
 
-  if (!user && !request.nextUrl.pathname.startsWith('/auth')) {
+  const tokenInvalido = error?.code === 'refresh_token_not_found' || error?.code === 'bad_jwt'
+
+  if (tokenInvalido || (!user && !request.nextUrl.pathname.startsWith('/auth'))) {
     const url = request.nextUrl.clone()
     url.pathname = '/auth/login'
-    return NextResponse.redirect(url)
+    const response = NextResponse.redirect(url)
+    // Limpiar cookies de Supabase para que no repita el error en cada request
+    request.cookies.getAll().forEach(cookie => {
+      if (cookie.name.startsWith('sb-')) response.cookies.delete(cookie.name)
+    })
+    return response
   }
 
   return supabaseResponse
