@@ -21,6 +21,12 @@ type PlanConfig = {
   activo: boolean
 }
 
+type ConvenioActivo = {
+  id: string
+  nombre: string
+  descuentoPorcentaje: string | null
+}
+
 type ModalConversion = {
   abierto: boolean
   tipo: 'servicio' | 'plan' | ''
@@ -30,6 +36,7 @@ type ModalConversion = {
   tipoServicio: string
   tipoPlan: string
   notas: string
+  convenioId: string
 }
 
 const ESTADOS = [
@@ -86,7 +93,7 @@ function Cronometro({ iniciado }: { iniciado: boolean }) {
 
 const modalInicial: ModalConversion = {
   abierto: false, tipo: '', apellido: '', email: '',
-  localidad: '', tipoServicio: '', tipoPlan: '', notas: '',
+  localidad: '', tipoServicio: '', tipoPlan: '', notas: '', convenioId: '',
 }
 
 export default function MisLeadsPage() {
@@ -102,6 +109,7 @@ export default function MisLeadsPage() {
   const [error, setError] = useState('')
   const [modal, setModal] = useState<ModalConversion>(modalInicial)
   const [guardandoConversion, setGuardandoConversion] = useState(false)
+  const [conveniosActivos, setConveniosActivos] = useState<ConvenioActivo[]>([])
 
   useEffect(() => {
     fetch('/api/leads?misLeads=true')
@@ -115,6 +123,11 @@ export default function MisLeadsPage() {
     fetch('/api/configuracion/planes')
       .then(r => r.json())
       .then(data => setPlanesConfig(data.filter((p: PlanConfig) => p.activo)))
+
+    fetch('/api/convenios?activos=true')
+      .then(r => r.json())
+      .then(data => setConveniosActivos(data))
+      .catch(() => {})
   }, [])
 
   const leadActual = leads[indiceActual]
@@ -182,6 +195,7 @@ export default function MisLeadsPage() {
         tipoServicio: modal.tipoServicio,
         tipoPlan: modal.tipoPlan,
         notas: modal.notas,
+        convenioId: modal.convenioId || null,
       }),
     })
 
@@ -262,6 +276,19 @@ export default function MisLeadsPage() {
                 <label style={{ fontSize: 13, fontWeight: 600, color: '#374151', display: 'block', marginBottom: 6 }}>Notas adicionales</label>
                 <textarea placeholder="Detalles de la venta..." value={modal.notas} onChange={e => setModal(p => ({ ...p, notas: e.target.value }))} rows={3} style={{ width: '100%', border: '1px solid #e5e7eb', borderRadius: 10, padding: '10px 12px', fontSize: 14, outline: 'none', resize: 'vertical', fontFamily: 'inherit', boxSizing: 'border-box' }} />
               </div>
+              {conveniosActivos.length > 0 && (
+                <div>
+                  <label style={{ fontSize: 13, fontWeight: 600, color: '#374151', display: 'block', marginBottom: 6 }}>¿Vino por convenio? <span style={{ fontWeight: 400, color: '#9ca3af' }}>(opcional)</span></label>
+                  <select value={modal.convenioId} onChange={e => setModal(p => ({ ...p, convenioId: e.target.value }))} style={{ width: '100%', border: '1px solid #e5e7eb', borderRadius: 10, padding: '10px 12px', fontSize: 14, outline: 'none', background: 'white' }}>
+                    <option value="">Sin convenio</option>
+                    {conveniosActivos.map(c => (
+                      <option key={c.id} value={c.id}>
+                        {c.nombre}{c.descuentoPorcentaje && Number(c.descuentoPorcentaje) > 0 ? ` (${c.descuentoPorcentaje}% dto.)` : ''}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginTop: 4 }}>
                 <button onClick={() => setModal(modalInicial)} style={{ padding: '12px', borderRadius: 10, border: '1px solid #e5e7eb', background: 'white', color: '#374151', fontWeight: 600, fontSize: 14, cursor: 'pointer' }}>Cancelar</button>
                 <button onClick={confirmarConversion} disabled={!modal.tipo || guardandoConversion} style={{ padding: '12px', borderRadius: 10, border: 'none', background: !modal.tipo ? '#9ca3af' : '#15803d', color: 'white', fontWeight: 600, fontSize: 14, cursor: !modal.tipo ? 'not-allowed' : 'pointer' }}>

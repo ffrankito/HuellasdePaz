@@ -7,7 +7,7 @@ import { sql } from 'drizzle-orm'
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { leadId, nombre, apellido, telefono, email, localidad, tipo, tipoServicio, tipoPlan, notas } = body
+    const { leadId, nombre, apellido, telefono, email, localidad, tipo, tipoServicio, tipoPlan, notas, convenioId } = body
 
     // 1. Crear cliente
     const [cliente] = await db.insert(clientes).values({
@@ -17,6 +17,7 @@ export async function POST(request: NextRequest) {
       email: email ?? null,
       localidad: localidad ?? null,
       origen: 'cotizador',
+      veterinariaId: convenioId || null,
     }).returning()
 
     // 2. Crear servicio o plan

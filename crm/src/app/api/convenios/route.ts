@@ -1,14 +1,31 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/db'
 import { convenios } from '@/db/schema'
+import { eq } from 'drizzle-orm'
 
-export async function GET() {
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'GET, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type',
+}
+
+export async function OPTIONS() {
+  return NextResponse.json({}, { headers: corsHeaders })
+}
+
+export async function GET(request: NextRequest) {
   try {
-    const data = await db.select().from(convenios)
-    return NextResponse.json(data)
+    const { searchParams } = new URL(request.url)
+    const soloActivos = searchParams.get('activos') === 'true'
+
+    const data = soloActivos
+      ? await db.select().from(convenios).where(eq(convenios.estadoConvenio, 'activo'))
+      : await db.select().from(convenios)
+
+    return NextResponse.json(data, { headers: corsHeaders })
   } catch (error) {
     console.error('Error obteniendo convenios:', error)
-    return NextResponse.json({ error: 'Error interno' }, { status: 500 })
+    return NextResponse.json({ error: 'Error interno' }, { status: 500, headers: corsHeaders })
   }
 }
 
