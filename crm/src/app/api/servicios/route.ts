@@ -1,26 +1,44 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { revalidatePath } from 'next/cache'
 import { db } from '@/db'
-import { servicios } from '@/db/schema'
-import { sql } from 'drizzle-orm'
+import { servicios, inventario } from '@/db/schema'
+import { sql, eq } from 'drizzle-orm'
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
+
+    // Validar stock antes de insertar
+    if (body.inventarioItemId) {
+      const item = await db.query.inventario.findFirst({ where: eq(inventario.id, body.inventarioItemId) })
+      if (!item || item.stockActual <= 0) {
+        return NextResponse.json({ error: 'El producto seleccionado no tiene stock disponible.' }, { status: 400 })
+      }
+    }
 
     const [servicio] = await db.insert(servicios).values({
       numero: sql`nextval('servicios_numero_seq')`,
       clienteId: body.clienteId,
       mascotaId: body.mascotaId || null,
       tipo: body.tipo,
-      estado: 'ingresado',
+      estado: 'pendiente',
       precio: body.precio || null,
       descuento: body.descuento || '0',
       servicioConfigId: body.servicioConfigId || null,
       convenioId: body.convenioId || null,
+      inventarioItemId: body.inventarioItemId || null,
       fechaRetiro: body.fechaRetiro ? new Date(body.fechaRetiro) : null,
       notas: body.notas,
     }).returning()
 
+    // Decrementar stock si se asoció un producto
+    if (body.inventarioItemId) {
+      await db.update(inventario)
+        .set({ stockActual: sql`${inventario.stockActual} - 1` })
+        .where(eq(inventario.id, body.inventarioItemId))
+    }
+
+    revalidatePath('/dashboard', 'layout')
     return NextResponse.json(servicio, { status: 201 })
   } catch (error) {
     console.error('Error creando servicio:', error)

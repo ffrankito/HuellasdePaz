@@ -4,15 +4,11 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 
 const ESTADOS = [
-  { value: 'ingresado', label: 'Ingresado' },
-  { value: 'retiro_pendiente', label: 'Retiro pendiente' },
-  { value: 'en_transporte', label: 'En transporte' },
-  { value: 'recibido', label: 'Recibido' },
-  { value: 'en_cremacion', label: 'En cremación' },
-  { value: 'cremado', label: 'Cremado' },
-  { value: 'listo_entrega', label: 'Listo para entrega' },
-  { value: 'entregado', label: 'Entregado' },
-  { value: 'cancelado', label: 'Cancelado' },
+  { value: 'pendiente',  label: 'Pendiente' },
+  { value: 'en_proceso', label: 'En proceso' },
+  { value: 'listo',      label: 'Listo para entregar' },
+  { value: 'entregado',  label: 'Entregado' },
+  { value: 'cancelado',  label: 'Cancelado' },
 ]
 
 export function ServicioEstadoForm({ servicioId, estadoActual }: { servicioId: string; estadoActual: string }) {

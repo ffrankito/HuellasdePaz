@@ -1,0 +1,283 @@
+---
+const CRM_URL = 'https://huellasde-paz.vercel.app'
+---
+
+<section id="memoriales" class="py-16 md:py-24" style="position:relative;overflow:hidden">
+
+  <!-- Orbes — igual que Servicios -->
+  <div aria-hidden="true" style="position:absolute;inset:0;pointer-events:none;z-index:0">
+    <div class="orb orb--verde"  style="width:600px;height:500px;top:-150px;left:-200px"></div>
+    <div class="orb orb--calido" style="width:500px;height:400px;bottom:-100px;right:-100px"></div>
+  </div>
+
+  <div style="position:relative;z-index:1;max-width:72rem;margin:0 auto;padding:0 1.25rem">
+
+    <!-- Header -->
+    <div class="mb-12 md:mb-16 reveal-m" style="max-width:36rem">
+      <p style="color:#2d8a54;font-size:0.75rem;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;margin:0 0 12px">Memoriales</p>
+      <h2 class="font-display" style="font-size:clamp(1.75rem,4vw,2.5rem);font-weight:600;color:#1c1917;line-height:1.2;margin:0 0 14px">
+        Siempre en nuestro corazón
+      </h2>
+      <p style="font-size:1rem;color:#78716c;line-height:1.7;margin:0">
+        Algunos clientes eligieron compartir el recuerdo de su compañero. Cada historia es única e irrepetible.
+      </p>
+    </div>
+
+    <!-- Skeleton hasta que JS cargue -->
+    <div id="memSkeleton" class="mem-grid">
+      {Array.from({length: 4}).map(() => (
+        <div class="mem-sk-card">
+          <div class="mem-sk-photo"></div>
+          <div style="padding:1.5rem 1.5rem 1.75rem;display:flex;flex-direction:column;gap:10px">
+            <div class="mem-sk-line" style="width:55%;height:15px"></div>
+            <div class="mem-sk-line" style="width:40%;height:11px"></div>
+            <div class="mem-sk-line" style="width:90%;height:10px"></div>
+            <div class="mem-sk-line" style="width:75%;height:10px"></div>
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <!-- Cards (JS) -->
+    <div id="memGrid" class="mem-grid" style="display:none"></div>
+
+    <!-- Empty state -->
+    <div id="memEmpty" style="display:none;flex-direction:column;align-items:center;gap:14px;padding:60px 24px;text-align:center">
+      <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+        <ellipse cx="20" cy="27" rx="10" ry="7.5" fill="#d6d3d1"/>
+        <ellipse cx="11" cy="17" rx="4.5" ry="3.8" transform="rotate(-15 11 17)" fill="#d6d3d1"/>
+        <ellipse cx="18" cy="13" rx="4" ry="3.2" transform="rotate(-5 18 13)" fill="#d6d3d1"/>
+        <ellipse cx="26" cy="13" rx="4" ry="3.2" transform="rotate(5 26 13)" fill="#d6d3d1"/>
+        <ellipse cx="32" cy="17" rx="4.5" ry="3.8" transform="rotate(15 32 17)" fill="#d6d3d1"/>
+      </svg>
+      <p style="color:#a8a29e;font-size:0.9375rem;margin:0">Los memoriales aparecerán aquí cuando los clientes los activen.</p>
+    </div>
+
+  </div>
+</section>
+
+<script define:vars={{ CRM_URL }}>
+  const TIPOS = { perro: '🐕', gato: '🐈', conejo: '🐇', hamster: '🐹', pajaro: '🐦', otro: '🐾' }
+
+  function fmtFecha(f) {
+    if (!f) return null
+    try { return new Date(f).toLocaleDateString('es-AR', { month: 'long', year: 'numeric' }) }
+    catch { return null }
+  }
+
+  function buildCard(m) {
+    const url = `${CRM_URL}/portal/${m.tokenPortal}/memorial/${m.id}`
+    const emoji = TIPOS[m.especie?.toLowerCase()] ?? '🐾'
+    const fecha = fmtFecha(m.fechaFallecimiento)
+    const extracto = m.dedicatoria
+      ? (m.dedicatoria.length > 100 ? m.dedicatoria.slice(0, 100).trimEnd() + '…' : m.dedicatoria)
+      : null
+
+    const card = document.createElement('a')
+    card.href = url
+    card.target = '_blank'
+    card.rel = 'noopener noreferrer'
+    card.className = 'mem-card reveal-m'
+    card.innerHTML = `
+      <div class="mem-card-img-wrap">
+        ${m.foto
+          ? `<img src="${m.foto}" alt="${m.nombre}" loading="lazy" style="width:100%;height:100%;object-fit:cover;object-position:center top;transition:transform 0.55s ease" />`
+          : `<div class="mem-card-placeholder">${emoji}</div>`
+        }
+        <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.28),transparent)"></div>
+      </div>
+      <div class="mem-card-body">
+        <div>
+          <h3 class="font-display mem-card-name">${m.nombre}</h3>
+          <p class="mem-card-meta">${m.especie ?? ''}${fecha ? ` · ${fecha}` : ''}</p>
+        </div>
+        ${extracto ? `<p class="mem-card-ded">"${extracto}"</p>` : '<div style="flex:1"></div>'}
+        <span class="mem-card-link">
+          Ver memorial
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </span>
+      </div>
+    `
+    return card
+  }
+
+  async function loadMemoriales() {
+    const skeleton = document.getElementById('memSkeleton')
+    const grid = document.getElementById('memGrid')
+    const empty = document.getElementById('memEmpty')
+
+    try {
+      const res = await fetch(`${CRM_URL}/api/memorial/publicos`)
+      const data = await res.json()
+
+      skeleton.style.display = 'none'
+
+      if (!data.length) {
+        empty.style.display = 'flex'
+        return
+      }
+
+      grid.style.display = ''
+      data.forEach(m => grid.appendChild(buildCard(m)))
+
+      // Disparar reveal para las nuevas tarjetas
+      const obs = new IntersectionObserver(entries => {
+        entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('is-visible'); obs.unobserve(e.target) } })
+      }, { threshold: 0.08 })
+      grid.querySelectorAll('.reveal-m').forEach(el => obs.observe(el))
+
+    } catch {
+      skeleton.style.display = 'none'
+      empty.style.display = 'flex'
+    }
+  }
+
+  loadMemoriales()
+
+  // Reveal para el header
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('is-visible'); obs.unobserve(e.target) } })
+  }, { threshold: 0.1 })
+  document.querySelectorAll('#memoriales .reveal-m').forEach(el => obs.observe(el))
+</script>
+
+<style>
+  /* ── Orbes — igual que Servicios ── */
+  .orb { position:absolute; border-radius:50%; filter:blur(90px); pointer-events:none; }
+  .orb--verde  { background:radial-gradient(circle,rgba(45,138,84,0.12) 0%,transparent 70%); animation:orb-drift 14s ease-in-out infinite alternate; }
+  .orb--calido { background:radial-gradient(circle,rgba(251,191,36,0.07) 0%,transparent 70%); animation:orb-drift 18s ease-in-out infinite alternate-reverse; }
+  @keyframes orb-drift { 0%{transform:translate(0,0)} 100%{transform:translate(30px,20px)} }
+
+  /* ── Grid ── */
+  .mem-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1.5rem;
+  }
+
+  /* ── Skeleton ── */
+  .mem-sk-card {
+    border-radius: 1.5rem;
+    border: 1px solid #e7e5e4;
+    overflow: hidden;
+    background: white;
+  }
+  .mem-sk-photo {
+    height: 13rem;
+    background: linear-gradient(90deg, #f5f5f4 25%, #e7e5e4 50%, #f5f5f4 75%);
+    background-size: 200% 100%;
+    animation: mem-shimmer 1.5s infinite;
+  }
+  .mem-sk-line {
+    border-radius: 6px;
+    background: linear-gradient(90deg, #f5f5f4 25%, #e7e5e4 50%, #f5f5f4 75%);
+    background-size: 200% 100%;
+    animation: mem-shimmer 1.5s infinite;
+  }
+  @keyframes mem-shimmer {
+    0%   { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+
+  /* ── Card ── */
+  .mem-card {
+    display: flex;
+    flex-direction: column;
+    border-radius: 1.5rem;
+    overflow: hidden;
+    border: 1px solid #e7e5e4;
+    background: white;
+    text-decoration: none;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    position: relative;
+  }
+  .mem-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 4;
+    pointer-events: none;
+    border-radius: inherit;
+    padding: 1.5px;
+    background: linear-gradient(135deg, #aadfc2 0%, #2d8a54 55%, #1a5233 100%);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity 0.35s;
+  }
+  .mem-card:hover { transform: translateY(-6px); box-shadow: 0 8px 32px rgba(45,138,84,0.18), 0 20px 48px rgba(45,138,84,0.08); }
+  .mem-card:hover::before { opacity: 1; }
+  .mem-card:hover img { transform: scale(1.07) !important; }
+
+  .mem-card-img-wrap {
+    position: relative;
+    height: 13rem;
+    overflow: hidden;
+    background: #f5f5f4;
+  }
+  .mem-card-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    background: #f0fdf4;
+  }
+
+  .mem-card-body {
+    padding: 1.25rem 1.5rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 1;
+    background: rgba(255,255,255,0.92);
+  }
+  .mem-card-name {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #1c1917;
+    margin: 0;
+    line-height: 1.3;
+  }
+  .mem-card-meta {
+    font-size: 0.8125rem;
+    color: #a8a29e;
+    margin: 0;
+    text-transform: capitalize;
+  }
+  .mem-card-ded {
+    font-size: 0.8125rem;
+    color: #78716c;
+    line-height: 1.6;
+    margin: 4px 0 0;
+    font-style: italic;
+    flex: 1;
+  }
+  .mem-card-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: #2d8a54;
+    margin-top: 10px;
+    transition: gap 0.2s;
+  }
+  .mem-card:hover .mem-card-link { gap: 8px; }
+
+  /* ── Reveal ── */
+  .reveal-m {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+  .reveal-m.is-visible { opacity: 1; transform: translateY(0); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .reveal-m { opacity: 1; transform: none; transition: none; }
+    .mem-card { transition: none; }
+    .orb { animation: none; }
+  }
+</style>

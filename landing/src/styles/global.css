@@ -23,6 +23,14 @@
 
 html { scroll-behavior: smooth; }
 
+.orb { position:absolute; border-radius:50%; filter:blur(90px); pointer-events:none; }
+.orb--verde    { background:radial-gradient(circle,rgba(45,138,84,0.12) 0%,transparent 70%); animation:orb-drift 14s ease-in-out infinite alternate; }
+.orb--verde-2  { background:radial-gradient(circle,rgba(45,138,84,0.08) 0%,transparent 70%); animation:orb-drift 20s ease-in-out infinite alternate-reverse; }
+.orb--calido   { background:radial-gradient(circle,rgba(251,191,36,0.07) 0%,transparent 70%); animation:orb-drift 18s ease-in-out infinite alternate-reverse; }
+.orb--aurora-1 { background:radial-gradient(circle,rgba(45,138,84,0.10) 0%,rgba(77,184,122,0.05) 40%,transparent 70%); animation:orb-drift 16s ease-in-out infinite alternate; }
+.orb--aurora-2 { background:radial-gradient(circle,rgba(251,191,36,0.06) 0%,rgba(45,138,84,0.04) 50%,transparent 70%); animation:orb-drift 22s ease-in-out infinite alternate-reverse; }
+@keyframes orb-drift { 0%{transform:translate(0,0)} 100%{transform:translate(30px,20px)} }
+
 body {
   font-family: var(--font-body);
   color: var(--color-stone-900);
@@ -80,6 +88,7 @@ h1, h2, h3 { font-family: var(--font-display); }
 @media (prefers-reduced-motion: reduce) {
   .particle, .star, .shooting-star { animation: none !important; opacity: 0.1; }
   .shooting-star { display: none; }
+  .orb { animation: none; }
 }
 
 @media (max-width: 640px) {

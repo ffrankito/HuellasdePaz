@@ -9,6 +9,7 @@ export function NuevoProductoForm() {
   const [error, setError] = useState<string | null>(null)
   const [foto, setFoto] = useState<File | null>(null)
   const [preview, setPreview] = useState<string | null>(null)
+  const [paraVenta, setParaVenta] = useState(false)
 
   function handleFoto(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
@@ -47,6 +48,7 @@ export function NuevoProductoForm() {
       proveedor: (form.elements.namedItem('proveedor') as HTMLInputElement).value || null,
       notas: (form.elements.namedItem('notas') as HTMLTextAreaElement).value || null,
       foto: fotoUrl,
+      paraVenta,
     }
 
     const res = await fetch('/api/inventario', {
@@ -118,6 +120,35 @@ export function NuevoProductoForm() {
       <div style={fieldStyle}>
         <label style={labelStyle}>Nombre *</label>
         <input name="nombre" required style={inputStyle} placeholder="Urna estándar" />
+      </div>
+
+      {/* Destino del producto */}
+      <div style={fieldStyle}>
+        <label style={labelStyle}>¿Para qué se usa este producto? *</label>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+          <button
+            type="button"
+            onClick={() => setParaVenta(false)}
+            style={{
+              padding: '14px 16px', borderRadius: 12, border: `2px solid ${!paraVenta ? '#111827' : '#e5e7eb'}`,
+              background: !paraVenta ? '#111827' : 'white', cursor: 'pointer', textAlign: 'left',
+            }}
+          >
+            <p style={{ fontSize: 14, fontWeight: 600, color: !paraVenta ? 'white' : '#111827', margin: '0 0 2px' }}>Uso interno</p>
+            <p style={{ fontSize: 12, color: !paraVenta ? 'rgba(255,255,255,0.6)' : '#9ca3af', margin: 0 }}>Bolsas, insumos, materiales</p>
+          </button>
+          <button
+            type="button"
+            onClick={() => setParaVenta(true)}
+            style={{
+              padding: '14px 16px', borderRadius: 12, border: `2px solid ${paraVenta ? '#2d8a54' : '#e5e7eb'}`,
+              background: paraVenta ? '#f0faf5' : 'white', cursor: 'pointer', textAlign: 'left',
+            }}
+          >
+            <p style={{ fontSize: 14, fontWeight: 600, color: paraVenta ? '#15803d' : '#111827', margin: '0 0 2px' }}>Para venta</p>
+            <p style={{ fontSize: 12, color: paraVenta ? '#6b7280' : '#9ca3af', margin: 0 }}>Urnas, accesorios, cajas</p>
+          </button>
+        </div>
       </div>
 
       <div style={fieldStyle}>

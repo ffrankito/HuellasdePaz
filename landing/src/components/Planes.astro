@@ -1,8 +1,8 @@
 ---
 const planes = [
-  { id:'huellita', nombre:'Plan Huellita', subtitulo:'Cremación comunitaria', precioMensual:'$3.000', precioAnual:'$33.000', descripcion:'Un adiós sencillo y respetuoso.', beneficios:['Atención 24/7','Retiro de mascota','Sin devolución de cenizas','Cremación comunitaria','Certificado de cremación'], destacado:false, emoji:'🐾' },
-  { id:'companeros', nombre:'Plan Compañeros', subtitulo:'El más ofrecido', precioMensual:'$6.000', precioAnual:'$66.000', descripcion:'Un homenaje completo y personalizado. El más elegido.', beneficios:['Atención 24/7','Retiro de mascota','Cremación individual','Entrega de cenizas entre 2 y 5 días hábiles en urna biodegradable','Certificado de cremación'], destacado:true, emoji:'💛' },
-  { id:'siempre-juntos', nombre:'Plan Siempre Juntos', subtitulo:'Cremación individual presencial', precioMensual:'$10.000', precioAnual:'$110.000', descripcion:'La opción más completa. Podés acompañar a tu mascota.', beneficios:['Atención 24/7','Retiro de mascota','Cremación individual','Entrega de cenizas INMEDIATA','Acompañamiento presencial','Certificado de cremación'], destacado:false, emoji:'🕊️' },
+  { id:'huellita', nombre:'Plan Huellita', subtitulo:'Cremación comunitaria', descripcion:'Un adiós sencillo y respetuoso.', beneficios:['Atención 24/7','Retiro de mascota','Sin devolución de cenizas','Cremación comunitaria','Certificado de cremación'], destacado:false, emoji:'🐾' },
+  { id:'companeros', nombre:'Plan Compañeros', subtitulo:'El más ofrecido', descripcion:'Un homenaje completo y personalizado. El más elegido.', beneficios:['Atención 24/7','Retiro de mascota','Cremación individual','Entrega de cenizas entre 2 y 5 días hábiles en urna biodegradable','Certificado de cremación'], destacado:true, emoji:'💛' },
+  { id:'siempre-juntos', nombre:'Plan Siempre Juntos', subtitulo:'Cremación individual presencial', descripcion:'La opción más completa. Podés acompañar a tu mascota.', beneficios:['Atención 24/7','Retiro de mascota','Cremación individual','Entrega de cenizas INMEDIATA','Acompañamiento presencial','Certificado de cremación'], destacado:false, emoji:'🕊️' },
 ]
 const WHATSAPP_NUMBER = '5493XXXXXXXXX'
 const pasos = [
@@ -75,9 +75,7 @@ const pts = [
           <div style="text-align:center;padding-top:8px">
             <span style="font-size:2rem;display:block;margin-bottom:10px">{plan.emoji}</span>
             <h3 class="font-display" style="font-size:1rem;font-weight:600;color:#1c1917;margin:0 0 4px">{plan.nombre}</h3>
-            <p style="font-size:0.6875rem;color:#a89f94;text-transform:uppercase;letter-spacing:0.05em;margin:0 0 6px">{plan.subtitulo}</p>
-            <p style="font-family:var(--font-display,'Playfair Display',serif);font-size:1.75rem;font-weight:700;color:#2d8a54;margin:0 2px 0">{plan.precioMensual}<span style="font-size:0.875rem;font-weight:400;color:#a89f94">/mes</span></p>
-            <p style="font-size:0.75rem;color:#a89f94;margin:2px 0 10px">{plan.precioAnual} anual <span style="color:#2d8a54;font-weight:600">(-1 cuota)</span></p>
+            <p style="font-size:0.6875rem;color:#a89f94;text-transform:uppercase;letter-spacing:0.05em;margin:0 0 10px">{plan.subtitulo}</p>
             <p style="font-size:0.875rem;color:#78716c;margin:0">{plan.descripcion}</p>
           </div>
           <ul style="list-style:none;padding:0;margin:14px 0 0;display:flex;flex-direction:column;gap:7px;flex:1">

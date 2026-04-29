@@ -3,41 +3,17 @@ import { Resend } from 'resend'
 const resend = new Resend(process.env.RESEND_API_KEY)
 
 const estadoInfo: Record<string, { label: string; descripcion: string; emoji: string; color: string }> = {
-  retiro_pendiente: {
-    label: 'Retiro pendiente',
-    descripcion: 'Coordinamos el retiro de tu mascota. En breve nos comunicamos con vos.',
-    emoji: '📋',
-    color: '#a16207',
-  },
-  en_transporte: {
-    label: 'En camino',
-    descripcion: 'Nuestro equipo está en camino a buscar a tu compañero/a.',
-    emoji: '🚗',
-    color: '#c2410c',
-  },
-  recibido: {
-    label: 'Recibido',
-    descripcion: 'Tu mascota llegó a nuestras instalaciones. La estamos recibiendo con todo el cuidado que merece.',
-    emoji: '🏠',
-    color: '#15803d',
-  },
-  en_cremacion: {
-    label: 'En cremación',
-    descripcion: 'El proceso de cremación está en curso. Lo realizamos con el mayor respeto.',
+  en_proceso: {
+    label: 'En proceso',
+    descripcion: 'Tu mascota llegó a nuestras instalaciones. La estamos atendiendo con todo el cuidado que merece.',
     emoji: '🕯️',
-    color: '#7e22ce',
+    color: '#1d4ed8',
   },
-  cremado: {
-    label: 'Cremación completada',
-    descripcion: 'El proceso fue completado. Pronto podrás retirar las cenizas.',
-    emoji: '🌿',
-    color: '#15803d',
-  },
-  listo_entrega: {
+  listo: {
     label: 'Listo para retirar',
-    descripcion: 'Las cenizas están listas para ser entregadas. Podés coordinar el retiro con nosotros.',
+    descripcion: 'El proceso fue completado. Las cenizas están listas para ser entregadas. Podés coordinar el retiro con nosotros.',
     emoji: '✅',
-    color: '#a16207',
+    color: '#15803d',
   },
   entregado: {
     label: 'Entregado',

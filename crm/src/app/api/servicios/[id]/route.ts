@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { revalidatePath } from 'next/cache'
 import { db } from '@/db'
 import { servicios, clientes, mascotas } from '@/db/schema'
 import { eq } from 'drizzle-orm'
@@ -24,6 +25,7 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
       enviarNotificacion(servicio).catch(e => console.error('Notificación estado fallida:', e))
     }
 
+    revalidatePath('/dashboard', 'layout')
     return NextResponse.json(servicio)
   } catch (error) {
     console.error('Error actualizando servicio:', error)

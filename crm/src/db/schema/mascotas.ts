@@ -1,4 +1,4 @@
-import { pgTable, uuid, text, timestamp, date, jsonb } from 'drizzle-orm/pg-core'
+import { pgTable, uuid, text, timestamp, date, jsonb, boolean } from 'drizzle-orm/pg-core'
 import { clientes } from './clientes'
 
 export const mascotas = pgTable('mascotas', {
@@ -15,7 +15,8 @@ export const mascotas = pgTable('mascotas', {
   notas: text('notas'),
   creadoEn: timestamp('creado_en').defaultNow().notNull(),
   actualizadoEn: timestamp('actualizado_en').defaultNow().notNull(),
-  dedicatoria: text('dedicatoria')
+  dedicatoria: text('dedicatoria'),
+  memoriaPublica: boolean('memoria_publica').default(false).notNull(),
 })
 
 export type Mascota = typeof mascotas.$inferSelect

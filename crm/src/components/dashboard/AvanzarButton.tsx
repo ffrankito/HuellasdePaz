@@ -29,13 +29,9 @@ export function AvanzarButtonClient({ id, siguiente }: { id: string; siguiente: 
   }
 
   const labelCorto: Record<string, string> = {
-    retiro_pendiente: 'Retiro',
-    en_transporte: 'Transporte',
-    recibido: 'Recibido',
-    en_cremacion: 'Cremación',
-    cremado: 'Cremado',
-    listo_entrega: 'Listo',
-    entregado: 'Entregado',
+    en_proceso: 'En proceso',
+    listo:      'Listo',
+    entregado:  'Entregado',
   }
 
   return (

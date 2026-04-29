@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { revalidatePath } from 'next/cache'
 import { db } from '@/db'
 import { planesConfig } from '@/db/schema'
 
@@ -14,6 +15,7 @@ export async function POST(request: NextRequest) {
       activo: body.activo ?? true,
     }).returning()
 
+    revalidatePath('/dashboard/configuracion')
     return NextResponse.json(plan, { status: 201 })
   } catch (error) {
     console.error('Error creando plan config:', error)

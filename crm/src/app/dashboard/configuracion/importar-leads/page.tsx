@@ -1,11 +1,12 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect, useCallback } from 'react'
 import * as XLSX from 'xlsx'
 
 type FilaLead = {
   nombre: string
   telefono: string
+  dni?: string
   email?: string
   mensaje?: string
 }
@@ -16,13 +17,32 @@ type ResultadoImportacion = {
   errores: number
 }
 
+type Importacion = {
+  id: string
+  nombreArchivo: string
+  totalImportados: number
+  totalDuplicados: number
+  totalErrores: number
+  creadoEn: string
+}
+
 export default function ImportarLeadsPage() {
   const [filas, setFilas] = useState<FilaLead[]>([])
   const [archivo, setArchivo] = useState<string>('')
   const [cargando, setCargando] = useState(false)
   const [resultado, setResultado] = useState<ResultadoImportacion | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [importaciones, setImportaciones] = useState<Importacion[]>([])
+  const [eliminando, setEliminando] = useState<string | null>(null)
+  const [confirmandoEliminar, setConfirmandoEliminar] = useState<string | null>(null)
   const inputRef = useRef<HTMLInputElement>(null)
+
+  const cargarImportaciones = useCallback(async () => {
+    const res = await fetch('/api/importaciones')
+    if (res.ok) setImportaciones(await res.json())
+  }, [])
+
+  useEffect(() => { cargarImportaciones() }, [cargarImportaciones])
 
   function procesarArchivo(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
@@ -40,10 +60,8 @@ export default function ImportarLeadsPage() {
         const hoja = workbook.Sheets[workbook.SheetNames[0]]
         const json = XLSX.utils.sheet_to_json<Record<string, string>>(hoja)
 
-        // Mapear columnas flexiblemente
         const leads: FilaLead[] = json
           .map(row => {
-            const keys = Object.keys(row).map(k => k.toLowerCase().trim())
             const get = (posibles: string[]) => {
               for (const p of posibles) {
                 const key = Object.keys(row).find(k => k.toLowerCase().trim().includes(p))
@@ -54,7 +72,8 @@ export default function ImportarLeadsPage() {
 
             return {
               nombre: get(['nombre', 'name', 'cliente']) ?? '',
-              telefono: get(['telefono', 'teléfono', 'phone', 'tel', 'celular']) ?? '',
+              telefono: get(['telefono', 'teléfono', 'phone', 'tel', 'celular', 'numero telefonico', 'número telefónico']) ?? '',
+              dni: get(['dni', 'documento', 'doc', 'cedula', 'cédula']),
               email: get(['email', 'mail', 'correo']),
               mensaje: get(['mensaje', 'nota', 'descripcion', 'descripción', 'observacion']),
             }
@@ -74,37 +93,34 @@ export default function ImportarLeadsPage() {
     setCargando(true)
     setError(null)
 
-    let importados = 0
-    let duplicados = 0
-    let errores = 0
+    try {
+      const res = await fetch('/api/leads/importar', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ filas, nombreArchivo: archivo }),
+      })
 
-    for (const fila of filas) {
-      try {
-        const res = await fetch('/api/leads', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            nombre: fila.nombre,
-            telefono: fila.telefono,
-            email: fila.email ?? null,
-            mensaje: fila.mensaje ?? null,
-            origen: 'directo',
-          }),
-        })
+      if (!res.ok) throw new Error('Error en el servidor')
 
-        if (res.status === 201) importados++
-        else if (res.status === 200) duplicados++
-        else errores++
-      } catch {
-        errores++
-      }
+      const { importados, duplicados, errores } = await res.json()
+      setResultado({ importados, duplicados, errores })
+    } catch {
+      setError('Error al importar. Intentá de nuevo.')
     }
 
-    setResultado({ importados, duplicados, errores })
     setFilas([])
     setArchivo('')
     if (inputRef.current) inputRef.current.value = ''
     setCargando(false)
+    cargarImportaciones()
+  }
+
+  async function eliminarImportacion(id: string) {
+    setEliminando(id)
+    await fetch(`/api/importaciones/${id}`, { method: 'DELETE' })
+    setImportaciones(prev => prev.filter(i => i.id !== id))
+    setEliminando(null)
+    setConfirmandoEliminar(null)
   }
 
   return (
@@ -123,7 +139,7 @@ export default function ImportarLeadsPage() {
           <p style={{ fontSize: 14, fontWeight: 600, color: '#1d4ed8', margin: '0 0 10px' }}>Formato esperado del archivo</p>
           <p style={{ fontSize: 13, color: '#374151', margin: '0 0 8px' }}>El archivo debe tener columnas con estos nombres (no importa el orden ni las mayúsculas):</p>
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-            {['nombre', 'telefono', 'email (opcional)', 'mensaje (opcional)'].map(col => (
+            {['nombre', 'telefono', 'dni (opcional)', 'email (opcional)', 'mensaje (opcional)'].map(col => (
               <span key={col} style={{ fontSize: 12, background: 'white', border: '1px solid #bfdbfe', padding: '3px 10px', borderRadius: 20, color: '#1d4ed8', fontWeight: 500 }}>
                 {col}
               </span>
@@ -158,7 +174,7 @@ export default function ImportarLeadsPage() {
         {/* Preview */}
         {filas.length > 0 && (
           <div style={{ background: 'white', borderRadius: 14, border: '1px solid #f3f4f6', overflow: 'hidden' }}>
-            <div style={{ padding: '16px 20px', borderBottom: '1px solid #f3f4f6', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ padding: '16px 20px', borderBottom: '1px solid #f3f4f6' }}>
               <p style={{ fontSize: 14, fontWeight: 600, color: '#111827', margin: 0 }}>
                 Vista previa — {filas.length} leads detectados
               </p>
@@ -167,7 +183,7 @@ export default function ImportarLeadsPage() {
               <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                 <thead>
                   <tr style={{ background: '#f9fafb' }}>
-                    {['Nombre', 'Teléfono', 'Email', 'Mensaje'].map(h => (
+                    {['Nombre', 'Teléfono', 'DNI', 'Email', 'Mensaje'].map(h => (
                       <th key={h} style={{ padding: '10px 16px', textAlign: 'left', fontSize: 12, color: '#9ca3af', fontWeight: 500 }}>{h}</th>
                     ))}
                   </tr>
@@ -177,6 +193,7 @@ export default function ImportarLeadsPage() {
                     <tr key={i} style={{ borderTop: '1px solid #f9fafb' }}>
                       <td style={{ padding: '10px 16px', fontSize: 13, color: '#111827' }}>{f.nombre}</td>
                       <td style={{ padding: '10px 16px', fontSize: 13, color: '#374151' }}>{f.telefono}</td>
+                      <td style={{ padding: '10px 16px', fontSize: 13, color: '#6b7280' }}>{f.dni ?? '—'}</td>
                       <td style={{ padding: '10px 16px', fontSize: 13, color: '#6b7280' }}>{f.email ?? '—'}</td>
                       <td style={{ padding: '10px 16px', fontSize: 13, color: '#6b7280', maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {f.mensaje ?? '—'}
@@ -237,6 +254,78 @@ export default function ImportarLeadsPage() {
             {cargando ? `Importando... (${filas.length} leads)` : `Importar ${filas.length} leads →`}
           </button>
         )}
+
+        {/* Historial de importaciones */}
+        {importaciones.length > 0 && (
+          <div style={{ marginTop: 8 }}>
+            <p style={{ fontSize: 14, fontWeight: 600, color: '#374151', margin: '0 0 12px' }}>Importaciones anteriores</p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              {importaciones.map(imp => (
+                <div key={imp.id} style={{
+                  background: 'white', borderRadius: 12, border: '1px solid #f3f4f6',
+                  padding: '14px 18px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16,
+                }}>
+                  <div style={{ minWidth: 0 }}>
+                    <p style={{ fontSize: 13, fontWeight: 600, color: '#111827', margin: '0 0 3px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      {imp.nombreArchivo}
+                    </p>
+                    <p style={{ fontSize: 12, color: '#9ca3af', margin: 0 }}>
+                      {new Date(imp.creadoEn).toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                    </p>
+                  </div>
+                  <div style={{ display: 'flex', gap: 16, alignItems: 'center', flexShrink: 0 }}>
+                    <div style={{ display: 'flex', gap: 12 }}>
+                      <span style={{ fontSize: 12, color: '#15803d', fontWeight: 600 }}>+{imp.totalImportados}</span>
+                      {imp.totalDuplicados > 0 && (
+                        <span style={{ fontSize: 12, color: '#a16207', fontWeight: 500 }}>{imp.totalDuplicados} dup.</span>
+                      )}
+                      {imp.totalErrores > 0 && (
+                        <span style={{ fontSize: 12, color: '#dc2626', fontWeight: 500 }}>{imp.totalErrores} err.</span>
+                      )}
+                    </div>
+                    {confirmandoEliminar === imp.id ? (
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                        <span style={{ fontSize: 12, color: '#374151' }}>¿Eliminás?</span>
+                        <button
+                          onClick={() => eliminarImportacion(imp.id)}
+                          disabled={eliminando === imp.id}
+                          style={{
+                            background: '#dc2626', border: 'none', borderRadius: 8,
+                            padding: '5px 10px', fontSize: 12, color: 'white', fontWeight: 600,
+                            cursor: eliminando === imp.id ? 'not-allowed' : 'pointer',
+                            opacity: eliminando === imp.id ? 0.5 : 1,
+                          }}
+                        >
+                          {eliminando === imp.id ? '...' : 'Sí, eliminar'}
+                        </button>
+                        <button
+                          onClick={() => setConfirmandoEliminar(null)}
+                          style={{
+                            background: 'none', border: '1px solid #e5e7eb', borderRadius: 8,
+                            padding: '5px 10px', fontSize: 12, color: '#6b7280', cursor: 'pointer',
+                          }}
+                        >
+                          Cancelar
+                        </button>
+                      </div>
+                    ) : (
+                      <button
+                        onClick={() => setConfirmandoEliminar(imp.id)}
+                        style={{
+                          background: 'none', border: '1px solid #fecaca', borderRadius: 8,
+                          padding: '5px 10px', fontSize: 12, color: '#dc2626', cursor: 'pointer',
+                        }}
+                      >
+                        Eliminar
+                      </button>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
       </div>
     </div>
   )

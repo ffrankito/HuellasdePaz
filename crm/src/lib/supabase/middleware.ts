@@ -25,15 +25,16 @@ export async function updateSession(request: NextRequest) {
     }
   )
 
-  const { data: { user }, error } = await supabase.auth.getUser()
+  // getSession lee del cookie sin round-trip a Supabase — refresca el access token
+  // via refresh token si expiró, pero no hace un request de validación al servidor.
+  const { data: { session }, error } = await supabase.auth.getSession()
 
   const tokenInvalido = error?.code === 'refresh_token_not_found' || error?.code === 'bad_jwt'
 
-  if (tokenInvalido || (!user && !request.nextUrl.pathname.startsWith('/auth'))) {
+  if (tokenInvalido || (!session && !request.nextUrl.pathname.startsWith('/auth'))) {
     const url = request.nextUrl.clone()
     url.pathname = '/auth/login'
     const response = NextResponse.redirect(url)
-    // Limpiar cookies de Supabase para que no repita el error en cada request
     request.cookies.getAll().forEach(cookie => {
       if (cookie.name.startsWith('sb-')) response.cookies.delete(cookie.name)
     })

@@ -12,7 +12,7 @@ export async function POST(request: NextRequest) {
       clienteId: body.clienteId,
       mascotaId: body.mascotaId,
       tipo: body.tipo,
-      estado: 'ingresado',
+      estado: 'pendiente',
       fechaRetiro: body.fechaRetiro ? new Date(body.fechaRetiro) : null,
       notas: body.notas,
     }).returning()

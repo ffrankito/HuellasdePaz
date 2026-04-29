@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { revalidatePath } from 'next/cache'
 import { db } from '@/db'
 import { planes, clientes } from '@/db/schema'
 import { sql, eq } from 'drizzle-orm'
@@ -26,6 +27,7 @@ export async function POST(request: NextRequest) {
         .where(eq(clientes.id, body.clienteId))
     }
 
+    revalidatePath('/dashboard', 'layout')
     return NextResponse.json(plan, { status: 201 })
   } catch (error) {
     console.error('Error creando plan:', error)

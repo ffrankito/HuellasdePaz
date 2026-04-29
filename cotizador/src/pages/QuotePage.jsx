@@ -27,7 +27,6 @@ const initialOpenFeatures = {
 };
 
 const CRM_API_URL = import.meta.env.VITE_CRM_API_URL || "https://huellasde-paz.vercel.app/api/leads";
-const CONVENIOS_URL = CRM_API_URL.replace("/leads", "") + "/convenios?activos=true";
 
 // Mascotas que no necesitan seleccionar tamaño
 const SIN_TALLA = ["felino", "mamifero-pequeno", "reptil", "ave-pez"];
@@ -38,21 +37,13 @@ export default function QuotePage() {
   const [showOtherPetTypes, setShowOtherPetTypes] = useState(false);
   const [openFeatures, setOpenFeatures] = useState(initialOpenFeatures);
   const [animKey, setAnimKey] = useState(0);
-
-  // Convenio state
-  const [conveniosActivos, setConveniosActivos] = useState([]);
-  const [cargandoConvenios, setCargandoConvenios] = useState(false);
-  const [mostrandoSelectorConvenio, setMostrandoSelectorConvenio] = useState(false);
-  const [convenioSeleccionado, setConvenioSeleccionado] = useState("");
-  const [resumenCotizacion, setResumenCotizacion] = useState("");
   const [enviandoLead, setEnviandoLead] = useState(false);
 
   const needsZone = formData.pickupMethod === "domicilio";
   const needsSize = !SIN_TALLA.includes(formData.petType);
   const totalSteps = needsZone ? (needsSize ? 8 : 7) : (needsSize ? 7 : 6);
-  const dataStep = totalSteps - 1;
-  const convenioStep = totalSteps;       // nuevo paso antes del éxito
-  const successStep = totalSteps + 1;    // pantalla final
+  const dataStep = totalSteps;
+  const successStep = totalSteps + 1;
   const isFinal = step === successStep;
 
   const principalPetTypes = petTypes.filter((p) => p.group === "principal");
@@ -81,7 +72,6 @@ export default function QuotePage() {
     return true;
   };
 
-  // Calcula el resumen para el mensaje del lead
   const calcularResumen = () => {
     const selectedService = services.find((s) => s.id === formData.service);
     const selectedSize = sizes.find((s) => s.id === formData.size);
@@ -96,8 +86,7 @@ export default function QuotePage() {
     ].filter(Boolean).join(" · ");
   };
 
-  // Envía el lead al CRM y avanza al success
-  const enviarLead = async (convenioId = null) => {
+  const enviarLead = async () => {
     setEnviandoLead(true);
     try {
       await fetch(CRM_API_URL, {
@@ -108,8 +97,7 @@ export default function QuotePage() {
           telefono: formData.phone,
           email: formData.email,
           origen: "cotizador",
-          mensaje: resumenCotizacion,
-          ...(convenioId ? { veterinariaId: convenioId } : {}),
+          mensaje: calcularResumen(),
         }),
       });
     } catch (err) {
@@ -119,28 +107,11 @@ export default function QuotePage() {
     goTo(successStep);
   };
 
-  const fetchConvenios = async () => {
-    if (conveniosActivos.length > 0) return; // ya cargados
-    setCargandoConvenios(true);
-    try {
-      const res = await fetch(CONVENIOS_URL);
-      const data = await res.json();
-      setConveniosActivos(Array.isArray(data) ? data : []);
-    } catch {
-      setConveniosActivos([]);
-    }
-    setCargandoConvenios(false);
-  };
-
   const handleNext = async () => {
     if (!canContinue()) return;
 
     if (step === dataStep) {
-      // Guardar resumen y avanzar al paso de convenio (el POST se hace desde ahí)
-      setResumenCotizacion(calcularResumen());
-      setMostrandoSelectorConvenio(false);
-      setConvenioSeleccionado("");
-      goTo(convenioStep);
+      await enviarLead();
       return;
     }
 
@@ -154,10 +125,6 @@ export default function QuotePage() {
   };
 
   const handleBack = () => {
-    if (step === convenioStep) {
-      goTo(dataStep);
-      return;
-    }
     if (step === 1 && showOtherPetTypes) {
       setShowOtherPetTypes(false);
       setFormData((p) => ({ ...p, petType: "" }));
@@ -176,21 +143,10 @@ export default function QuotePage() {
     setShowOtherPetTypes(false);
     setFormData(initialFormData);
     setOpenFeatures(initialOpenFeatures);
-    setConvenioSeleccionado("");
-    setMostrandoSelectorConvenio(false);
-    setResumenCotizacion("");
     setAnimKey((k) => k + 1);
   };
 
   const selectedService = services.find((s) => s.id === formData.service);
-
-  // Precio con descuento aplicado
-  const convenioElegido = conveniosActivos.find((c) => c.id === convenioSeleccionado);
-  const descuento = convenioElegido ? Number(convenioElegido.descuentoPorcentaje ?? 0) : 0;
-  const precioBase = selectedService?.price ?? null;
-  const precioFinal = precioBase && descuento > 0
-    ? Math.round(precioBase * (1 - descuento / 100))
-    : precioBase;
 
   const renderStep1 = () => (
     <div className="section-block">
@@ -387,126 +343,6 @@ const renderStep3 = () => (
     </div>
   );
 
-  const renderConvenio = () => {
-    if (mostrandoSelectorConvenio) {
-      return (
-        <div className="section-block">
-          <p className="section-block__title" style={{ fontSize: 20, marginBottom: 8 }}>
-            Seleccioná tu convenio
-          </p>
-          <p style={{ textAlign: "center", color: "var(--text-soft)", fontSize: 14, marginBottom: 24 }}>
-            Elegí la veterinaria o institución con la que tenés convenio
-          </p>
-
-          {cargandoConvenios ? (
-            <p style={{ textAlign: "center", color: "var(--text-soft)", fontSize: 14 }}>Cargando...</p>
-          ) : (
-            <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 24 }}>
-              {conveniosActivos.map((c) => (
-                <button
-                  key={c.id}
-                  type="button"
-                  onClick={() => setConvenioSeleccionado(c.id)}
-                  style={{
-                    padding: "14px 18px",
-                    borderRadius: 12,
-                    border: "2px solid",
-                    borderColor: convenioSeleccionado === c.id ? "var(--color-green, #2d8a54)" : "#e5e7eb",
-                    background: convenioSeleccionado === c.id ? "rgba(45,138,84,0.06)" : "white",
-                    cursor: "pointer",
-                    textAlign: "left",
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                  }}
-                >
-                  <span style={{ fontWeight: 600, fontSize: 15 }}>{c.nombre}</span>
-                  {Number(c.descuentoPorcentaje ?? 0) > 0 && (
-                    <span style={{ fontSize: 13, color: "#2d8a54", fontWeight: 600, background: "rgba(45,138,84,0.1)", padding: "3px 10px", borderRadius: 20 }}>
-                      {c.descuentoPorcentaje}% dto.
-                    </span>
-                  )}
-                </button>
-              ))}
-            </div>
-          )}
-
-          {/* Precio con descuento */}
-          {convenioSeleccionado && precioBase && (
-            <div style={{ background: "rgba(45,138,84,0.06)", border: "1px solid rgba(45,138,84,0.2)", borderRadius: 12, padding: "16px 20px", marginBottom: 20, textAlign: "center" }}>
-              {descuento > 0 ? (
-                <>
-                  <p style={{ fontSize: 13, color: "var(--text-soft)", margin: "0 0 4px" }}>
-                    Precio con convenio ({descuento}% de descuento)
-                  </p>
-                  <p style={{ fontSize: 13, color: "#9ca3af", margin: "0 0 4px", textDecoration: "line-through" }}>
-                    ${precioBase.toLocaleString("es-AR")}
-                  </p>
-                  <p style={{ fontSize: 22, fontWeight: 700, color: "#2d8a54", margin: 0 }}>
-                    ${precioFinal.toLocaleString("es-AR")}
-                  </p>
-                </>
-              ) : (
-                <p style={{ fontSize: 14, color: "var(--text-soft)", margin: 0 }}>
-                  Precio: ${precioBase.toLocaleString("es-AR")} (sin descuento adicional)
-                </p>
-              )}
-            </div>
-          )}
-
-          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-            <button
-              type="button"
-              className="btn btn--green"
-              disabled={!convenioSeleccionado || enviandoLead}
-              onClick={() => enviarLead(convenioSeleccionado)}
-            >
-              {enviandoLead ? "Enviando..." : "Confirmar con convenio →"}
-            </button>
-            <button
-              type="button"
-              className="btn btn--secondary"
-              onClick={() => setMostrandoSelectorConvenio(false)}
-            >
-              ← Volver
-            </button>
-          </div>
-        </div>
-      );
-    }
-
-    return (
-      <div className="section-block">
-        <p className="section-block__title" style={{ fontSize: 20, marginBottom: 8 }}>
-          ¿Tenés convenio con nosotros?
-        </p>
-        <p style={{ textAlign: "center", color: "var(--text-soft)", fontSize: 14, marginBottom: 32 }}>
-          Si tu veterinaria o institución tiene convenio con Huellas de Paz, podés acceder a beneficios especiales.
-        </p>
-        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-          <button
-            type="button"
-            className="btn btn--green"
-            onClick={() => {
-              setMostrandoSelectorConvenio(true);
-              fetchConvenios();
-            }}
-          >
-            Sí, tengo convenio
-          </button>
-          <button
-            type="button"
-            className="btn btn--secondary"
-            disabled={enviandoLead}
-            onClick={() => enviarLead(null)}
-          >
-            {enviandoLead ? "Enviando..." : "No, continuar sin convenio →"}
-          </button>
-        </div>
-      </div>
-    );
-  };
-
   const renderSuccess = () => {
     const waText = encodeURIComponent(
       "Hola, quiero consultar sobre el servicio " +
@@ -557,23 +393,20 @@ const renderStep3 = () => (
     if (step === 6 && needsSize && !needsZone) return renderDatos();
     if (step === 6 && !needsSize) return renderDatos();
     if (step === 7 && needsSize && needsZone) return renderDatos();
-    if (step === convenioStep) return renderConvenio();
     if (isFinal) return renderSuccess();
     return null;
   };
 
-  const isConvenioStep = step === convenioStep;
-
   return (
     <div className="app">
-      {!isFinal && !isConvenioStep && (
+      {!isFinal && (
         <StepIndicator step={step} totalSteps={totalSteps} needsZone={needsZone} />
       )}
       <div className="quote-content">
         <div className="step-content" key={animKey}>
           {renderCurrentStep()}
         </div>
-        {!isFinal && !isConvenioStep && (
+        {!isFinal && (
           <div className="nav-buttons">
             {(step > 1 || showOtherPetTypes) && (
               <button type="button" className="btn btn--secondary" onClick={handleBack}>
@@ -584,9 +417,9 @@ const renderStep3 = () => (
               type="button"
               className={"btn " + (step === dataStep ? "btn--green" : "btn--primary")}
               onClick={handleNext}
-              disabled={!canContinue()}
+              disabled={!canContinue() || enviandoLead}
             >
-              {step === dataStep ? "Reservar" : "Siguiente"}
+              {step === dataStep ? (enviandoLead ? "Enviando..." : "Reservar") : "Siguiente"}
             </button>
           </div>
         )}

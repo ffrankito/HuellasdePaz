@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { revalidatePath } from 'next/cache'
 import { db } from '@/db'
 import { comunicaciones } from '@/db/schema'
 import { eq } from 'drizzle-orm'
@@ -13,6 +14,7 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
       .where(eq(comunicaciones.id, id))
       .returning()
 
+    revalidatePath('/dashboard/comunicacion')
     return NextResponse.json(comunicacion)
   } catch (error) {
     console.error('Error actualizando comunicacion:', error)

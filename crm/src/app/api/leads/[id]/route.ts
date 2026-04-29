@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { revalidatePath } from 'next/cache'
 import { db } from '@/db'
 import { leads, leadInteracciones, usuarios } from '@/db/schema'
 import { eq } from 'drizzle-orm'
@@ -40,6 +41,12 @@ export async function PATCH(
     const ahora = new Date()
     const updateData: Record<string, unknown> = { actualizadoEn: ahora }
     const interaccionesACrear: { tipo: string; descripcion: string }[] = []
+
+    // Edición de campos de datos
+    if (body.nombre !== undefined) updateData.nombre = body.nombre
+    if (body.telefono !== undefined) updateData.telefono = body.telefono
+    if (body.email !== undefined) updateData.email = body.email || null
+    if (body.dni !== undefined) updateData.dni = body.dni || null
 
     // Cambio de estado
     if (body.estado && body.estado !== leadActual.estado) {
@@ -89,6 +96,7 @@ export async function PATCH(
       })
     }
 
+    revalidatePath('/dashboard', 'layout')
     return NextResponse.json(leadActualizado)
   } catch (error) {
     console.error('Error actualizando lead:', error)
@@ -103,6 +111,7 @@ export async function DELETE(
   try {
     const { id } = await params
     await db.delete(leads).where(eq(leads.id, id))
+    revalidatePath('/dashboard', 'layout')
     return NextResponse.json({ ok: true })
   } catch (error) {
     console.error('Error eliminando lead:', error)

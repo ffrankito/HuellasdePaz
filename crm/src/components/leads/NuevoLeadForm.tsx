@@ -16,6 +16,7 @@ export function NuevoLeadForm({
   const [form, setForm] = useState({
     nombre: '',
     telefono: '',
+    dni: '',
     email: '',
     origen: '',
     veterinariaId: '',
@@ -50,6 +51,7 @@ export function NuevoLeadForm({
       body: JSON.stringify({
         nombre: form.nombre.trim(),
         telefono: form.telefono.trim(),
+        dni: form.dni.trim() || null,
         email: form.email.trim() || null,
         origen: form.origen || 'directo',
         veterinariaId: form.veterinariaId || null,
@@ -117,16 +119,28 @@ export function NuevoLeadForm({
         </div>
       </div>
 
-      <div>
-        <label style={labelStyle}>Email</label>
-        <input
-          name="email"
-          type="email"
-          value={form.email}
-          onChange={handleChange}
-          placeholder="email@ejemplo.com"
-          style={inputStyle}
-        />
+      <div className="grid-2" style={{ gap: 16 }}>
+        <div>
+          <label style={labelStyle}>DNI</label>
+          <input
+            name="dni"
+            value={form.dni}
+            onChange={handleChange}
+            placeholder="12.345.678"
+            style={inputStyle}
+          />
+        </div>
+        <div>
+          <label style={labelStyle}>Email</label>
+          <input
+            name="email"
+            type="email"
+            value={form.email}
+            onChange={handleChange}
+            placeholder="email@ejemplo.com"
+            style={inputStyle}
+          />
+        </div>
       </div>
 
       <div className="grid-2" style={{ gap: 16 }}>

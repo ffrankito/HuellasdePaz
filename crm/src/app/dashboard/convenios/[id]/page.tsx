@@ -1,8 +1,9 @@
 import { db } from '@/db'
-import { convenios, leads, clientes } from '@/db/schema'
-import { eq, count, and } from 'drizzle-orm'
+import { convenios, leads, clientes, servicios } from '@/db/schema'
+import { eq, count, and, sql } from 'drizzle-orm'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
+import { InvitarConvenioBtn, TogglePortalActivoBtn } from '@/components/convenios/PortalConvenioBtn'
 
 const estadoColors: Record<string, { bg: string; color: string; label: string }> = {
   sin_convenio: { bg: '#f3f4f6', color: '#6b7280', label: 'Sin convenio' },
@@ -31,6 +32,7 @@ export default async function ConvenioDetallePage({
     totalClientes,
     ultimosLeads,
     ultimosClientes,
+    [statsServicios],
   ] = await Promise.all([
     db.select({ count: count() }).from(leads).where(eq(leads.veterinariaId, id)),
     db.select({ count: count() }).from(leads).where(and(eq(leads.veterinariaId, id), eq(leads.estado, 'convertido'))),
@@ -38,11 +40,20 @@ export default async function ConvenioDetallePage({
     db.select({ count: count() }).from(clientes).where(eq(clientes.veterinariaId, id)),
     db.select().from(leads).where(eq(leads.veterinariaId, id)).orderBy(leads.creadoEn).limit(5),
     db.select().from(clientes).where(eq(clientes.veterinariaId, id)).orderBy(clientes.creadoEn).limit(5),
+    db.select({
+      totalServicios:      sql<number>`count(*)`,
+      comisionCobrada:     sql<number>`coalesce(sum(coalesce(${servicios.descuento},0)::numeric) filter (where ${servicios.pagado} = true), 0)`,
+      comisionPendiente:   sql<number>`coalesce(sum(coalesce(${servicios.descuento},0)::numeric) filter (where ${servicios.pagado} = false and ${servicios.estado} != 'cancelado'), 0)`,
+    }).from(servicios).where(eq(servicios.convenioId, id)),
   ])
 
   const conversion = totalLeads[0].count > 0
     ? Math.round((leadsConvertidos[0].count / totalLeads[0].count) * 100)
     : 0
+
+  const comisionCobrada   = Number(statsServicios.comisionCobrada)
+  const comisionPendiente = Number(statsServicios.comisionPendiente)
+  const totalServicios    = Number(statsServicios.totalServicios)
 
   const badge = estadoColors[convenio.estadoConvenio] ?? estadoColors.sin_convenio
 
@@ -60,12 +71,20 @@ export default async function ConvenioDetallePage({
             {badge.label}
           </span>
         </div>
-        <Link href={`/dashboard/convenios/${id}/editar`} style={{
-          background: '#111827', color: 'white', padding: '10px 20px',
-          borderRadius: 10, fontSize: 14, fontWeight: 500, textDecoration: 'none',
-        }}>
-          Editar
-        </Link>
+        <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'center' }}>
+          <TogglePortalActivoBtn convenioId={id} portalActivo={convenio.portalActivo ?? false} />
+          <InvitarConvenioBtn
+            convenioId={id}
+            email={convenio.email ?? null}
+            yaInvitado={!!convenio.authUserId}
+          />
+          <Link href={`/dashboard/convenios/${id}/editar`} style={{
+            background: '#111827', color: 'white', padding: '10px 20px',
+            borderRadius: 10, fontSize: 14, fontWeight: 500, textDecoration: 'none',
+          }}>
+            Editar
+          </Link>
+        </div>
       </div>
 
       <div className="grid-2">
@@ -87,8 +106,18 @@ export default async function ConvenioDetallePage({
             <h2 style={{ fontSize: 15, fontWeight: 600, color: '#111827', margin: '0 0 16px' }}>Convenio</h2>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               <InfoRow label="Estado" value={badge.label} />
-              <InfoRow label="Descuento" value={Number(convenio.descuentoPorcentaje) > 0 ? `${Number(convenio.descuentoPorcentaje)}%` : '—'} />
+              <InfoRow label="Comisión" value={Number(convenio.descuentoPorcentaje) > 0 ? `${Number(convenio.descuentoPorcentaje)}%` : '—'} />
               {convenio.beneficioDescripcion && <InfoRow label="Beneficio" value={convenio.beneficioDescripcion} />}
+              <InfoRow
+                label="Servicios"
+                value={
+                  convenio.serviciosCubiertos && (convenio.serviciosCubiertos as string[]).length > 0
+                    ? (convenio.serviciosCubiertos as string[])
+                        .map(s => ({ cremacion_individual: 'Cremación individual', cremacion_comunitaria: 'Cremación comunitaria', entierro: 'Entierro' })[s] ?? s)
+                        .join(', ')
+                    : 'Todos los servicios'
+                }
+              />
               {convenio.fechaInicioConvenio && <InfoRow label="Inicio" value={new Date(convenio.fechaInicioConvenio).toLocaleDateString('es-AR')} />}
               {convenio.fechaVencimientoConvenio && <InfoRow label="Vencimiento" value={new Date(convenio.fechaVencimientoConvenio).toLocaleDateString('es-AR')} />}
             </div>
@@ -103,6 +132,37 @@ export default async function ConvenioDetallePage({
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+
+          {/* Comisiones acumuladas */}
+          <div style={{ background: 'white', borderRadius: 16, border: '1px solid #f3f4f6', padding: '24px', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
+            <h2 style={{ fontSize: 15, fontWeight: 600, color: '#111827', margin: '0 0 16px' }}>Comisiones a pagar</h2>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: '#f0faf5', borderRadius: 12, border: '1px solid #d1ead9' }}>
+                <div>
+                  <p style={{ fontSize: 12, color: '#2d8a54', margin: '0 0 2px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Ya cobrado</p>
+                  <p style={{ fontSize: 11, color: '#6b7280', margin: 0 }}>Servicios pagados por el cliente</p>
+                </div>
+                <p style={{ fontSize: 26, fontWeight: 700, color: '#2d8a54', margin: 0 }}>
+                  ${comisionCobrada.toLocaleString('es-AR')}
+                </p>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: comisionPendiente > 0 ? '#fefce8' : '#f9fafb', borderRadius: 12, border: `1px solid ${comisionPendiente > 0 ? '#fde68a' : '#f3f4f6'}` }}>
+                <div>
+                  <p style={{ fontSize: 12, color: comisionPendiente > 0 ? '#a16207' : '#9ca3af', margin: '0 0 2px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Pendiente de cobro</p>
+                  <p style={{ fontSize: 11, color: '#6b7280', margin: 0 }}>Servicios aún no pagados</p>
+                </div>
+                <p style={{ fontSize: 26, fontWeight: 700, color: comisionPendiente > 0 ? '#a16207' : '#9ca3af', margin: 0 }}>
+                  ${comisionPendiente.toLocaleString('es-AR')}
+                </p>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, padding: '8px 4px' }}>
+                <span style={{ color: '#9ca3af' }}>Servicios derivados totales</span>
+                <span style={{ fontWeight: 600, color: '#111827' }}>{totalServicios}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Métricas leads/clientes */}
           <div className="grid-2">
             <div style={{ background: '#f0fdf4', borderRadius: 14, border: '1px solid #bbf7d0', padding: '18px 20px' }}>
               <p style={{ fontSize: 12, color: '#15803d', margin: '0 0 6px' }}>Clientes derivados</p>

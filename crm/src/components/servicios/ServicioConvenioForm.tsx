@@ -50,7 +50,7 @@ export function ServicioConvenioForm({ servicioId, convenioIdActual }: { servici
         <option value="">Sin convenio</option>
         {convenios.map(c => (
           <option key={c.id} value={c.id}>
-            {c.nombre}{c.descuentoPorcentaje && Number(c.descuentoPorcentaje) > 0 ? ` — ${c.descuentoPorcentaje}% desc.` : ''}
+            {c.nombre}{c.descuentoPorcentaje && Number(c.descuentoPorcentaje) > 0 ? ` — ${c.descuentoPorcentaje}% com.` : ''}
           </option>
         ))}
       </select>

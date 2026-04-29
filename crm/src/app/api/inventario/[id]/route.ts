@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { revalidatePath } from 'next/cache'
 import { db } from '@/db'
 import { inventario } from '@/db/schema'
 import { eq } from 'drizzle-orm'
@@ -29,11 +30,13 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
         proveedor: body.proveedor,
         notas: body.notas,
         foto: body.foto,
+        paraVenta: body.paraVenta,
         actualizadoEn: new Date(),
       })
       .where(eq(inventario.id, id))
       .returning()
 
+    revalidatePath('/dashboard', 'layout')
     return NextResponse.json(item)
   } catch (error) {
     return NextResponse.json({ error: 'Error interno' }, { status: 500 })
@@ -44,6 +47,7 @@ export async function DELETE(_: NextRequest, { params }: { params: Promise<{ id:
   try {
     const { id } = await params
     await db.delete(inventario).where(eq(inventario.id, id))
+    revalidatePath('/dashboard', 'layout')
     return NextResponse.json({ ok: true })
   } catch (error) {
     return NextResponse.json({ error: 'Error interno' }, { status: 500 })

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { revalidatePath } from 'next/cache'
 import { db } from '@/db'
 import { planes } from '@/db/schema'
 import { eq } from 'drizzle-orm'
@@ -54,6 +55,7 @@ export async function PATCH(
       .where(eq(planes.id, id))
       .returning()
 
+    revalidatePath('/dashboard', 'layout')
     return NextResponse.json(planActualizado)
   } catch (error) {
     console.error('Error actualizando plan:', error)

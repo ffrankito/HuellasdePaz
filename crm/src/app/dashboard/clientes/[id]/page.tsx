@@ -49,6 +49,7 @@ export default async function ClienteDetallePage({ params }: { params: Promise<{
           <h2 style={{ fontSize: 15, fontWeight: 600, color: '#111827', marginBottom: 16, marginTop: 0 }}>Datos personales</h2>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             <InfoRow label="Teléfono" value={cliente.telefono} />
+            {cliente.dni && <InfoRow label="DNI" value={cliente.dni} />}
             <InfoRow label="Email" value={cliente.email ?? '—'} />
             <InfoRow label="Dirección" value={cliente.direccion ?? '—'} />
             <InfoRow label="Localidad" value={cliente.localidad ?? '—'} />

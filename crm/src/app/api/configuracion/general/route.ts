@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { revalidatePath } from 'next/cache'
 import { db } from '@/db'
 import { configuracionGeneral } from '@/db/schema'
 import { eq } from 'drizzle-orm'
@@ -12,6 +13,7 @@ export async function PATCH(request: NextRequest) {
       .where(eq(configuracionGeneral.clave, body.clave))
       .returning()
 
+    revalidatePath('/dashboard/configuracion')
     return NextResponse.json(config)
   } catch (error) {
     console.error('Error actualizando configuracion:', error)

@@ -56,8 +56,11 @@ export const noticiasCementerio = pgTable('noticias_cementerio', {
   id: uuid('id').primaryKey().defaultRandom(),
   titulo: text('titulo').notNull(),
   contenido: text('contenido').notNull(),
+  imagen: text('imagen'),
   creadoPorId: uuid('creado_por_id').references(() => usuarios.id),
   creadoEn: timestamp('creado_en').defaultNow().notNull(),
+  publicada: boolean('publicada').default(true).notNull(),
+  destacada: boolean('destacada').default(false).notNull(),
 })
 
 export type PlanConfig = typeof planesConfig.$inferSelect

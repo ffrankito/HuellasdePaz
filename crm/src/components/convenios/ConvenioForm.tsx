@@ -41,6 +41,7 @@ export function ConvenioForm({ convenio }: { convenio?: Convenio }) {
     estadoConvenio: convenio?.estadoConvenio ?? 'sin_convenio',
     descuentoPorcentaje: convenio?.descuentoPorcentaje ?? '0',
     beneficioDescripcion: convenio?.beneficioDescripcion ?? '',
+    serviciosCubiertos: (convenio?.serviciosCubiertos as string[] | null) ?? [],
     fechaInicioConvenio: convenio?.fechaInicioConvenio
       ? new Date(convenio.fechaInicioConvenio).toISOString().split('T')[0]
       : '',
@@ -79,6 +80,7 @@ export function ConvenioForm({ convenio }: { convenio?: Convenio }) {
         descuentoPorcentaje: Number(form.descuentoPorcentaje),
         fechaInicioConvenio: form.fechaInicioConvenio || null,
         fechaVencimientoConvenio: form.fechaVencimientoConvenio || null,
+        serviciosCubiertos: form.serviciosCubiertos.length > 0 ? form.serviciosCubiertos : null,
       }),
     })
 
@@ -163,12 +165,46 @@ export function ConvenioForm({ convenio }: { convenio?: Convenio }) {
             </select>
           </div>
           <div>
-            <label style={labelStyle}>Descuento (%)</label>
+            <label style={labelStyle}>Comisión para el socio (%)</label>
             <input name="descuentoPorcentaje" type="number" min="0" max="100" value={form.descuentoPorcentaje} onChange={handleChange} style={inputStyle} placeholder="0" />
           </div>
           <div style={{ gridColumn: '1 / -1' }}>
-            <label style={labelStyle}>Descripción del beneficio</label>
-            <input name="beneficioDescripcion" value={form.beneficioDescripcion} onChange={handleChange} style={inputStyle} placeholder="Ej: 10% de descuento en cremación individual" />
+            <label style={labelStyle}>Descripción del acuerdo</label>
+            <input name="beneficioDescripcion" value={form.beneficioDescripcion} onChange={handleChange} style={inputStyle} placeholder="Ej: 15% de comisión sobre cremación individual" />
+          </div>
+          <div style={{ gridColumn: '1 / -1' }}>
+            <label style={labelStyle}>Servicios cubiertos</label>
+            <p style={{ fontSize: 12, color: '#9ca3af', margin: '0 0 10px' }}>
+              Dejá todo sin marcar si el convenio aplica a todos los servicios.
+            </p>
+            <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+              {[
+                { value: 'cremacion_individual', label: 'Cremación individual' },
+                { value: 'cremacion_comunitaria', label: 'Cremación comunitaria' },
+                { value: 'entierro', label: 'Entierro' },
+              ].map(({ value, label }) => {
+                const checked = form.serviciosCubiertos.includes(value)
+                return (
+                  <label key={value} style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', padding: '8px 14px', border: `1.5px solid ${checked ? '#2d8a54' : '#e5e7eb'}`, borderRadius: 8, background: checked ? '#f0fdf4' : 'white', fontSize: 13, fontWeight: 500, color: checked ? '#15803d' : '#374151', transition: 'all 0.15s', userSelect: 'none' }}>
+                    <input
+                      type="checkbox"
+                      checked={checked}
+                      onChange={() => setForm(prev => ({
+                        ...prev,
+                        serviciosCubiertos: checked
+                          ? prev.serviciosCubiertos.filter(v => v !== value)
+                          : [...prev.serviciosCubiertos, value],
+                      }))}
+                      style={{ display: 'none' }}
+                    />
+                    <span style={{ width: 16, height: 16, borderRadius: 4, border: `1.5px solid ${checked ? '#2d8a54' : '#d1d5db'}`, background: checked ? '#2d8a54' : 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                      {checked && <svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>}
+                    </span>
+                    {label}
+                  </label>
+                )
+              })}
+            </div>
           </div>
           <div>
             <label style={labelStyle}>Inicio del convenio</label>

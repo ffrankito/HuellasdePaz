@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { revalidatePath } from 'next/cache'
 import { db } from '@/db'
 import { clientes } from '@/db/schema'
 import { eq } from 'drizzle-orm'
@@ -66,6 +67,7 @@ export async function POST(request: NextRequest) {
       linkActivacion,
     })
 
+    revalidatePath('/dashboard/clientes')
     return NextResponse.json({ ok: true })
   } catch (error) {
     console.error('Error:', error)

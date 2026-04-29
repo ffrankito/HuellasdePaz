@@ -1,10 +1,8 @@
-export const ALLOWED_ORIGINS = [
-  'https://huellasde-paz-cotizador.vercel.app',
-  'https://huellasde-paz-pl2f.vercel.app',
-  'http://localhost:5173',  // cotizador dev
-  'http://localhost:4321',  // landing dev (Astro)
-  'http://localhost:3001',
-]
+const envOrigins = process.env.CORS_ALLOWED_ORIGINS?.split(',').map(s => s.trim()).filter(Boolean) ?? []
+const devOrigins = process.env.NODE_ENV === 'development'
+  ? ['http://localhost:5173', 'http://localhost:4321', 'http://localhost:3001']
+  : []
+export const ALLOWED_ORIGINS = [...envOrigins, ...devOrigins]
 
 export function getCorsHeaders(origin: string | null) {
   const allowed = origin && ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0]

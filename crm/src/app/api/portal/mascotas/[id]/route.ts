@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { revalidatePath } from 'next/cache'
 import { db } from '@/db'
 import { clientes, mascotas } from '@/db/schema'
 import { eq, and } from 'drizzle-orm'
 import { createClient } from '@supabase/supabase-js'
+import sharp from 'sharp'
 
 export async function PATCH(
   request: NextRequest,
@@ -14,6 +16,8 @@ export async function PATCH(
 
     const token = formData.get('token') as string
     const dedicatoria = formData.get('dedicatoria') as string | null
+    const memoriaPublicaRaw = formData.get('memoriaPublica') as string | null
+    const memoriaPublica = memoriaPublicaRaw !== null ? memoriaPublicaRaw === 'true' : null
     const foto = formData.get('foto') as File | null
     const galeria = formData.getAll('galeria') as File[]
     const galeriaExistenteRaw = formData.get('galeriaExistente') as string | null
@@ -41,18 +45,21 @@ export async function PATCH(
     }
 
     if (dedicatoria !== null) updates.dedicatoria = dedicatoria
+    if (memoriaPublica !== null) updates.memoriaPublica = memoriaPublica
 
     if (foto && foto.size > 0) {
-      const ext = foto.name.split('.').pop() ?? 'jpg'
-      const path = `mascotas/${mascotaId}/foto.${ext}`
-      const buffer = Buffer.from(await foto.arrayBuffer())
+      const raw = Buffer.from(await foto.arrayBuffer())
+      const jpeg = await sharp(raw).rotate().resize(1200, 1200, { fit: 'inside', withoutEnlargement: true }).jpeg({ quality: 85 }).toBuffer()
+      const path = `mascotas/${mascotaId}/foto.jpg`
       const { error: uploadError } = await supabase.storage
         .from('portal')
-        .upload(path, buffer, { upsert: true, contentType: foto.type })
-      if (!uploadError) {
-        const { data: { publicUrl } } = supabase.storage.from('portal').getPublicUrl(path)
-        updates.foto = publicUrl
+        .upload(path, jpeg, { upsert: true, contentType: 'image/jpeg' })
+      if (uploadError) {
+        console.error('Supabase Storage upload error:', uploadError)
+        return NextResponse.json({ error: 'storage_error', detail: uploadError.message }, { status: 500 })
       }
+      const { data: { publicUrl } } = supabase.storage.from('portal').getPublicUrl(path)
+      updates.foto = `${publicUrl}?t=${Date.now()}`
     }
 
     if (galeria.length > 0 || galeriaExistente !== null) {
@@ -61,13 +68,13 @@ export async function PATCH(
       const galeriaUrls: string[] = [...base]
       for (const img of galeria) {
         if (img.size === 0) continue
-        const ext = img.name.split('.').pop() ?? 'jpg'
-        const filename = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`
+        const filename = `${Date.now()}-${Math.random().toString(36).slice(2)}.jpg`
         const path = `mascotas/${mascotaId}/galeria/${filename}`
-        const buffer = Buffer.from(await img.arrayBuffer())
+        const rawImg = Buffer.from(await img.arrayBuffer())
+        const jpegImg = await sharp(rawImg).rotate().resize(1200, 1200, { fit: 'inside', withoutEnlargement: true }).jpeg({ quality: 85 }).toBuffer()
         const { error: uploadError } = await supabase.storage
           .from('portal')
-          .upload(path, buffer, { upsert: false, contentType: img.type })
+          .upload(path, jpegImg, { upsert: false, contentType: 'image/jpeg' })
         if (!uploadError) {
           const { data: { publicUrl } } = supabase.storage.from('portal').getPublicUrl(path)
           galeriaUrls.push(publicUrl)
@@ -81,6 +88,7 @@ export async function PATCH(
       .where(eq(mascotas.id, mascotaId))
       .returning()
 
+    revalidatePath('/', 'layout')
     return NextResponse.json(updated)
   } catch (error) {
     console.error('Error actualizando memorial:', error)
@@ -114,6 +122,7 @@ export async function DELETE(
       .where(eq(mascotas.id, mascotaId))
       .returning()
 
+    revalidatePath('/', 'layout')
     return NextResponse.json(updated)
   } catch (error) {
     console.error('Error eliminando foto:', error)

@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<title>Huellas de Paz - Demo y Presupuesto 30/04/2026</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--green:#2d8a54;--gl:#f0faf5;--gb:#d1ead9;--dark:#111827;--mid:#374151;--gray:#6b7280;--light:#f9fafb;--border:#e5e7eb;--red:#dc2626;--yellow:#d97706}
+body{font-family:'Inter',sans-serif;color:var(--dark);background:white;line-height:1.6;font-size:13px}
+.page{max-width:820px;margin:0 auto;padding:44px}
+.header{display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:24px;border-bottom:2px solid var(--green);margin-bottom:32px}
+.brand{display:flex;align-items:center;gap:12px}
+.brand h1{font-size:22px;font-weight:700}
+.brand p{font-size:11px;color:var(--gray);margin-top:2px}
+.badge{display:inline-block;background:var(--gl);border:1px solid var(--gb);color:var(--green);font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px}
+.meta p{font-size:11px;color:var(--gray);margin-top:4px;text-align:right}
+.section{margin-bottom:40px;page-break-inside:avoid}
+.st{font-size:17px;font-weight:700;padding-bottom:9px;border-bottom:1px solid var(--border);margin-bottom:16px;display:flex;align-items:center;gap:9px;page-break-after:avoid}
+.num{width:24px;height:24px;border-radius:50%;background:var(--green);color:white;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+table{width:100%;border-collapse:collapse;margin-bottom:10px;font-size:12.5px}
+th{background:var(--light);padding:8px 12px;font-size:10px;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--border);text-align:left}
+td{padding:8px 12px;border-bottom:1px solid var(--border);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+.tr-t td{font-weight:700;background:var(--gl);color:var(--green);font-size:13px;border-top:2px solid var(--gb)}
+.tr-s td{font-weight:600;background:#f8fafc;color:var(--mid);font-size:12px;border-top:1px dashed var(--border)}
+.tr-n td{font-size:11px;color:var(--gray);background:var(--light);font-style:italic}
+.tr-x{background:#fffdf0}
+.tg{display:inline-block;font-size:10px;font-weight:700;padding:1px 6px;border-radius:4px}
+.tg-g{background:var(--gl);color:var(--green);border:1px solid var(--gb)}
+.tg-y{background:#fef3c7;color:#92400e;border:1px solid #fde68a}
+.tg-s{background:var(--light);color:var(--gray);border:1px solid var(--border)}
+.tg-r{background:#fef2f2;color:var(--red);border:1px solid #fecaca}
+.ab{border:1px solid var(--border);border-radius:9px;overflow:hidden;margin-bottom:9px;page-break-inside:avoid}
+.ah{display:flex;align-items:center;gap:9px;padding:9px 13px;background:var(--light);border-bottom:1px solid var(--border)}
+.at{font-size:11px;font-weight:700;color:var(--green);background:var(--gl);border:1px solid var(--gb);padding:2px 7px;border-radius:4px;white-space:nowrap}
+.ah strong{font-size:13px}
+.abody{padding:9px 13px}
+.abody ul{padding-left:15px}
+.abody li{font-size:12px;color:var(--mid);margin-bottom:3px}
+.checklist{display:flex;flex-direction:column;gap:5px;margin-top:5px}
+.ci{display:flex;align-items:flex-start;gap:7px;padding:7px 9px;border-radius:7px;border:1px solid var(--border);background:var(--light)}
+.cb{width:13px;height:13px;border-radius:3px;border:2px solid #d1d5db;flex-shrink:0;margin-top:2px}
+.ci p{font-size:12px;color:var(--mid);margin:0}
+.ci small{font-size:10.5px;color:var(--gray);display:block;margin-top:1px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-bottom:13px}
+.card{border:1px solid var(--border);border-radius:8px;padding:12px}
+.card h4{font-size:12px;font-weight:700;margin-bottom:6px}
+.card ul{padding-left:14px}
+.card li{font-size:11.5px;color:var(--mid);margin-bottom:3px}
+.cg{border-color:var(--gb)}.cg h4{color:var(--green)}
+.cr{border-color:#fecaca}.cr h4{color:var(--red)}
+.sc{border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:8px;page-break-inside:avoid}
+.sh{padding:8px 13px;font-size:12.5px;font-weight:700;display:flex;justify-content:space-between}
+.sh.r{background:#fef2f2;color:var(--red)}.sh.y{background:#fffbeb;color:var(--yellow)}.sh.g{background:var(--gl);color:var(--green)}
+.sb{padding:9px 13px;font-size:12px;color:var(--mid);line-height:1.55}
+.alert{border-radius:8px;padding:11px 13px;margin:11px 0;display:flex;gap:9px;font-size:12px}
+.alert.g{background:var(--gl);border:1px solid var(--gb)}
+.alert.y{background:#fffbeb;border:1px solid #fde68a;color:#92400e}
+.ic{font-size:15px;flex-shrink:0;margin-top:1px}
+.bw{height:5px;background:var(--border);border-radius:3px;margin-top:4px}
+.b{height:5px;border-radius:3px}
+.footer{border-top:1px solid var(--border);padding-top:14px;margin-top:36px;display:flex;justify-content:space-between;font-size:11px;color:var(--gray)}
+</style>
+</head>
+<body><div class="page">
+
+<div class="header">
+  <div class="brand">
+    <span style="font-size:28px">&#x1F43E;</span>
+    <div><h1>Huellas de Paz</h1><p>Presupuesto operativo &middot; Agenda de demo &middot; Analisis de leads</p></div>
+  </div>
+  <div class="meta"><span class="badge">Demo &mdash; Jueves 30/04/2026</span><p>Preparado por Ravenna</p></div>
+</div>
+
+<div class="section">
+  <h2 class="st"><span class="num">1</span> Presupuesto mensual de infraestructura</h2>
+  <p style="font-size:12px;color:var(--mid);margin-bottom:13px">Costos actuales del sistema y proyeccion con los canales de WhatsApp e Instagram conectados.</p>
+  <table>
+    <thead><tr><th>Servicio</th><th>Funcion</th><th>Plan</th><th style="text-align:right">Costo/mes</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Vercel</strong></td><td>Hosting &mdash; CRM, landing, cotizador, portal cliente</td><td><span class="tg tg-g">Pro</span></td><td style="text-align:right"><strong>$20 USD</strong></td></tr>
+      <tr><td><strong>Supabase</strong></td><td>Base de datos, autenticacion, storage de fotos</td><td><span class="tg tg-g">Pro</span></td><td style="text-align:right"><strong>$25 USD</strong></td></tr>
+      <tr><td><strong>Resend</strong></td><td>Emails &mdash; invitaciones, notificaciones, cambios de estado</td><td><span class="tg tg-s">Free 3k/mes</span></td><td style="text-align:right"><strong>$0</strong></td></tr>
+      <tr><td><strong>Claude Haiku (IA)</strong></td><td>Asistente IA interno del CRM &mdash; cap $10/mes</td><td><span class="tg tg-s">Pay-per-use</span></td><td style="text-align:right"><strong>max $10 USD</strong></td></tr>
+      <tr><td><strong>Dominio</strong></td><td>huellasde-paz.com.ar (prorrateado mensual)</td><td><span class="tg tg-s">Anual</span></td><td style="text-align:right"><strong>~$1 USD</strong></td></tr>
+      <tr class="tr-s"><td colspan="3"><strong>Subtotal &mdash; Sistema base (hoy)</strong></td><td style="text-align:right">~$56 USD / mes</td></tr>
+      <tr class="tr-x"><td><strong>Kapso</strong></td><td>WhatsApp Business &mdash; chat + captura automatica de leads</td><td><span class="tg tg-y">Pro</span></td><td style="text-align:right"><strong>$25 USD</strong></td></tr>
+      <tr class="tr-x"><td><strong>Make.com</strong></td><td>Automatizaciones &mdash; conecta Instagram DMs y WhatsApp al CRM</td><td><span class="tg tg-y">Core</span></td><td style="text-align:right"><strong>$10.59 USD</strong></td></tr>
+      <tr class="tr-t"><td colspan="3">Total &mdash; Sistema completo con todos los canales conectados</td><td style="text-align:right">~$92 USD / mes</td></tr>
+      <tr class="tr-n"><td colspan="4">* La diferencia entre el sistema base y el completo es de ~$36 USD/mes. Con recuperar un solo cliente por mes ya se paga solo.</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="section">
+  <h2 class="st"><span class="num">2</span> Agenda de la demo &mdash; Jueves 30/04/2026</h2>
+
+  <div class="ab"><div class="ah"><span class="at">0 &mdash; 5 min</span><strong>Introduccion y contexto</strong></div><div class="abody"><ul>
+    <li>4 productos construidos: CRM, portal cliente, landing y cotizador</li>
+    <li>Estado: Fases 0, 1a, 1b y 2 completas &mdash; el sistema esta listo para operar</li>
+    <li>Costo mensual: $56 USD base / $92 USD con todos los canales conectados</li>
+  </ul></div></div>
+
+  <div class="ab"><div class="ah"><span class="at">5 &mdash; 30 min</span><strong>CRM &mdash; Back office interno</strong></div><div class="abody"><ul>
+    <li>Login con roles: admin, televenta, transporte, cremacion, entrega, contadora</li>
+    <li>Dashboard con KPIs en tiempo real: clientes, servicios activos, leads, stock bajo</li>
+    <li>Gestion completa de clientes y mascotas</li>
+    <li>Ciclo de vida del servicio: ingresado &rarr; retiro &rarr; transporte &rarr; cremacion &rarr; cremado &rarr; entregado</li>
+    <li>Planes de prevision: cuotas, cobertura progresiva (0% / 50% / 100%), atrasos automaticos</li>
+    <li>Leads: kanban drag and drop, conversion a cliente, importacion masiva desde Excel</li>
+    <li>Seguimiento automatico: alerta a las 24hs, pasa a &quot;perdido&quot; a las 48hs sin contacto</li>
+    <li>Agenda del dia con servicios programados por hora</li>
+    <li>Cobranzas: servicios impagos y cuotas atrasadas</li>
+    <li>Inventario con alertas de stock bajo</li>
+    <li>Convenios B2B: veterinarias, petshops y clinicas con metricas por convenio</li>
+    <li>Novedades del cementerio parque: publicar, destacar y gestionar desde el CRM</li>
+    <li>Reportes por periodo con graficos y exportacion a PDF</li>
+    <li>Configuracion: usuarios, permisos, templates de mensajes, listas configurables</li>
+    <li>Asistente IA interno: consultas rapidas sobre el negocio con Claude</li>
+  </ul></div></div>
+
+  <div class="ab"><div class="ah"><span class="at">30 &mdash; 45 min</span><strong>Portal del cliente</strong></div><div class="abody"><ul>
+    <li>Acceso por link unico sin registrarse &mdash; el cliente lo abre desde el celular</li>
+    <li>Tab Servicios: estado del servicio actualizado en tiempo real</li>
+    <li>Tab Planes: cuotas pagadas, porcentaje de cobertura activa</li>
+    <li>Tab Memorial: foto, fechas, dedicatoria, galeria de fotos &mdash; editable desde el portal</li>
+    <li>Tab Novedades: ultimas noticias del cementerio parque</li>
+    <li>Memorial publico: la familia puede compartir una pagina publica de su mascota</li>
+  </ul></div></div>
+
+  <div class="ab"><div class="ah"><span class="at">45 &mdash; 55 min</span><strong>Mejora futura &mdash; Mapa interactivo del cementerio parque</strong><span style="margin-left:auto;font-size:10px;font-weight:700;background:#fef3c7;color:#92400e;border:1px solid #fde68a;padding:2px 7px;border-radius:4px;white-space:nowrap">Demo del concepto</span></div><div class="abody">
+    <p style="font-size:12px;color:var(--gray);margin-bottom:8px;font-style:italic">Esta funcionalidad es una propuesta de mejora futura, no esta disponible en el sistema actual. Se muestra como demo del concepto para que el cliente evalúe si le interesa incorporarla.</p>
+    <ul>
+    <li>Vista satelital real del cementerio parque de Rosario sobre el mapa</li>
+    <li>Sectores y parcelas individuales marcadas e identificadas</li>
+    <li>Camino animado desde la entrada hasta la parcela del cliente</li>
+    <li>Panel con sector, fila y numero de parcela</li>
+    <li>Boton &quot;Como llegar&quot; que abre Waze o Google Maps</li>
+    <li><strong>Para implementarlo:</strong> numeracion real de parcelas + plano del cementerio</li>
+  </ul></div></div>
+
+  <div class="ab"><div class="ah"><span class="at">55 &mdash; 65 min</span><strong>Pendiente del cliente para poder lanzar</strong></div><div class="abody">
+    <div class="checklist">
+      <div class="ci"><div class="cb"></div><div><p><strong>Numero de WhatsApp real</strong></p><small>Hoy hay un placeholder en la landing y el CRM</small></div></div>
+      <div class="ci"><div class="cb"></div><div><p><strong>Dominio propio y email configurado en Resend</strong></p><small>Para que los emails salgan desde su propio dominio</small></div></div>
+      <div class="ci"><div class="cb"></div><div><p><strong>Logo final de Huellas de Paz</strong></p><small>Reemplaza el placeholder en la landing</small></div></div>
+      <div class="ci"><div class="cb"></div><div><p><strong>Fotos reales del lugar y las mascotas</strong></p><small>Para el slideshow del hero en la landing</small></div></div>
+      <div class="ci"><div class="cb"></div><div><p><strong>Direccion fisica exacta del crematorio</strong></p><small>Para la seccion de ubicacion en la landing</small></div></div>
+      <div class="ci"><div class="cb"></div><div><p><strong>Plano de parcelas del cementerio</strong></p><small>Numeracion real de sectores y parcelas para el mapa interactivo</small></div></div>
+      <div class="ci"><div class="cb"></div><div><p><strong>Precios finales de planes de prevision</strong></p><small>Para activar el cotizador cuando el crematorio este operativo</small></div></div>
+    </div>
+  </div></div>
+
+  <div class="ab"><div class="ah"><span class="at">65 &mdash; 75 min</span><strong>Proximos pasos y preguntas</strong></div><div class="abody"><ul>
+    <li>Definir fecha de apertura del crematorio para activar el cotizador</li>
+    <li>Conectar WhatsApp con Kapso + Make.com para captura automatica de leads</li>
+    <li>Conectar Instagram DMs con Make.com</li>
+    <li>Roadmap Fase 3: portal B2B para veterinarias y petshops</li>
+    <li>Roadmap Fase 4: chatbot IA en la web</li>
+  </ul></div></div>
+</div>
+
+<div class="section">
+  <h2 class="st"><span class="num">3</span> Analisis de canales y riesgo de perdida de leads</h2>
+  <p style="font-size:12px;color:var(--mid);margin-bottom:14px">El CRM esta listo para gestionar leads de cualquier origen. El riesgo hoy es que <strong>WhatsApp e Instagram no estan conectados automaticamente</strong>. En un servicio donde la respuesta en las primeras horas es critica, eso genera perdida real de clientes.</p>
+
+  <div class="two">
+    <div class="card cg"><h4>&#10003; Canales ya conectados al CRM</h4><ul>
+      <li>Landing page &rarr; formulario directo al CRM</li>
+      <li>Cotizador &rarr; envia leads automaticamente</li>
+      <li>Carga manual por el equipo</li>
+      <li>Importacion masiva desde Excel</li>
+      <li>Veterinarias y convenios B2B</li>
+    </ul></div>
+    <div class="card cr"><h4>&#10007; Canales sin conectar todavia</h4><ul>
+      <li><strong>WhatsApp</strong> &mdash; canal principal en Argentina</li>
+      <li><strong>Instagram DMs</strong> &mdash; canal en crecimiento</li>
+      <li>Facebook Messenger</li>
+      <li>Chatbot web (Fase 4, planificado)</li>
+    </ul></div>
+  </div>
+
+  <table style="margin-bottom:14px">
+    <thead><tr><th>Canal</th><th>Peso estimado</th><th>Estado</th><th>Riesgo</th></tr></thead>
+    <tbody>
+      <tr><td><strong>WhatsApp</strong></td><td>~55%<div class="bw"><div class="b" style="width:55%;background:#25D366"></div></div></td><td><span class="tg tg-r">Sin integracion</span></td><td style="color:var(--red);font-weight:600">Alto</td></tr>
+      <tr><td><strong>Instagram DMs</strong></td><td>~20%<div class="bw"><div class="b" style="width:20%;background:#e1306c"></div></div></td><td><span class="tg tg-r">Sin integracion</span></td><td style="color:var(--red);font-weight:600">Alto</td></tr>
+      <tr><td><strong>Landing / Cotizador</strong></td><td>~15%<div class="bw"><div class="b" style="width:15%;background:var(--green)"></div></div></td><td><span class="tg tg-g">Conectado</span></td><td style="color:var(--green);font-weight:600">Bajo</td></tr>
+      <tr><td><strong>Veterinarias / Boca en boca</strong></td><td>~8%<div class="bw"><div class="b" style="width:8%;background:#6366f1"></div></div></td><td><span class="tg tg-g">Manual/Convenio</span></td><td style="color:var(--green);font-weight:600">Bajo</td></tr>
+      <tr><td><strong>Facebook / Otros</strong></td><td>~2%<div class="bw"><div class="b" style="width:2%;background:#1877f2"></div></div></td><td><span class="tg tg-s">Sin integracion</span></td><td style="color:var(--gray)">Bajo</td></tr>
+    </tbody>
+  </table>
+
+  <div class="sc"><div class="sh r"><span>Sin sistema &mdash; carga manual inconsistente</span><span>Perdida: 30&ndash;45%</span></div><div class="sb">El equipo responde por WhatsApp o Instagram pero no carga el lead al CRM. Sin seguimiento, sin recordatorio a las 24hs, sin asignacion de agente. En cremacion la ventana de respuesta es de <strong>2 a 6 horas</strong> &mdash; despues la familia elige otro servicio.</div></div>
+  <div class="sc"><div class="sh y"><span>Carga manual parcial</span><span>Perdida: 15&ndash;25%</span></div><div class="sb">Se carga parte de los leads pero no todos ni a tiempo. El seguimiento automatico solo actua sobre leads ya cargados. Los que no entraron quedan fuera del radar.</div></div>
+  <div class="sc"><div class="sh g"><span>Kapso + Make.com &mdash; captura automatica completa</span><span>Perdida: menos del 5%</span></div><div class="sb">Cada mensaje de WhatsApp o DM de Instagram entra automaticamente al CRM. Se asigna a un agente. Si no se contacta en 24hs el sistema alerta. A las 48hs pasa a &quot;perdido&quot; automaticamente. <strong>Costo adicional: $35.59 USD/mes.</strong></div></div>
+
+  <div class="alert y"><span class="ic">&#x1F4CA;</span><div><strong>Calculo orientativo:</strong> Si Huellas de Paz recibe 40 consultas/mes y pierde el 30% por falta de seguimiento, son 12 clientes potenciales perdidos. A ticket promedio de $120.000 ARS equivale a <strong>$1.440.000 ARS/mes en ingresos no captados</strong>. Los $35.59 USD adicionales se recuperan con un solo cliente al mes.</div></div>
+
+  <h3 style="font-size:13.5px;font-weight:700;margin:16px 0 10px">Hoja de ruta para conectar los canales faltantes</h3>
+  <table>
+    <thead><tr><th>Canal</th><th>Herramienta</th><th>Esfuerzo estimado</th><th>Impacto</th></tr></thead>
+    <tbody>
+      <tr><td><strong>WhatsApp</strong></td><td>Kapso + Make.com &rarr; webhook al CRM</td><td style="color:var(--green)"><strong>1&ndash;2 dias</strong></td><td style="color:var(--green);font-weight:600">Muy alto</td></tr>
+      <tr><td><strong>Instagram DMs</strong></td><td>Make.com &rarr; Instagram Business API &rarr; CRM</td><td style="color:var(--yellow)"><strong>2&ndash;3 dias</strong> + verificacion Meta</td><td style="color:var(--green);font-weight:600">Alto</td></tr>
+      <tr><td><strong>Facebook Messenger</strong></td><td>Make.com &rarr; Facebook API &rarr; CRM</td><td style="color:var(--yellow)">2&ndash;3 dias</td><td>Medio</td></tr>
+      <tr><td><strong>Chatbot web</strong></td><td>Fase 4 &mdash; Claude AI integrado al CRM</td><td style="color:var(--red)">Fase 4 completa</td><td style="color:var(--green);font-weight:600">Muy alto</td></tr>
+    </tbody>
+  </table>
+
+  <div class="alert g"><span class="ic">&#x1F4A1;</span><div><strong>Recomendacion inmediata:</strong> Arrancar con WhatsApp via Kapso + Make.com. Es el canal de mayor volumen, el de menor friccion tecnica y el de mayor impacto dado que la urgencia en cremacion es critica. Se puede tener operativo en menos de una semana.</div></div>
+</div>
+
+<div class="footer">
+  <p>Preparado por <strong>Ravenna</strong> &mdash; Tomas Pinolini y Franco Zancocchia</p>
+  <p>Huellas de Paz &middot; Demo 30/04/2026</p>
+</div>
+
+</div></body></html>

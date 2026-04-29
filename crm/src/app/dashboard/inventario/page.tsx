@@ -25,7 +25,7 @@ export default async function InventarioPage() {
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead>
             <tr style={{ borderBottom: '1px solid #f3f4f6' }}>
-              {['Producto', 'Categoría', 'Stock actual', 'Stock mínimo', 'Estado', ''].map((col) => (
+              {['Producto', 'Categoría', 'Venta', 'Stock actual', 'Stock mínimo', 'Estado', ''].map((col) => (
                 <th key={col} style={{ padding: '12px 20px', textAlign: 'left', fontSize: 12, fontWeight: 500, color: '#9ca3af', letterSpacing: '0.05em' }}>
                   {col.toUpperCase()}
                 </th>
@@ -47,9 +47,9 @@ export default async function InventarioPage() {
                     <td style={{ padding: '14px 20px' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                         {item.foto ? (
-                          <img src={item.foto} alt={item.nombre} style={{ width: 40, height: 40, borderRadius: 8, objectFit: 'cover', border: '1px solid #f3f4f6', flexShrink: 0 }} />
+                          <img src={item.foto} alt={item.nombre} style={{ width: 64, height: 64, borderRadius: 10, objectFit: 'cover', border: '1px solid #f3f4f6', flexShrink: 0 }} />
                         ) : (
-                          <div style={{ width: 40, height: 40, borderRadius: 8, background: '#f3f4f6', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16 }}>
+                          <div style={{ width: 64, height: 64, borderRadius: 10, background: '#f3f4f6', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22 }}>
                             📦
                           </div>
                         )}
@@ -60,6 +60,12 @@ export default async function InventarioPage() {
                       </div>
                     </td>
                     <td style={{ padding: '14px 20px', fontSize: 14, color: '#4b5563', textTransform: 'capitalize' }}>{item.categoria}</td>
+                    <td style={{ padding: '14px 20px' }}>
+                      {item.paraVenta
+                        ? <span style={{ background: '#f0faf5', color: '#2d8a54', padding: '3px 10px', borderRadius: 20, fontSize: 12, fontWeight: 500 }}>Venta</span>
+                        : <span style={{ background: '#f3f4f6', color: '#9ca3af', padding: '3px 10px', borderRadius: 20, fontSize: 12 }}>Interno</span>
+                      }
+                    </td>
                     <td style={{ padding: '14px 20px', fontSize: 14, fontWeight: 600, color: stockBajo ? '#dc2626' : '#111827' }}>{item.stockActual}</td>
                     <td style={{ padding: '14px 20px', fontSize: 14, color: '#4b5563' }}>{item.stockMinimo}</td>
                     <td style={{ padding: '14px 20px' }}>

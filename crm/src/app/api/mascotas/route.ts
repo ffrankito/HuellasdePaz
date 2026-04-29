@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { revalidatePath } from 'next/cache'
 import { db } from '@/db'
 import { mascotas } from '@/db/schema'
 import { eq } from 'drizzle-orm'
@@ -17,6 +18,8 @@ export async function POST(request: NextRequest) {
       notas: body.notas,
     }).returning()
 
+    revalidatePath('/dashboard', 'layout')
+    revalidatePath('/', 'layout')
     return NextResponse.json(mascota, { status: 201 })
   } catch (error) {
     console.error('Error creando mascota:', error)

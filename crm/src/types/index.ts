@@ -1,12 +1,8 @@
 export type Rol = 'admin' | 'manager' | 'contadora' | 'televenta' | 'transporte' | 'cremacion' | 'entrega'
 export type EstadoServicio =
-  | 'ingresado'
-  | 'retiro_pendiente'
-  | 'en_transporte'
-  | 'recibido'
-  | 'en_cremacion'
-  | 'cremado'
-  | 'listo_entrega'
+  | 'pendiente'
+  | 'en_proceso'
+  | 'listo'
   | 'entregado'
   | 'cancelado'
 

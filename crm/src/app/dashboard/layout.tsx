@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { Sidebar } from '@/components/layout/Sidebar'
 import { Header } from '@/components/layout/Header'
+import { AsistenteWidget } from '@/components/asistente/AsistenteWidget'
 import { db } from '@/db'
 import { usuarios } from '@/db/schema'
 import { eq } from 'drizzle-orm'
@@ -12,12 +13,12 @@ export default async function DashboardLayout({
   children: React.ReactNode
 }) {
   const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const { data: { session } } = await supabase.auth.getSession()
 
-  if (!user) redirect('/auth/login')
+  if (!session?.user) redirect('/auth/login')
 
   const usuario = await db.query.usuarios.findFirst({
-    where: eq(usuarios.id, user.id),
+    where: eq(usuarios.id, session.user.id),
   })
 
   if (!usuario) redirect('/auth/login')
@@ -31,6 +32,7 @@ export default async function DashboardLayout({
           {children}
         </main>
       </div>
+      <AsistenteWidget />
     </div>
   )
 }

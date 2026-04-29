@@ -6,6 +6,7 @@ export const clientes = pgTable('clientes', {
   nombre: text('nombre').notNull(),
   apellido: text('apellido').notNull(),
   email: text('email'),
+  dni: text('dni'),
   telefono: text('telefono').notNull(),
   direccion: text('direccion'),
   localidad: text('localidad'),

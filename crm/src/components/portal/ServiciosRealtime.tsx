@@ -18,18 +18,14 @@ type Mascota = {
 }
 
 const estadoColors: Record<string, { bg: string; color: string; label: string }> = {
-  ingresado: { bg: '#eff6ff', color: '#1d4ed8', label: 'Ingresado' },
-  retiro_pendiente: { bg: '#fefce8', color: '#a16207', label: 'Retiro pendiente' },
-  en_transporte: { bg: '#fff7ed', color: '#c2410c', label: 'En camino' },
-  recibido: { bg: '#f0fdf4', color: '#15803d', label: 'Recibido' },
-  en_cremacion: { bg: '#fdf4ff', color: '#7e22ce', label: 'En cremación' },
-  cremado: { bg: '#f0fdf4', color: '#15803d', label: 'Cremado' },
-  listo_entrega: { bg: '#fefce8', color: '#a16207', label: 'Listo para retirar' },
-  entregado: { bg: '#f0fdf4', color: '#15803d', label: 'Entregado' },
-  cancelado: { bg: '#fef2f2', color: '#dc2626', label: 'Cancelado' },
+  pendiente:  { bg: '#fefce8', color: '#a16207', label: 'Pendiente' },
+  en_proceso: { bg: '#eff6ff', color: '#1d4ed8', label: 'En proceso' },
+  listo:      { bg: '#f0fdf4', color: '#15803d', label: 'Listo para retirar' },
+  entregado:  { bg: '#f0fdf4', color: '#15803d', label: 'Entregado' },
+  cancelado:  { bg: '#fef2f2', color: '#dc2626', label: 'Cancelado' },
 }
 
-const pasos = ['ingresado', 'retiro_pendiente', 'en_transporte', 'recibido', 'en_cremacion', 'cremado', 'listo_entrega', 'entregado']
+const pasos = ['pendiente', 'en_proceso', 'listo', 'entregado']
 
 export function ServiciosRealtime({
   initialServicios,

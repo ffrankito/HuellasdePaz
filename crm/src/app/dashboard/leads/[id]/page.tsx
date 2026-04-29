@@ -102,6 +102,7 @@ export default async function LeadDetallePage({
             <h2 style={{ fontSize: 15, fontWeight: 600, color: '#111827', margin: '0 0 16px' }}>Datos del lead</h2>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               <InfoRow label="Teléfono" value={lead.telefono} />
+              {lead.dni && <InfoRow label="DNI" value={lead.dni} />}
               <InfoRow label="Email" value={lead.email ?? '—'} />
               <InfoRow label="Origen" value={lead.origen ?? '—'} />
               <InfoRow label="Agente asignado" value={agente?.nombre ?? 'Sin asignar'} />

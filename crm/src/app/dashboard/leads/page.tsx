@@ -28,11 +28,30 @@ const columnas: { id: EstadoLead; label: string; color: string }[] = [
 export default function LeadsPage() {
   const [leads, setLeads] = useState<Lead[]>([])
   const [loading, setLoading] = useState(true)
+  const [nuevosCount, setNuevosCount] = useState(0)
 
   useEffect(() => {
-    fetch('/api/leads')
-      .then(r => r.json())
-      .then(data => { setLeads(data); setLoading(false) })
+    const cargar = (esPolling = false) =>
+      fetch('/api/leads')
+        .then(r => r.json())
+        .then((data: Lead[]) => {
+          if (!esPolling) {
+            setLeads(data)
+            setLoading(false)
+            return
+          }
+          setLeads(prev => {
+            const ids = new Set(prev.map(l => l.id))
+            const nuevos = data.filter(l => !ids.has(l.id))
+            if (nuevos.length === 0) return prev
+            setNuevosCount(n => n + nuevos.length)
+            return [...prev, ...nuevos]
+          })
+        })
+
+    cargar()
+    const poll = setInterval(() => cargar(true), 10_000)
+    return () => clearInterval(poll)
   }, [])
 
   async function onDragEnd(result: DropResult) {
@@ -49,6 +68,18 @@ export default function LeadsPage() {
 
   return (
     <div className="page-container" style={{ display: 'flex', flexDirection: 'column' }}>
+      {nuevosCount > 0 && (
+        <div style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: 10,
+          padding: '10px 16px', marginBottom: 16,
+        }}>
+          <span style={{ fontSize: 14, color: '#15803d', fontWeight: 500 }}>
+            {nuevosCount === 1 ? '1 nuevo lead' : `${nuevosCount} nuevos leads`} en la cola
+          </span>
+          <button onClick={() => setNuevosCount(0)} style={{ background: 'none', border: 'none', fontSize: 16, cursor: 'pointer', color: '#15803d', lineHeight: 1 }}>×</button>
+        </div>
+      )}
       <div className="page-header">
         <div>
           <h1 style={{ fontSize: 24, fontWeight: 600, color: '#111827', margin: 0 }}>Leads</h1>

@@ -7,15 +7,11 @@ import { ServicioEstadoForm } from '@/components/servicios/ServicioEstadoForm'
 import { ServicioPagoForm } from '@/components/servicios/ServicioPagoForm'
 
 const estadoColors: Record<string, { bg: string; color: string }> = {
-  ingresado: { bg: '#eff6ff', color: '#1d4ed8' },
-  retiro_pendiente: { bg: '#fefce8', color: '#a16207' },
-  en_transporte: { bg: '#fff7ed', color: '#c2410c' },
-  recibido: { bg: '#f0fdf4', color: '#15803d' },
-  en_cremacion: { bg: '#fdf4ff', color: '#7e22ce' },
-  cremado: { bg: '#f0fdf4', color: '#15803d' },
-  listo_entrega: { bg: '#fefce8', color: '#a16207' },
-  entregado: { bg: '#f0fdf4', color: '#15803d' },
-  cancelado: { bg: '#fef2f2', color: '#dc2626' },
+  pendiente:  { bg: '#fefce8', color: '#a16207' },
+  en_proceso: { bg: '#eff6ff', color: '#1d4ed8' },
+  listo:      { bg: '#f0fdf4', color: '#15803d' },
+  entregado:  { bg: '#f0fdf4', color: '#15803d' },
+  cancelado:  { bg: '#fef2f2', color: '#dc2626' },
 }
 
 const tipoLabel: Record<string, string> = {
@@ -24,10 +20,7 @@ const tipoLabel: Record<string, string> = {
   entierro: 'Entierro',
 }
 
-const estadoOrden = [
-  'ingresado', 'retiro_pendiente', 'en_transporte', 'recibido',
-  'en_cremacion', 'cremado', 'listo_entrega', 'entregado',
-]
+const estadoOrden = ['pendiente', 'en_proceso', 'listo', 'entregado']
 
 function InfoRow({ label, value }: { label: string; value: string }) {
   return (
@@ -59,9 +52,10 @@ export default async function ServicioDetallePage({ params }: { params: Promise<
 
   const { servicio, cliente, mascota, convenioNombre } = row
   const badge = estadoColors[servicio.estado] ?? { bg: '#f3f4f6', color: '#374151' }
-  const neto = servicio.precio
-    ? Number(servicio.precio) - Number(servicio.descuento ?? 0)
-    : null
+  const precio = servicio.precio ? Number(servicio.precio) : null
+  const comision = Number(servicio.descuento ?? 0)
+  const ingresoNeto = precio !== null ? precio - comision : null
+  const neto = precio  // alias para no romper las condiciones de abajo
   const pasoActual = estadoOrden.indexOf(servicio.estado)
 
   return (
@@ -123,15 +117,15 @@ export default async function ServicioDetallePage({ params }: { params: Promise<
           <InfoRow label="Fecha de cremación" value={servicio.fechaCremacion ? new Date(servicio.fechaCremacion).toLocaleDateString('es-AR', { day: 'numeric', month: 'long', year: 'numeric' }) : '—'} />
           <InfoRow label="Fecha de entrega" value={servicio.fechaEntrega ? new Date(servicio.fechaEntrega).toLocaleDateString('es-AR', { day: 'numeric', month: 'long', year: 'numeric' }) : '—'} />
           {convenioNombre && <InfoRow label="Convenio" value={convenioNombre} />}
-          {neto !== null && (
+          {precio !== null && (
             <>
-              {Number(servicio.descuento) > 0 && (
-                <InfoRow label="Precio base" value={`$${Number(servicio.precio).toLocaleString('es-AR')}`} />
+              <InfoRow label="Total a cobrar al cliente" value={`$${precio.toLocaleString('es-AR')}`} />
+              {comision > 0 && (
+                <InfoRow label={`Comisión ${convenioNombre ?? 'convenio'}`} value={`−$${comision.toLocaleString('es-AR')}`} />
               )}
-              {Number(servicio.descuento) > 0 && (
-                <InfoRow label="Descuento convenio" value={`−$${Number(servicio.descuento).toLocaleString('es-AR')}`} />
+              {comision > 0 && ingresoNeto !== null && (
+                <InfoRow label="Ingreso neto Huellas" value={`$${ingresoNeto.toLocaleString('es-AR')}`} />
               )}
-              <InfoRow label="Total a cobrar" value={`$${neto.toLocaleString('es-AR')}`} />
             </>
           )}
           {servicio.notas && (

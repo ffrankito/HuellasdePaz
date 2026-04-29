@@ -14,7 +14,15 @@ export function EditarServicioConfigInline({ config }: { config: ServicioConfig 
   const router = useRouter()
   const [editando, setEditando] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [eliminando, setEliminando] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  async function handleEliminar() {
+    if (!confirm(`¿Eliminár "${config.nombre}"? Esta acción no se puede deshacer.`)) return
+    setEliminando(true)
+    await fetch(`/api/configuracion/servicios/${config.id}`, { method: 'DELETE' })
+    router.refresh()
+  }
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -57,6 +65,9 @@ export function EditarServicioConfigInline({ config }: { config: ServicioConfig 
             </span>
             <button onClick={() => setEditando(true)} style={{ fontSize: 11, color: '#1d4ed8', background: '#eff6ff', border: 'none', borderRadius: 6, padding: '3px 10px', cursor: 'pointer', fontWeight: 600 }}>
               Editar
+            </button>
+            <button onClick={handleEliminar} disabled={eliminando} style={{ fontSize: 11, color: '#dc2626', background: '#fef2f2', border: 'none', borderRadius: 6, padding: '3px 10px', cursor: eliminando ? 'not-allowed' : 'pointer', fontWeight: 600, opacity: eliminando ? 0.6 : 1 }}>
+              {eliminando ? '...' : 'Eliminar'}
             </button>
           </div>
         </div>

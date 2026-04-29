@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { revalidatePath } from 'next/cache'
 import { db } from '@/db'
 import { leads } from '@/db/schema'
 import { eq, asc } from 'drizzle-orm'
@@ -22,10 +23,13 @@ export async function POST(request: NextRequest) {
       nombre: body.nombre,
       telefono: body.telefono,
       email: body.email,
+      dni: body.dni,
       mensaje: body.mensaje,
       origen: (body.origen as OrigenLead) ?? 'directo',
       veterinariaId: body.veterinariaId,
+      importacionId: body.importacionId,
     })
+    revalidatePath('/dashboard', 'layout')
     return NextResponse.json(lead, { status: esNuevo ? 201 : 200, headers: corsHeaders })
   } catch (error) {
     console.error('Error creando lead:', error)

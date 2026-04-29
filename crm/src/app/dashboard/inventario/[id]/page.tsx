@@ -5,6 +5,7 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { EditarStockButton } from '@/components/dashboard/EditarStockButton'
 import { EliminarProductoButton } from '@/components/dashboard/EliminarProductoButton'
+import { ToggleParaVentaButton } from '@/components/dashboard/ToggleParaVentaButton'
 
 export default async function InventarioDetallePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
@@ -67,6 +68,8 @@ export default async function InventarioDetallePage({ params }: { params: Promis
             </div>
             <EditarStockButton id={item.id} stockActual={item.stockActual} />
           </div>
+
+          <ToggleParaVentaButton id={item.id} paraVenta={item.paraVenta} />
 
           {item.foto && (
             <div style={{ background: 'white', borderRadius: 16, border: '1px solid #f3f4f6', padding: '24px', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>

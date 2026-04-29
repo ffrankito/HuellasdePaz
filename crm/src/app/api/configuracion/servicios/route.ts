@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { revalidatePath } from 'next/cache'
 import { db } from '@/db'
 import { serviciosConfig } from '@/db/schema'
 
@@ -16,6 +17,7 @@ export async function POST(request: NextRequest) {
       precio: body.precio ? body.precio.toString() : null,
       descripcion: body.descripcion || null,
     }).returning()
+    revalidatePath('/dashboard/configuracion')
     return NextResponse.json(config, { status: 201 })
   } catch (error) {
     console.error('Error creando config servicio:', error)

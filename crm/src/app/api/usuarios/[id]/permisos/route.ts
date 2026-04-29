@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { revalidatePath } from 'next/cache'
 import { db } from '@/db'
 import { usuarios } from '@/db/schema'
 import { eq } from 'drizzle-orm'
@@ -30,6 +31,7 @@ export async function PATCH(
       .where(eq(usuarios.id, id))
       .returning()
 
+    revalidatePath('/dashboard', 'layout')
     return NextResponse.json(actualizado)
   } catch (error) {
     console.error('Error actualizando permisos:', error)

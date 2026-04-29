@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { revalidatePath } from 'next/cache'
 import { db } from '@/db'
 import { leads, leadInteracciones, usuarios } from '@/db/schema'
 import { eq } from 'drizzle-orm'
@@ -46,6 +47,7 @@ export async function POST(
       .set({ ultimaInteraccionEn: new Date(), actualizadoEn: new Date() })
       .where(eq(leads.id, id))
 
+    revalidatePath('/dashboard', 'layout')
     return NextResponse.json({ ok: true })
   } catch (error) {
     console.error('Error enviando email:', error)

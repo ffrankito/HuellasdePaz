@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { revalidatePath } from 'next/cache'
 import { db } from '@/db'
 import { convenios } from '@/db/schema'
 import { eq } from 'drizzle-orm'
@@ -26,7 +27,8 @@ export async function PATCH(
     const { id } = await params
     const body = await request.json()
 
-    const [actualizado] = await db.update(convenios).set({
+    // Allow partial updates (e.g., toggle portalActivo) or full form saves
+    const campos = body.nombre !== undefined ? {
       nombre: body.nombre,
       tipo: body.tipo,
       direccion: body.direccion || null,
@@ -38,13 +40,20 @@ export async function PATCH(
       estadoConvenio: body.estadoConvenio,
       descuentoPorcentaje: body.descuentoPorcentaje?.toString() ?? '0',
       beneficioDescripcion: body.beneficioDescripcion || null,
+      serviciosCubiertos: body.serviciosCubiertos ?? null,
       fechaInicioConvenio: body.fechaInicioConvenio ? new Date(body.fechaInicioConvenio) : null,
       fechaVencimientoConvenio: body.fechaVencimientoConvenio ? new Date(body.fechaVencimientoConvenio) : null,
       notas: body.notas || null,
       actualizadoEn: new Date(),
-    }).where(eq(convenios.id, id)).returning()
+    } : {
+      ...(body.portalActivo !== undefined && { portalActivo: body.portalActivo }),
+      actualizadoEn: new Date(),
+    }
+
+    const [actualizado] = await db.update(convenios).set(campos).where(eq(convenios.id, id)).returning()
 
     if (!actualizado) return NextResponse.json({ error: 'No encontrado' }, { status: 404 })
+    revalidatePath('/dashboard', 'layout')
     return NextResponse.json(actualizado)
   } catch (error) {
     console.error('Error actualizando convenio:', error)

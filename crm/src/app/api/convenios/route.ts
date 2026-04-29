@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { revalidatePath } from 'next/cache'
 import { db } from '@/db'
 import { convenios } from '@/db/schema'
 import { eq } from 'drizzle-orm'
@@ -49,11 +50,13 @@ export async function POST(request: NextRequest) {
       estadoConvenio: body.estadoConvenio ?? 'sin_convenio',
       descuentoPorcentaje: body.descuentoPorcentaje?.toString() ?? '0',
       beneficioDescripcion: body.beneficioDescripcion || null,
+      serviciosCubiertos: body.serviciosCubiertos ?? null,
       fechaInicioConvenio: body.fechaInicioConvenio ? new Date(body.fechaInicioConvenio) : null,
       fechaVencimientoConvenio: body.fechaVencimientoConvenio ? new Date(body.fechaVencimientoConvenio) : null,
       notas: body.notas || null,
     }).returning()
 
+    revalidatePath('/dashboard', 'layout')
     return NextResponse.json(convenio, { status: 201 })
   } catch (error) {
     console.error('Error creando convenio:', error)

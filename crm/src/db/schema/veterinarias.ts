@@ -1,4 +1,4 @@
-import { pgTable, uuid, text, timestamp, numeric, pgEnum } from 'drizzle-orm/pg-core'
+import { pgTable, uuid, text, timestamp, numeric, pgEnum, jsonb, boolean } from 'drizzle-orm/pg-core'
 
 export const estadoConvenioEnum = pgEnum('estado_convenio', [
   'sin_convenio',
@@ -30,7 +30,11 @@ export const convenios = pgTable('convenios', {
   beneficioDescripcion: text('beneficio_descripcion'),
   fechaInicioConvenio: timestamp('fecha_inicio_convenio'),
   fechaVencimientoConvenio: timestamp('fecha_vencimiento_convenio'),
+  serviciosCubiertos: jsonb('servicios_cubiertos').$type<string[]>(),
   notas: text('notas'),
+  tokenPortal: uuid('token_portal').defaultRandom(),
+  portalActivo: boolean('portal_activo').notNull().default(false),
+  authUserId: text('auth_user_id'),
   creadoEn: timestamp('creado_en').defaultNow().notNull(),
   actualizadoEn: timestamp('actualizado_en').defaultNow().notNull(),
 })

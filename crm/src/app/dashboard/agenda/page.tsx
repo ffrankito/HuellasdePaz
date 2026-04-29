@@ -5,25 +5,17 @@ import { AvanzarButtonClient } from '@/components/dashboard/AvanzarButton'
 import Link from 'next/link'
 
 const estadoColors: Record<string, { bg: string; color: string }> = {
-  ingresado: { bg: '#eff6ff', color: '#1d4ed8' },
-  retiro_pendiente: { bg: '#fefce8', color: '#a16207' },
-  en_transporte: { bg: '#fff7ed', color: '#c2410c' },
-  recibido: { bg: '#f0fdf4', color: '#15803d' },
-  en_cremacion: { bg: '#fdf4ff', color: '#7e22ce' },
-  cremado: { bg: '#f0fdf4', color: '#15803d' },
-  listo_entrega: { bg: '#fefce8', color: '#a16207' },
-  entregado: { bg: '#f0fdf4', color: '#15803d' },
-  cancelado: { bg: '#fef2f2', color: '#dc2626' },
+  pendiente:  { bg: '#fefce8', color: '#a16207' },
+  en_proceso: { bg: '#eff6ff', color: '#1d4ed8' },
+  listo:      { bg: '#f0fdf4', color: '#15803d' },
+  entregado:  { bg: '#f0fdf4', color: '#15803d' },
+  cancelado:  { bg: '#fef2f2', color: '#dc2626' },
 }
 
 const estadoSiguiente: Record<string, string> = {
-  ingresado: 'retiro_pendiente',
-  retiro_pendiente: 'en_transporte',
-  en_transporte: 'recibido',
-  recibido: 'en_cremacion',
-  en_cremacion: 'cremado',
-  cremado: 'listo_entrega',
-  listo_entrega: 'entregado',
+  pendiente:  'en_proceso',
+  en_proceso: 'listo',
+  listo:      'entregado',
 }
 
 const tipoLabel: Record<string, string> = {

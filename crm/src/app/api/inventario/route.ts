@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { revalidatePath } from 'next/cache'
 import { db } from '@/db'
 import { inventario } from '@/db/schema'
+import { and, eq, gt } from 'drizzle-orm'
 
 export async function POST(request: NextRequest) {
   try {
@@ -15,8 +17,10 @@ export async function POST(request: NextRequest) {
       proveedor: body.proveedor,
       notas: body.notas,
       foto: body.foto,
+      paraVenta: body.paraVenta ?? false,
     }).returning()
 
+    revalidatePath('/dashboard', 'layout')
     return NextResponse.json(item, { status: 201 })
   } catch (error) {
     console.error('Error creando producto:', error)
@@ -24,9 +28,17 @@ export async function POST(request: NextRequest) {
   }
 }
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
-    const data = await db.select().from(inventario)
+    const { searchParams } = new URL(request.url)
+    const selector = searchParams.get('selector') === 'true'
+
+    const data = selector
+      ? await db.select().from(inventario).where(
+          and(eq(inventario.paraVenta, true), gt(inventario.stockActual, 0))
+        )
+      : await db.select().from(inventario)
+
     return NextResponse.json(data)
   } catch (error) {
     console.error('Error obteniendo inventario:', error)

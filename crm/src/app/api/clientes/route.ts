@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { revalidatePath } from 'next/cache'
 import { db } from '@/db'
 import { clientes } from '@/db/schema'
 import { generarToken } from '@/lib/utils/token'
@@ -12,6 +13,7 @@ export async function POST(request: NextRequest) {
       apellido: body.apellido,
       telefono: body.telefono,
       email: body.email,
+      dni: body.dni ?? null,
       direccion: body.direccion,
       localidad: body.localidad,
       provincia: body.provincia ?? 'Santa Fe',
@@ -20,6 +22,7 @@ export async function POST(request: NextRequest) {
       tokenPortal: generarToken(),
     }).returning()
 
+    revalidatePath('/dashboard', 'layout')
     return NextResponse.json(cliente, { status: 201 })
   } catch (error) {
     console.error('Error creando cliente:', error)

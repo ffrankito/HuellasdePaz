@@ -2,12 +2,14 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { EmailLeadForm } from '@/components/leads/EmailLeadForm'
+import { SelectorProducto } from '@/components/servicios/SelectorProducto'
 
 type Lead = {
   id: string
   nombre: string
   telefono: string
   email: string | null
+  dni: string | null
   origen: string | null
   estado: string
   mensaje: string | null
@@ -21,22 +23,51 @@ type PlanConfig = {
   activo: boolean
 }
 
+type ServicioConfig = {
+  id: string
+  nombre: string
+  tipo: string
+  precio: string | null
+  activo: boolean
+}
+
 type ConvenioActivo = {
   id: string
   nombre: string
   descuentoPorcentaje: string | null
+  serviciosCubiertos: string[] | null
+}
+
+type ItemInventario = {
+  id: string
+  nombre: string
+  descripcion: string | null
+  categoria: string
+  stockActual: number
+  precioUnitario: string | null
+  foto: string | null
+}
+
+function convenioAplica(c: ConvenioActivo, tipo: string | undefined): boolean {
+  if (!tipo) return true
+  if (!c.serviciosCubiertos || c.serviciosCubiertos.length === 0) return true
+  return c.serviciosCubiertos.includes(tipo)
 }
 
 type ModalConversion = {
   abierto: boolean
   tipo: 'servicio' | 'plan' | ''
   apellido: string
+  dni: string
   email: string
   localidad: string
-  tipoServicio: string
+  mascotaNombre: string
+  mascotaEspecie: string
+  servicioConfigId: string
   tipoPlan: string
   notas: string
   convenioId: string
+  inventarioItemId: string | null
 }
 
 const ESTADOS = [
@@ -46,12 +77,6 @@ const ESTADOS = [
   { id: 'cotizado', label: 'Cotizado', color: '#7e22ce' },
   { id: 'convertido', label: '✓ Convirtió — crear cliente', color: '#15803d' },
   { id: 'perdido', label: 'Perdido', color: '#dc2626' },
-]
-
-const TIPOS_SERVICIO = [
-  { id: 'cremacion_individual', label: 'Cremación individual' },
-  { id: 'cremacion_comunitaria', label: 'Cremación comunitaria' },
-  { id: 'jardin_del_recuerdo', label: 'Jardín del Recuerdo' },
 ]
 
 function parsearMensaje(mensaje: string): { label: string; value: string }[] | null {
@@ -92,13 +117,16 @@ function Cronometro({ iniciado }: { iniciado: boolean }) {
 }
 
 const modalInicial: ModalConversion = {
-  abierto: false, tipo: '', apellido: '', email: '',
-  localidad: '', tipoServicio: '', tipoPlan: '', notas: '', convenioId: '',
+  abierto: false, tipo: '', apellido: '', dni: '', email: '',
+  localidad: '', mascotaNombre: '', mascotaEspecie: '',
+  servicioConfigId: '', tipoPlan: '', notas: '', convenioId: '',
+  inventarioItemId: null,
 }
 
 export default function MisLeadsPage() {
   const [leads, setLeads] = useState<Lead[]>([])
   const [planesConfig, setPlanesConfig] = useState<PlanConfig[]>([])
+  const [serviciosConfig, setServiciosConfig] = useState<ServicioConfig[]>([])
   const [loading, setLoading] = useState(true)
   const [indiceActual, setIndiceActual] = useState(0)
   const [leadAbierto, setLeadAbierto] = useState(false)
@@ -110,24 +138,47 @@ export default function MisLeadsPage() {
   const [modal, setModal] = useState<ModalConversion>(modalInicial)
   const [guardandoConversion, setGuardandoConversion] = useState(false)
   const [conveniosActivos, setConveniosActivos] = useState<ConvenioActivo[]>([])
+  const [inventarioItems, setInventarioItems] = useState<ItemInventario[]>([])
 
   useEffect(() => {
-    fetch('/api/leads?misLeads=true')
-      .then(r => r.json())
-      .then(data => {
-        const activos = data.filter((l: Lead) => l.estado !== 'convertido' && l.estado !== 'perdido')
-        setLeads(activos)
-        setLoading(false)
-      })
+    const cargarLeads = () =>
+      fetch('/api/leads?misLeads=true')
+        .then(r => r.json())
+        .then((data: Lead[]) => {
+          const activos = data.filter(l => l.estado !== 'convertido' && l.estado !== 'perdido')
+          setLeads(prev => {
+            if (prev.length === 0) { setLoading(false); return activos }
+            // polling: only append truly new leads at the end
+            const ids = new Set(prev.map(l => l.id))
+            const nuevos = activos.filter(l => !ids.has(l.id))
+            return nuevos.length > 0 ? [...prev, ...nuevos] : prev
+          })
+          setLoading(false)
+        })
+
+    cargarLeads()
+    const poll = setInterval(cargarLeads, 30_000)
 
     fetch('/api/configuracion/planes')
       .then(r => r.json())
       .then(data => setPlanesConfig(data.filter((p: PlanConfig) => p.activo)))
 
+    fetch('/api/configuracion/servicios')
+      .then(r => r.json())
+      .then(data => setServiciosConfig(data.filter((s: ServicioConfig) => s.activo)))
+      .catch(() => {})
+
     fetch('/api/convenios?activos=true')
       .then(r => r.json())
       .then(data => setConveniosActivos(data))
       .catch(() => {})
+
+    fetch('/api/inventario?selector=true')
+      .then(r => r.ok ? r.json() : [])
+      .then(data => setInventarioItems(data))
+      .catch(() => {})
+
+    return () => clearInterval(poll)
   }, [])
 
   const leadActual = leads[indiceActual]
@@ -157,7 +208,18 @@ export default function MisLeadsPage() {
     }
 
     if (nuevoEstado === 'convertido') {
-      setModal(prev => ({ ...prev, abierto: true, email: leadActual.email ?? '' }))
+      const mascotaItem = selecciones?.find(s => s.label === 'Mascota')
+      const especieDetectada = leadActual.mensaje
+        ? (['perro', 'gato', 'conejo', 'hurón', 'ave', 'reptil'] as const).find(e => leadActual.mensaje!.toLowerCase().includes(e)) ?? ''
+        : ''
+      setModal(prev => ({
+        ...prev,
+        abierto: true,
+        dni: leadActual.dni ?? '',
+        email: leadActual.email ?? '',
+        mascotaNombre: mascotaItem?.value ?? '',
+        mascotaEspecie: especieDetectada,
+      }))
       return
     }
 
@@ -189,13 +251,17 @@ export default function MisLeadsPage() {
         nombre: leadActual.nombre,
         apellido: modal.apellido,
         telefono: leadActual.telefono,
+        dni: modal.dni || null,
         email: modal.email,
         localidad: modal.localidad,
+        mascotaNombre: modal.mascotaNombre.trim() || null,
+        mascotaEspecie: modal.mascotaNombre.trim() ? (modal.mascotaEspecie || 'perro') : null,
         tipo: modal.tipo,
-        tipoServicio: modal.tipoServicio,
+        servicioConfigId: modal.tipo === 'servicio' ? modal.servicioConfigId || null : null,
         tipoPlan: modal.tipoPlan,
         notas: modal.notas,
         convenioId: modal.tipo === 'servicio' ? modal.convenioId || null : null,
+        inventarioItemId: modal.tipo === 'servicio' ? modal.inventarioItemId || null : null,
       }),
     })
 
@@ -225,13 +291,19 @@ export default function MisLeadsPage() {
       {/* Modal de conversión */}
       {modal.abierto && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
-          <div style={{ background: 'white', borderRadius: 20, padding: 32, maxWidth: 520, width: '100%', boxShadow: '0 20px 60px rgba(0,0,0,0.2)' }}>
+          <div style={{ background: 'white', borderRadius: 20, padding: 32, maxWidth: 520, width: '100%', boxShadow: '0 20px 60px rgba(0,0,0,0.2)', maxHeight: '90vh', overflowY: 'auto' }}>
             <h2 style={{ fontSize: 20, fontWeight: 700, color: '#111827', margin: '0 0 6px' }}>🎉 ¡Convirtió! Crear cliente</h2>
             <p style={{ fontSize: 14, color: '#6b7280', margin: '0 0 24px' }}>Completá los datos para crear el cliente y su servicio/plan.</p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-              <div>
-                <label style={{ fontSize: 13, fontWeight: 600, color: '#374151', display: 'block', marginBottom: 6 }}>Apellido</label>
-                <input type="text" placeholder="Apellido" value={modal.apellido} onChange={e => setModal(p => ({ ...p, apellido: e.target.value }))} style={{ width: '100%', border: '1px solid #e5e7eb', borderRadius: 10, padding: '10px 12px', fontSize: 14, outline: 'none', boxSizing: 'border-box' }} />
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                <div>
+                  <label style={{ fontSize: 13, fontWeight: 600, color: '#374151', display: 'block', marginBottom: 6 }}>Apellido</label>
+                  <input type="text" placeholder="Apellido" value={modal.apellido} onChange={e => setModal(p => ({ ...p, apellido: e.target.value }))} style={{ width: '100%', border: '1px solid #e5e7eb', borderRadius: 10, padding: '10px 12px', fontSize: 14, outline: 'none', boxSizing: 'border-box' }} />
+                </div>
+                <div>
+                  <label style={{ fontSize: 13, fontWeight: 600, color: '#374151', display: 'block', marginBottom: 6 }}>DNI</label>
+                  <input type="text" placeholder="12.345.678" value={modal.dni} onChange={e => setModal(p => ({ ...p, dni: e.target.value }))} style={{ width: '100%', border: '1px solid #e5e7eb', borderRadius: 10, padding: '10px 12px', fontSize: 14, outline: 'none', boxSizing: 'border-box' }} />
+                </div>
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
                 <div>
@@ -243,19 +315,63 @@ export default function MisLeadsPage() {
                   <input type="text" placeholder="Ciudad" value={modal.localidad} onChange={e => setModal(p => ({ ...p, localidad: e.target.value }))} style={{ width: '100%', border: '1px solid #e5e7eb', borderRadius: 10, padding: '10px 12px', fontSize: 14, outline: 'none', boxSizing: 'border-box' }} />
                 </div>
               </div>
+              <div style={{ borderTop: '1px solid #f3f4f6', paddingTop: 14 }}>
+                <label style={{ fontSize: 13, fontWeight: 600, color: '#374151', display: 'block', marginBottom: 6 }}>
+                  Mascota <span style={{ fontWeight: 400, color: '#9ca3af' }}>(opcional)</span>
+                </label>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: 10 }}>
+                  <input
+                    type="text"
+                    placeholder="Nombre de la mascota"
+                    value={modal.mascotaNombre}
+                    onChange={e => setModal(p => ({ ...p, mascotaNombre: e.target.value }))}
+                    style={{ border: '1px solid #e5e7eb', borderRadius: 10, padding: '10px 12px', fontSize: 14, outline: 'none', width: '100%', boxSizing: 'border-box' as const }}
+                  />
+                  <select
+                    value={modal.mascotaEspecie}
+                    onChange={e => setModal(p => ({ ...p, mascotaEspecie: e.target.value }))}
+                    style={{ border: '1px solid #e5e7eb', borderRadius: 10, padding: '10px 12px', fontSize: 14, outline: 'none', background: 'white', minWidth: 110 }}
+                  >
+                    <option value="">Especie...</option>
+                    <option value="perro">🐕 Perro</option>
+                    <option value="gato">🐈 Gato</option>
+                    <option value="conejo">🐇 Conejo</option>
+                    <option value="ave">🐦 Ave</option>
+                    <option value="reptil">🦎 Reptil</option>
+                    <option value="otro">Otro</option>
+                  </select>
+                </div>
+              </div>
+
               <div>
                 <label style={{ fontSize: 13, fontWeight: 600, color: '#374151', display: 'block', marginBottom: 8 }}>¿Qué compró?</label>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
                   <button onClick={() => setModal(p => ({ ...p, tipo: 'servicio', tipoPlan: '' }))} style={{ padding: '12px', borderRadius: 10, border: '2px solid', borderColor: modal.tipo === 'servicio' ? '#111827' : '#e5e7eb', background: modal.tipo === 'servicio' ? '#111827' : 'white', color: modal.tipo === 'servicio' ? 'white' : '#374151', fontWeight: 600, fontSize: 14, cursor: 'pointer' }}>Servicio</button>
-                  <button onClick={() => setModal(p => ({ ...p, tipo: 'plan', tipoServicio: '' }))} style={{ padding: '12px', borderRadius: 10, border: '2px solid', borderColor: modal.tipo === 'plan' ? '#111827' : '#e5e7eb', background: modal.tipo === 'plan' ? '#111827' : 'white', color: modal.tipo === 'plan' ? 'white' : '#374151', fontWeight: 600, fontSize: 14, cursor: 'pointer' }}>Plan</button>
+                  <button onClick={() => setModal(p => ({ ...p, tipo: 'plan', servicioConfigId: '' }))} style={{ padding: '12px', borderRadius: 10, border: '2px solid', borderColor: modal.tipo === 'plan' ? '#111827' : '#e5e7eb', background: modal.tipo === 'plan' ? '#111827' : 'white', color: modal.tipo === 'plan' ? 'white' : '#374151', fontWeight: 600, fontSize: 14, cursor: 'pointer' }}>Plan</button>
                 </div>
               </div>
               {modal.tipo === 'servicio' && (
                 <div>
-                  <label style={{ fontSize: 13, fontWeight: 600, color: '#374151', display: 'block', marginBottom: 6 }}>Tipo de servicio</label>
-                  <select value={modal.tipoServicio} onChange={e => setModal(p => ({ ...p, tipoServicio: e.target.value }))} style={{ width: '100%', border: '1px solid #e5e7eb', borderRadius: 10, padding: '10px 12px', fontSize: 14, outline: 'none', background: 'white' }}>
+                  <label style={{ fontSize: 13, fontWeight: 600, color: '#374151', display: 'block', marginBottom: 6 }}>Servicio</label>
+                  <select
+                    value={modal.servicioConfigId}
+                    onChange={e => {
+                      const nuevoConfigId = e.target.value
+                      const nuevoTipo = serviciosConfig.find(s => s.id === nuevoConfigId)?.tipo
+                      const convenioSigue = !modal.convenioId || convenioAplica(
+                        conveniosActivos.find(c => c.id === modal.convenioId)!,
+                        nuevoTipo
+                      )
+                      setModal(p => ({ ...p, servicioConfigId: nuevoConfigId, convenioId: convenioSigue ? p.convenioId : '' }))
+                    }}
+                    style={{ width: '100%', border: '1px solid #e5e7eb', borderRadius: 10, padding: '10px 12px', fontSize: 14, outline: 'none', background: 'white' }}
+                  >
                     <option value="">Seleccioná...</option>
-                    {TIPOS_SERVICIO.map(t => <option key={t.id} value={t.id}>{t.label}</option>)}
+                    {serviciosConfig.map(s => (
+                      <option key={s.id} value={s.id}>
+                        {s.nombre}{s.precio ? ` — $${Number(s.precio).toLocaleString('es-AR')}` : ' — Consultar'}
+                      </option>
+                    ))}
                   </select>
                 </div>
               )}
@@ -272,23 +388,47 @@ export default function MisLeadsPage() {
                   </select>
                 </div>
               )}
+              {modal.tipo === 'servicio' && (
+                <div>
+                  <label style={{ fontSize: 13, fontWeight: 600, color: '#374151', display: 'block', marginBottom: 6 }}>
+                    Producto / Urna <span style={{ fontWeight: 400, color: '#9ca3af' }}>(opcional)</span>
+                  </label>
+                  <SelectorProducto
+                    value={modal.inventarioItemId}
+                    onChange={v => setModal(p => ({ ...p, inventarioItemId: v }))}
+                    items={inventarioItems}
+                  />
+                </div>
+              )}
               <div>
                 <label style={{ fontSize: 13, fontWeight: 600, color: '#374151', display: 'block', marginBottom: 6 }}>Notas adicionales</label>
                 <textarea placeholder="Detalles de la venta..." value={modal.notas} onChange={e => setModal(p => ({ ...p, notas: e.target.value }))} rows={3} style={{ width: '100%', border: '1px solid #e5e7eb', borderRadius: 10, padding: '10px 12px', fontSize: 14, outline: 'none', resize: 'vertical', fontFamily: 'inherit', boxSizing: 'border-box' }} />
               </div>
-              {modal.tipo === 'servicio' && conveniosActivos.length > 0 && (
-                <div>
-                  <label style={{ fontSize: 13, fontWeight: 600, color: '#374151', display: 'block', marginBottom: 6 }}>¿Vino por convenio? <span style={{ fontWeight: 400, color: '#9ca3af' }}>(opcional)</span></label>
-                  <select value={modal.convenioId} onChange={e => setModal(p => ({ ...p, convenioId: e.target.value }))} style={{ width: '100%', border: '1px solid #e5e7eb', borderRadius: 10, padding: '10px 12px', fontSize: 14, outline: 'none', background: 'white' }}>
-                    <option value="">Sin convenio</option>
-                    {conveniosActivos.map(c => (
-                      <option key={c.id} value={c.id}>
-                        {c.nombre}{c.descuentoPorcentaje && Number(c.descuentoPorcentaje) > 0 ? ` (${c.descuentoPorcentaje}% dto.)` : ''}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              )}
+              {modal.tipo === 'servicio' && (() => {
+                const tipoServicio = serviciosConfig.find(s => s.id === modal.servicioConfigId)?.tipo
+                const aplicables = conveniosActivos.filter(c => convenioAplica(c, tipoServicio))
+                if (aplicables.length === 0) return null
+                return (
+                  <div>
+                    <label style={{ fontSize: 13, fontWeight: 600, color: '#374151', display: 'block', marginBottom: 6 }}>¿Vino por convenio? <span style={{ fontWeight: 400, color: '#9ca3af' }}>(opcional)</span></label>
+                    {tipoServicio && conveniosActivos.length > aplicables.length && (
+                      <p style={{ fontSize: 12, color: '#6b7280', margin: '0 0 6px' }}>Solo convenios que cubren este servicio.</p>
+                    )}
+                    <select
+                      value={modal.convenioId}
+                      onChange={e => setModal(p => ({ ...p, convenioId: e.target.value }))}
+                      style={{ width: '100%', border: '1px solid #e5e7eb', borderRadius: 10, padding: '10px 12px', fontSize: 14, outline: 'none', background: 'white' }}
+                    >
+                      <option value="">Sin convenio</option>
+                      {aplicables.map(c => (
+                        <option key={c.id} value={c.id}>
+                          {c.nombre}{c.descuentoPorcentaje && Number(c.descuentoPorcentaje) > 0 ? ` (${c.descuentoPorcentaje}% com.)` : ''}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )
+              })()}
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginTop: 4 }}>
                 <button onClick={() => setModal(modalInicial)} style={{ padding: '12px', borderRadius: 10, border: '1px solid #e5e7eb', background: 'white', color: '#374151', fontWeight: 600, fontSize: 14, cursor: 'pointer' }}>Cancelar</button>
                 <button onClick={confirmarConversion} disabled={!modal.tipo || guardandoConversion} style={{ padding: '12px', borderRadius: 10, border: 'none', background: !modal.tipo ? '#9ca3af' : '#15803d', color: 'white', fontWeight: 600, fontSize: 14, cursor: !modal.tipo ? 'not-allowed' : 'pointer' }}>
@@ -356,6 +496,12 @@ export default function MisLeadsPage() {
                   <span style={{ color: '#9ca3af' }}>Teléfono</span>
                   <span style={{ fontWeight: 600 }}>{leadActual.telefono}</span>
                 </div>
+                {leadActual.dni && (
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14 }}>
+                    <span style={{ color: '#9ca3af' }}>DNI</span>
+                    <span style={{ fontWeight: 600 }}>{leadActual.dni}</span>
+                  </div>
+                )}
                 {leadActual.email && (
                   <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14 }}>
                     <span style={{ color: '#9ca3af' }}>Email</span>

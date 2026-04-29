@@ -15,9 +15,11 @@ export type DatosLead = {
   nombre: string
   telefono: string
   email?: string
+  dni?: string
   mensaje?: string
   origen: OrigenLead
   veterinariaId?: string
+  importacionId?: string
 }
 
 // ── Round-robin ──────────────────────────────────────────────────────────────
@@ -104,9 +106,12 @@ export async function crearLeadAutomatico(datos: DatosLead) {
     nombre: datos.nombre,
     telefono: datos.telefono,
     email: datos.email ?? null,
+    dni: datos.dni ?? null,
     mensaje: datos.mensaje ?? null,
     origen: datos.origen,
     asignadoAId,
+    veterinariaId: datos.veterinariaId ?? null,
+    importacionId: datos.importacionId ?? null,
   }).returning()
 
   // Registrar interacción inicial

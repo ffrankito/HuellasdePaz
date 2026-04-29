@@ -19,6 +19,7 @@ export function NuevoClienteForm() {
       apellido: (form.elements.namedItem('apellido') as HTMLInputElement).value,
       telefono: (form.elements.namedItem('telefono') as HTMLInputElement).value,
       email: (form.elements.namedItem('email') as HTMLInputElement).value || null,
+      dni: (form.elements.namedItem('dni') as HTMLInputElement).value || null,
       direccion: (form.elements.namedItem('direccion') as HTMLInputElement).value || null,
       localidad: (form.elements.namedItem('localidad') as HTMLInputElement).value || null,
       provincia: (form.elements.namedItem('provincia') as HTMLInputElement).value || 'Santa Fe',
@@ -84,9 +85,14 @@ export function NuevoClienteForm() {
           <input id="telefono" name="telefono" type="tel" required style={inputStyle} placeholder="3413000000" />
         </div>
         <div style={fieldStyle}>
-          <label htmlFor="email" style={labelStyle}>Email</label>
-          <input id="email" name="email" type="email" style={inputStyle} placeholder="juan@email.com" />
+          <label htmlFor="dni" style={labelStyle}>DNI</label>
+          <input id="dni" name="dni" type="text" style={inputStyle} placeholder="12.345.678" />
         </div>
+      </div>
+
+      <div style={fieldStyle}>
+        <label htmlFor="email" style={labelStyle}>Email</label>
+        <input id="email" name="email" type="email" style={inputStyle} placeholder="juan@email.com" />
       </div>
 
       <div style={fieldStyle}>

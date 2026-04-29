@@ -3,15 +3,12 @@ import { clientes } from './clientes'
 import { mascotas } from './mascotas'
 import { usuarios } from './usuarios'
 import { convenios } from './veterinarias'
+import { inventario } from './inventario'
 
 export const estadoServicioEnum = pgEnum('estado_servicio', [
-  'ingresado',
-  'retiro_pendiente',
-  'en_transporte',
-  'recibido',
-  'en_cremacion',
-  'cremado',
-  'listo_entrega',
+  'pendiente',
+  'en_proceso',
+  'listo',
   'entregado',
   'cancelado',
 ])
@@ -42,7 +39,7 @@ export const servicios = pgTable('servicios', {
   clienteId: uuid('cliente_id').notNull().references(() => clientes.id),
   mascotaId: uuid('mascota_id').references(() => mascotas.id),
   tipo: tipoServicioEnum('tipo').notNull(),
-  estado: estadoServicioEnum('estado').notNull().default('ingresado'),
+  estado: estadoServicioEnum('estado').notNull().default('pendiente'),
   precio: numeric('precio', { precision: 10, scale: 2 }),
   descuento: numeric('descuento', { precision: 10, scale: 2 }).default('0'),
   responsableTransporteId: uuid('responsable_transporte_id').references(() => usuarios.id),
@@ -53,6 +50,7 @@ export const servicios = pgTable('servicios', {
   fechaEntrega: timestamp('fecha_entrega'),
   convenioId: uuid('convenio_id').references(() => convenios.id),
   servicioConfigId: uuid('servicio_config_id').references(() => serviciosConfig.id),
+  inventarioItemId: uuid('inventario_item_id').references(() => inventario.id),
   pagado: boolean('pagado').default(false).notNull(),
   notas: text('notas'),
   creadoEn: timestamp('creado_en').defaultNow().notNull(),

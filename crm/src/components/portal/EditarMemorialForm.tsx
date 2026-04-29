@@ -4,9 +4,10 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { type Mascota } from '@/db/schema'
 
-export function EditarMemorialForm({ mascota, token }: { mascota: Mascota; token: string }) {
+export function EditarMemorialForm({ mascota, token, onSuccess }: { mascota: Mascota; token: string; onSuccess?: () => void }) {
   const router = useRouter()
   const [dedicatoria, setDedicatoria] = useState(mascota.dedicatoria ?? '')
+  const [memoriaPublica, setMemoriaPublica] = useState(mascota.memoriaPublica ?? false)
   const [foto, setFoto] = useState<File | null>(null)
   const [preview, setPreview] = useState<string | null>(mascota.foto ?? null)
   const [galeriaFiles, setGaleriaFiles] = useState<File[]>([])
@@ -53,6 +54,7 @@ export function EditarMemorialForm({ mascota, token }: { mascota: Mascota; token
     const formData = new FormData()
     formData.append('token', token)
     formData.append('dedicatoria', dedicatoria)
+    formData.append('memoriaPublica', String(memoriaPublica))
     if (foto) formData.append('foto', foto)
 
     // Enviar fotos eliminadas de la galería existente
@@ -73,8 +75,12 @@ export function EditarMemorialForm({ mascota, token }: { mascota: Mascota; token
       return
     }
 
-    router.push(`/portal/${token}/memorial/${mascota.id}`)
     router.refresh()
+    if (onSuccess) {
+      onSuccess()
+    } else {
+      router.push(`/portal/${token}/memorial/${mascota.id}`)
+    }
   }
 
   const inputStyle: React.CSSProperties = {
@@ -167,6 +173,33 @@ export function EditarMemorialForm({ mascota, token }: { mascota: Mascota; token
         <div style={{ display: 'flex', justifyContent: 'space-between', margin: '6px 0 0' }}>
           <p style={{ fontSize: 11, color: '#9ca3af', margin: 0 }}>Esta frase aparecerá en el memorial.</p>
           <p style={{ fontSize: 11, color: dedicatoria.length > 450 ? '#dc2626' : '#9ca3af', margin: 0 }}>{dedicatoria.length}/500</p>
+        </div>
+      </div>
+
+      {/* Visibilidad pública */}
+      <div style={cardStyle}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div>
+            <p style={{ fontSize: 14, fontWeight: 500, color: '#111827', margin: '0 0 2px' }}>Mostrar en el muro de memoriales</p>
+            <p style={{ fontSize: 12, color: '#9ca3af', margin: 0 }}>
+              El memorial de {mascota.nombre} aparecerá en la página principal del sitio.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => setMemoriaPublica(v => !v)}
+            style={{
+              width: 44, height: 24, borderRadius: 12, border: 'none', cursor: 'pointer',
+              background: memoriaPublica ? '#2d8a54' : '#e5e7eb',
+              position: 'relative', transition: 'background 0.2s', flexShrink: 0, marginLeft: 16,
+            }}
+          >
+            <span style={{
+              position: 'absolute', top: 2, left: memoriaPublica ? 22 : 2,
+              width: 20, height: 20, borderRadius: '50%', background: 'white',
+              transition: 'left 0.2s', boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
+            }} />
+          </button>
         </div>
       </div>
 

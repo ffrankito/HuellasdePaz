@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { revalidatePath } from 'next/cache'
 import { db } from '@/db'
-import { clientes, servicios, planes, leads, leadInteracciones } from '@/db/schema'
-import { eq } from 'drizzle-orm'
-import { sql } from 'drizzle-orm'
+import { clientes, mascotas, servicios, planes, leadInteracciones, serviciosConfig, planesConfig, convenios, inventario } from '@/db/schema'
+import { eq, sql } from 'drizzle-orm'
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { leadId, nombre, apellido, telefono, email, localidad, tipo, tipoServicio, tipoPlan, notas, convenioId } = body
+    const { leadId, nombre, apellido, telefono, email, dni, localidad, tipo, servicioConfigId, tipoPlan, notas, convenioId, mascotaNombre, mascotaEspecie, inventarioItemId } = body
 
     // 1. Crear cliente
     const [cliente] = await db.insert(clientes).values({
@@ -15,29 +15,69 @@ export async function POST(request: NextRequest) {
       apellido: apellido ?? '',
       telefono: telefono ?? '',
       email: email ?? null,
+      dni: dni ?? null,
       localidad: localidad ?? null,
-      origen: 'cotizador',
+      origen: 'lead',
       veterinariaId: convenioId || null,
     }).returning()
 
-    // 2. Crear servicio o plan
-    if (tipo === 'servicio' && tipoServicio) {
+    // 2. Crear mascota si se proporcionó
+    let mascotaId: string | null = null
+    if (mascotaNombre?.trim()) {
+      const [mascota] = await db.insert(mascotas).values({
+        clienteId: cliente.id,
+        nombre: mascotaNombre.trim(),
+        especie: mascotaEspecie?.trim() || 'perro',
+      }).returning()
+      mascotaId = mascota.id
+    }
+
+    // 3. Crear servicio o plan
+    if (tipo === 'servicio' && servicioConfigId) {
+      const [config, convenio] = await Promise.all([
+        db.query.serviciosConfig.findFirst({ where: eq(serviciosConfig.id, servicioConfigId) }),
+        convenioId
+          ? db.query.convenios.findFirst({ where: eq(convenios.id, convenioId) })
+          : Promise.resolve(null),
+      ])
+
+      const precioBase = config?.precio ? Number(config.precio) : null
+      const tipoServicio = config?.tipo ?? ''
+      const cubiertos = convenio?.serviciosCubiertos as string[] | null
+      const convenioAplica = !cubiertos || cubiertos.length === 0 || cubiertos.includes(tipoServicio)
+      const descuentoPct = convenioAplica && convenio?.descuentoPorcentaje ? Number(convenio.descuentoPorcentaje) : 0
+      const descuentoMonto = precioBase ? Math.round(precioBase * descuentoPct / 100) : 0
+
       await db.insert(servicios).values({
         numero: sql`nextval('servicios_numero_seq')`,
         clienteId: cliente.id,
-        tipo: tipoServicio,
-        estado: 'ingresado',
+        mascotaId,
+        tipo: config?.tipo ?? 'cremacion_individual',
+        servicioConfigId,
+        convenioId: convenioId || null,
+        inventarioItemId: inventarioItemId || null,
+        precio: precioBase !== null ? String(precioBase) : null,
+        descuento: String(descuentoMonto),
+        estado: 'pendiente',
         notas: notas ?? null,
       })
+
+      if (inventarioItemId) {
+        await db.update(inventario)
+          .set({ stockActual: sql`${inventario.stockActual} - 1` })
+          .where(eq(inventario.id, inventarioItemId))
+      }
     }
 
     if (tipo === 'plan' && tipoPlan) {
+      const config = await db.query.planesConfig.findFirst({ where: eq(planesConfig.id, tipoPlan) })
+
       await db.insert(planes).values({
         numero: sql`nextval('planes_numero_seq')`,
         clienteId: cliente.id,
         planConfigId: tipoPlan,
-        cuotasMensual: '0',
-        cuotasTotales: 12,
+        cuotasMensual: config?.cuotaMensual ?? '0',
+        cuotasTotales: config?.cuotasTotales ?? 12,
         cuotasPagadas: 0,
         porcentajeCobertura: '0',
         estado: 'activo',
@@ -50,10 +90,11 @@ export async function POST(request: NextRequest) {
       await db.insert(leadInteracciones).values({
         leadId,
         tipo: 'nota',
-        descripcion: `Lead convertido a cliente. ${tipo === 'servicio' ? 'Servicio: ' + tipoServicio : 'Plan: ' + tipoPlan}. Cliente ID: ${cliente.id}`,
+        descripcion: `Lead convertido a cliente. ${tipo === 'servicio' ? 'Servicio config ID: ' + servicioConfigId : 'Plan config ID: ' + tipoPlan}. Cliente ID: ${cliente.id}`,
       })
     }
 
+    revalidatePath('/dashboard', 'layout')
     return NextResponse.json({ ok: true, clienteId: cliente.id }, { status: 201 })
   } catch (error) {
     console.error('Error convirtiendo lead:', error)

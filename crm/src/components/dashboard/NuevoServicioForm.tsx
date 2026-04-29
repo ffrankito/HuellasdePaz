@@ -3,8 +3,15 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { type Cliente, type Mascota, type ServicioConfig } from '@/db/schema'
+import { SelectorProducto } from '@/components/servicios/SelectorProducto'
 
-type ConvenioActivo = { id: string; nombre: string; descuentoPorcentaje: string | null }
+type ConvenioActivo = { id: string; nombre: string; descuentoPorcentaje: string | null; serviciosCubiertos: string[] | null }
+
+function convenioAplica(c: ConvenioActivo, tipo: string | undefined): boolean {
+  if (!tipo) return true
+  if (!c.serviciosCubiertos || c.serviciosCubiertos.length === 0) return true
+  return c.serviciosCubiertos.includes(tipo)
+}
 
 export function NuevoServicioForm({ clientes, mascotas, serviciosConfig }: {
   clientes: Cliente[]
@@ -18,15 +25,19 @@ export function NuevoServicioForm({ clientes, mascotas, serviciosConfig }: {
   const [servicioConfigId, setServicioConfigId] = useState('')
   const [convenioId, setConvenioId] = useState('')
   const [conveniosActivos, setConveniosActivos] = useState<ConvenioActivo[]>([])
+  const [inventarioItemId, setInventarioItemId] = useState<string | null>(null)
 
   const mascotasFiltradas = mascotas.filter(m => m.clienteId === clienteId)
   const configSeleccionada = serviciosConfig.find(s => s.id === servicioConfigId)
-  const convenioSeleccionado = conveniosActivos.find(c => c.id === convenioId)
+  const tipoSeleccionado = configSeleccionada?.tipo
+  const conveniosAplicables = conveniosActivos.filter(c => convenioAplica(c, tipoSeleccionado))
+  const convenioSeleccionado = conveniosAplicables.find(c => c.id === convenioId)
 
   const precioBase = configSeleccionada?.precio ? Number(configSeleccionada.precio) : null
-  const descuentoPct = convenioSeleccionado?.descuentoPorcentaje ? Number(convenioSeleccionado.descuentoPorcentaje) : 0
-  const descuentoMonto = precioBase ? Math.round(precioBase * descuentoPct / 100) : 0
-  const precioFinal = precioBase !== null ? precioBase - descuentoMonto : null
+  // El cliente SIEMPRE paga el precio completo. El % del convenio es la comisión al socio (veterinaria/petshop).
+  const comisionPct = convenioSeleccionado?.descuentoPorcentaje ? Number(convenioSeleccionado.descuentoPorcentaje) : 0
+  const comisionMonto = precioBase ? Math.round(precioBase * comisionPct / 100) : 0
+  const ingresoNeto = precioBase !== null ? precioBase - comisionMonto : null
 
   useEffect(() => {
     fetch('/api/convenios?activos=true')
@@ -34,6 +45,13 @@ export function NuevoServicioForm({ clientes, mascotas, serviciosConfig }: {
       .then(setConveniosActivos)
       .catch(() => {})
   }, [])
+
+  // Limpiar convenio si cambia el tipo y el convenio actual no aplica
+  useEffect(() => {
+    if (!convenioId || !tipoSeleccionado) return
+    const actual = conveniosActivos.find(c => c.id === convenioId)
+    if (actual && !convenioAplica(actual, tipoSeleccionado)) setConvenioId('')
+  }, [tipoSeleccionado])
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -47,10 +65,11 @@ export function NuevoServicioForm({ clientes, mascotas, serviciosConfig }: {
       tipo: configSeleccionada?.tipo ?? '',
       servicioConfigId: servicioConfigId || null,
       precio: precioBase !== null ? precioBase.toString() : null,
-      descuento: descuentoMonto > 0 ? descuentoMonto.toString() : '0',
+      descuento: comisionMonto > 0 ? comisionMonto.toString() : '0',
       fechaRetiro: (form.elements.namedItem('fechaRetiro') as HTMLInputElement).value || null,
       notas: (form.elements.namedItem('notas') as HTMLTextAreaElement).value || null,
       convenioId: convenioId || null,
+      inventarioItemId: inventarioItemId || null,
     }
 
     const res = await fetch('/api/servicios', {
@@ -115,14 +134,19 @@ export function NuevoServicioForm({ clientes, mascotas, serviciosConfig }: {
         </select>
       </div>
 
-      {conveniosActivos.length > 0 && (
+      {conveniosAplicables.length > 0 && (
         <div style={fieldStyle}>
           <label style={labelStyle}>¿Vino por convenio?</label>
+          {tipoSeleccionado && conveniosActivos.length > conveniosAplicables.length && (
+            <p style={{ fontSize: 12, color: '#6b7280', margin: '0 0 6px' }}>
+              Solo se muestran los convenios que cubren este tipo de servicio.
+            </p>
+          )}
           <select value={convenioId} onChange={e => setConvenioId(e.target.value)} style={inputStyle}>
             <option value="">Sin convenio</option>
-            {conveniosActivos.map(c => (
+            {conveniosAplicables.map(c => (
               <option key={c.id} value={c.id}>
-                {c.nombre}{c.descuentoPorcentaje && Number(c.descuentoPorcentaje) > 0 ? ` — ${c.descuentoPorcentaje}% desc.` : ''}
+                {c.nombre}{c.descuentoPorcentaje && Number(c.descuentoPorcentaje) > 0 ? ` — ${c.descuentoPorcentaje}% com.` : ''}
               </option>
             ))}
           </select>
@@ -135,26 +159,33 @@ export function NuevoServicioForm({ clientes, mascotas, serviciosConfig }: {
           <p style={{ fontSize: 13, fontWeight: 600, color: '#111827', margin: '0 0 10px' }}>Resumen de precio</p>
           {precioBase !== null ? (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13 }}>
-                <span style={{ color: '#9ca3af' }}>Precio base</span>
-                <span style={{ color: '#111827' }}>${precioBase.toLocaleString('es-AR')}</span>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 15, fontWeight: 700, paddingBottom: 8, borderBottom: comisionMonto > 0 ? '1px solid #e5e7eb' : 'none', marginBottom: comisionMonto > 0 ? 4 : 0 }}>
+                <span style={{ color: '#111827' }}>Total a cobrar al cliente</span>
+                <span style={{ color: '#15803d' }}>${precioBase.toLocaleString('es-AR')}</span>
               </div>
-              {descuentoMonto > 0 && (
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13 }}>
-                  <span style={{ color: '#9ca3af' }}>Descuento convenio ({descuentoPct}%)</span>
-                  <span style={{ color: '#dc2626' }}>−${descuentoMonto.toLocaleString('es-AR')}</span>
-                </div>
+              {comisionMonto > 0 && (
+                <>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13 }}>
+                    <span style={{ color: '#9ca3af' }}>Comisión {convenioSeleccionado?.nombre} ({comisionPct}%)</span>
+                    <span style={{ color: '#d97706' }}>−${comisionMonto.toLocaleString('es-AR')}</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13 }}>
+                    <span style={{ color: '#9ca3af' }}>Ingreso neto Huellas de Paz</span>
+                    <span style={{ color: '#6b7280', fontWeight: 600 }}>${ingresoNeto!.toLocaleString('es-AR')}</span>
+                  </div>
+                </>
               )}
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 15, fontWeight: 700, paddingTop: 8, borderTop: '1px solid #e5e7eb', marginTop: 4 }}>
-                <span style={{ color: '#111827' }}>Total a cobrar</span>
-                <span style={{ color: '#15803d' }}>${precioFinal!.toLocaleString('es-AR')}</span>
-              </div>
             </div>
           ) : (
             <p style={{ fontSize: 13, color: '#6b7280', margin: 0 }}>Precio a consultar — ingresarlo manualmente al confirmar.</p>
           )}
         </div>
       )}
+
+      <div style={fieldStyle}>
+        <label style={labelStyle}>Producto / Urna <span style={{ fontWeight: 400, color: '#9ca3af' }}>(opcional)</span></label>
+        <SelectorProducto value={inventarioItemId} onChange={setInventarioItemId} />
+      </div>
 
       <div style={fieldStyle}>
         <label style={labelStyle}>Fecha de retiro</label>
@@ -172,13 +203,13 @@ export function NuevoServicioForm({ clientes, mascotas, serviciosConfig }: {
         </div>
       )}
 
-      <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end', paddingTop: 8 }}>
+      <div style={{ position: 'sticky', bottom: 0, background: 'white', paddingTop: 16, paddingBottom: 4, marginTop: 8, borderTop: '1px solid #f3f4f6', display: 'flex', gap: 12, justifyContent: 'flex-end' }}>
         <button type="button" onClick={() => router.back()}
-          style={{ padding: '10px 20px', borderRadius: 10, fontSize: 14, fontWeight: 500, border: '1px solid #e5e7eb', background: 'white', color: '#374151', cursor: 'pointer' }}>
+          style={{ padding: '12px 24px', borderRadius: 10, fontSize: 14, fontWeight: 500, border: '1px solid #e5e7eb', background: 'white', color: '#374151', cursor: 'pointer' }}>
           Cancelar
         </button>
         <button type="submit" disabled={loading}
-          style={{ padding: '10px 20px', borderRadius: 10, fontSize: 14, fontWeight: 500, border: 'none', background: '#111827', color: 'white', cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.6 : 1 }}>
+          style={{ padding: '12px 24px', borderRadius: 10, fontSize: 14, fontWeight: 600, border: 'none', background: '#111827', color: 'white', cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.6 : 1 }}>
           {loading ? 'Guardando...' : 'Guardar servicio'}
         </button>
       </div>

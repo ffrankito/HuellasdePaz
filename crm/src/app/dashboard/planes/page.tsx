@@ -31,6 +31,7 @@ export default async function PlanesPage() {
       clienteNombre: clientes.nombre,
       clienteApellido: clientes.apellido,
       clienteTelefono: clientes.telefono,
+      clienteDni: clientes.dni,
       mascotaNombre: mascotas.nombre,
       mascotaEspecie: mascotas.especie,
       planNombre: planesConfig.nombre,
@@ -86,7 +87,7 @@ export default async function PlanesPage() {
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead>
             <tr style={{ borderBottom: '1px solid #f3f4f6' }}>
-              {['#', 'Cliente', 'Mascota', 'Plan', 'Cuota mensual', 'Cuotas pagadas', 'Cobertura', 'Estado', ''].map(col => (
+              {['#', 'Cliente', 'Teléfono', 'Mascota', 'Plan', 'Cuota mensual', 'Cuotas pagadas', 'Cobertura', 'Estado', ''].map(col => (
                 <th key={col} style={{ padding: '12px 20px', textAlign: 'left', fontSize: 12, fontWeight: 500, color: '#9ca3af', letterSpacing: '0.05em' }}>
                   {col.toUpperCase()}
                 </th>
@@ -96,7 +97,7 @@ export default async function PlanesPage() {
           <tbody>
             {data.length === 0 ? (
               <tr>
-                <td colSpan={9} style={{ padding: '48px 20px', textAlign: 'center', fontSize: 14, color: '#9ca3af' }}>
+                <td colSpan={10} style={{ padding: '48px 20px', textAlign: 'center', fontSize: 14, color: '#9ca3af' }}>
                   No hay planes registrados todavía
                 </td>
               </tr>
@@ -114,7 +115,12 @@ export default async function PlanesPage() {
                       <p style={{ fontSize: 14, fontWeight: 500, color: '#111827', margin: 0 }}>
                         {p.clienteNombre} {p.clienteApellido}
                       </p>
-                      <p style={{ fontSize: 12, color: '#9ca3af', margin: 0 }}>{p.clienteTelefono}</p>
+                      {p.clienteDni && (
+                        <p style={{ fontSize: 12, color: '#9ca3af', margin: 0 }}>DNI {p.clienteDni}</p>
+                      )}
+                    </td>
+                    <td style={{ padding: '14px 20px' }}>
+                      <p style={{ fontSize: 13, color: '#4b5563', margin: 0 }}>{p.clienteTelefono}</p>
                     </td>
                     <td style={{ padding: '14px 20px' }}>
                       <p style={{ fontSize: 14, color: '#4b5563', margin: 0 }}>{p.mascotaNombre ?? '—'}</p>

@@ -33,11 +33,11 @@ Desarrollado por **Ravenna** (Tomás Pinolini + Franco Zancocchia).
 
 | Fase | Descripción | Estado |
 | --- | --- | --- |
-| **Fase 0** | Landing + Cotizador | ✅ Live |
+| **Fase 0** | Landing + Cotizador | ✅ Live (cotizador oculto hasta apertura del crematorio) |
 | **Fase 1a** | CRM Core (clientes, servicios, planes, leads) | ✅ Implementado |
-| **Fase 1b** | Cobranzas, comunicación masiva, reportes | 🔄 En progreso |
-| **Fase 2** | Portal cliente + memorial digital | 🔄 Parcialmente implementado |
-| **Fase 3** | Portal B2B veterinarias | 📋 Planificado |
+| **Fase 1b** | Cobranzas, comunicación, reportes | ✅ Implementado (falta integración Mercado Pago) |
+| **Fase 2** | Portal cliente + memorial digital | ✅ Implementado |
+| **Fase 3** | Portal B2B convenios (veterinarias, petshops, clínicas) | 📋 Planificado |
 | **Fase 4** | Chatbot AI | 📋 Planificado (no antes de Fase 3) |
 
 ---
@@ -85,21 +85,25 @@ Código, comentarios y documentación técnica en inglés.
 | Componente | Descripción |
 | --- | --- |
 | `Navbar.astro` | Navegación con links de ancla, botón WhatsApp (número placeholder) |
-| `Hero.astro` | Hero con patas animadas |
+| `Hero.astro` | Hero con slideshow de fotos (10 slides, fade cada 5s) + huellas flotantes animadas |
 | `Servicios.astro` | Sección de servicios |
 | `Planes.astro` | Estructura lista, contenido pendiente del cliente |
-| `Cotizador.astro` | CTA al cotizador |
+| `Cotizador.astro` | CTA al cotizador — **actualmente comentado** en `index.astro` hasta apertura del crematorio |
 | `Contacto.astro` | Formulario → envía leads al CRM (`POST /api/leads`) |
-| `CTA.astro` | Call to action general |
+| `Ubicacion.astro` | Sección de ubicación |
+| `Convenios.astro` | Sección de convenios B2B |
+| `Memoriales.astro` | Sección de memoriales públicos |
 | `Footer.astro` | Pie de página |
 
 ### Estado
 
 - ✅ Estructura completa de la página
 - ✅ Formulario de contacto integrado con CRM
-- ⏳ Logo final pendiente (imágenes de placeholder activas)
+- ✅ Slideshow del hero con fotos reales en `public/hero/` (hero-1.png a hero-4.png)
+- ⏳ Logo final pendiente (placeholder activo)
 - ⏳ Precios y nombres de planes pendientes del cliente
-- ⏳ Fotos reales del lugar y testimonios pendientes
+- ⏳ Número de WhatsApp real pendiente (hoy es `5493XXXXXXXXX`)
+- ⏳ Testimonios de clientes pendientes
 
 ---
 
@@ -147,18 +151,19 @@ Cotizador embebible como iframe en Wix. Envía leads al CRM.
 | Tabla | Descripción |
 | --- | --- |
 | `usuarios` | Equipo interno (rol, permisos) |
-| `clientes` | Dueños de mascotas |
-| `mascotas` | Mascotas de los clientes |
+| `clientes` | Dueños de mascotas — incluye `token_portal` (UUID único de acceso al portal) y `auth_user_id` (Supabase Auth, opcional) |
+| `mascotas` | Mascotas — incluye `galeria` (jsonb array de URLs), `dedicatoria`, `memoria_publica` (boolean), `fecha_nacimiento`, `fecha_fallecimiento` |
 | `servicios` | Servicios de cremación/entierro con ciclo de vida de 9 estados |
 | `planes` | Planes de previsión contratados |
 | `planes_config` | Templates de planes configurables |
 | `leads` | Prospectos del landing/cotizador/directo/veterinaria |
 | `lead_interacciones` | Historial de interacciones con leads |
 | `inventario` | Stock de urnas, bolsas, accesorios, insumos |
-| `convenios` | Acuerdos B2B (veterinarias, petshops, refugios, clínicas) |
+| `convenios` | Acuerdos B2B (veterinarias, petshops, refugios, clínicas) — antes llamada "veterinarias" |
 | `templates_msg` | Templates de mensajes WhatsApp/email por evento |
 | `comunicaciones` | Log de comunicaciones enviadas |
 | `configuracion_general` | Settings del sistema (clave/valor en JSONB) |
+| `noticias_cementerio` | Novedades del cementerio visibles en el portal — incluye `publicada` (boolean, default true) y `destacada` (boolean, default false) |
 
 #### Estados de un servicio
 
@@ -176,7 +181,21 @@ nuevo → contactado → interesado → cotizado → convertido
 
 ### Migraciones (Drizzle)
 
-10 migraciones (0000–0009). La última (0009) renombró "veterinarias" a "convenios" y agregó el enum `tipo`.
+Archivo de config: `crm/drizzle.config.ts` — output en `crm/supabase/migrations/`.
+
+- Migraciones 0000–0009: generadas por drizzle-kit, registradas en `meta/_journal.json`
+- Migraciones 0010–0012: aplicadas manualmente con SQL directo (no en el journal):
+  - `0010`: agrega `fecha_ultimo_pago` a `planes`
+  - `0011`: agrega `galeria` (jsonb) a `mascotas`
+  - `0012`: agrega `publicada` y `destacada` a `noticias_cementerio`
+
+Para aplicar migraciones manuales usar `postgres.js` directamente (el proyecto no tiene `pg` instalado):
+```js
+import postgres from './node_modules/postgres/src/index.js'
+const sql = postgres(process.env.DATABASE_URL_UNPOOLED)
+```
+
+**Importante:** no usar `drizzle-kit push` — detecta columnas eliminadas en otras tablas y pide confirmación destructiva.
 
 ### API Routes
 
@@ -185,7 +204,7 @@ nuevo → contactado → interesado → cotizado → convertido
 - `GET /api/leads` — listado
 - `GET|PATCH|DELETE /api/leads/[id]`
 - `POST /api/leads/[id]/email`
-- `POST /api/leads/convertir` — convierte lead en cliente
+- `POST /api/leads/convertir` — convierte lead en cliente + crea mascota si viene `mascotaNombre`
 
 **Clientes / Mascotas / Servicios / Planes**
 - CRUD estándar: `GET|POST /api/{recurso}`, `GET|PATCH|DELETE /api/{recurso}/[id]`
@@ -200,6 +219,12 @@ nuevo → contactado → interesado → cotizado → convertido
 - `PATCH /api/configuracion/general`
 - `GET|POST /api/configuracion/planes`, `PATCH /api/configuracion/planes/[id]`
 - `GET|POST /api/configuracion/templates`
+
+**Novedades (solo admin)**
+- `GET /api/noticias` — listado ordenado por `destacada DESC, creado_en DESC`
+- `POST /api/noticias` — crear con imagen opcional (multipart/form-data), acepta `publicada`
+- `PATCH /api/noticias/[id]` — edición completa (multipart) o toggle de `publicada`/`destacada` (JSON)
+- `DELETE /api/noticias/[id]`
 
 **Reportes**
 - `GET /api/reportes/negocio` — métricas de negocio
@@ -233,13 +258,13 @@ nuevo → contactado → interesado → cotizado → convertido
 
 **Leads**
 - `/dashboard/leads`, `/dashboard/leads/nuevo`, `/dashboard/leads/[id]`
-- `/dashboard/mis-leads` (vista televenta)
+- `/dashboard/mis-leads` (vista televenta — incluye modal de conversión con campos de mascota)
 
 **Agenda**
 - `/dashboard/agenda` — calendario de servicios (filtrado por rol)
 
 **Comunicación**
-- `/dashboard/comunicacion` — templates de mensajes y envío masivo
+- `/dashboard/comunicacion` — templates de mensajes y envío individual por cliente
 
 **Inventario**
 - `/dashboard/inventario`, `/dashboard/inventario/nuevo`, `/dashboard/inventario/[id]`
@@ -247,6 +272,9 @@ nuevo → contactado → interesado → cotizado → convertido
 **Convenios B2B**
 - `/dashboard/convenios`, `/dashboard/convenios/nueva`
 - `/dashboard/convenios/[id]`, `/dashboard/convenios/editar`
+
+**Novedades**
+- `/dashboard/novedades` — gestión de novedades del cementerio con borrador/publicado y pin
 
 **Reportes**
 - `/dashboard/reportes`
@@ -259,12 +287,6 @@ nuevo → contactado → interesado → cotizado → convertido
 - `/dashboard/configuracion`
 - `/dashboard/configuracion/importar-leads` — importación masiva desde Excel
 
-**Portal cliente (Fase 2, parcialmente implementado)**
-- `/portal/login`, `/portal/activar`
-- `/portal/[token]` — home del portal
-- `/portal/[token]/memorial/[mascotaId]` — memorial digital
-- `/portal/[token]/memorial/[mascotaId]/editar` — editar dedicatoria y fotos
-
 ### Variables de entorno requeridas (CRM)
 
 ```
@@ -272,12 +294,102 @@ NEXT_PUBLIC_SUPABASE_URL
 NEXT_PUBLIC_SUPABASE_ANON_KEY
 SUPABASE_SERVICE_ROLE_KEY
 DATABASE_URL
+DATABASE_URL_UNPOOLED
 RESEND_API_KEY
-MP_ACCESS_TOKEN
-MP_PUBLIC_KEY
-MP_WEBHOOK_SECRET
+RESEND_FROM_EMAIL          # pendiente — cuando tengan dominio configurado en Resend
+MP_ACCESS_TOKEN            # pendiente — integración Mercado Pago no implementada aún
+MP_PUBLIC_KEY              # pendiente
+MP_WEBHOOK_SECRET          # pendiente
 NEXT_PUBLIC_APP_URL
+CORS_ALLOWED_ORIGINS       # URLs de producción separadas por coma (cotizador, landing)
+ANTHROPIC_API_KEY_ASISTENTE
+ASISTENTE_MODELO
+ASISTENTE_MAX_TOKENS
+ASISTENTE_RATE_LIMIT_POR_MINUTO
+ASISTENTE_PRESUPUESTO_USD
 ```
+
+---
+
+## Portal cliente (`/portal/`) — Fase 2
+
+### Autenticación del portal
+
+El portal usa **dos mecanismos de auth independientes**:
+
+1. **`tokenPortal`** (URL): UUID único en la tabla `clientes`. Quien tenga la URL `/portal/[token]` puede ver el portal. Es el mecanismo principal — no requiere login.
+2. **Supabase Auth** (`esClienteLogueado`): login explícito con email/password. Se detecta en el servidor y se pasa como prop. Actualmente reservado para features futuras que requieran identidad verificada.
+
+### Rutas del portal
+
+| Ruta | Descripción |
+| --- | --- |
+| `/portal/login` | Login con email/password + recupero de contraseña |
+| `/portal/activar` | Activación de cuenta (link desde email de invitación) |
+| `/portal/[token]` | Home del portal — tabs: Servicios, Planes, Memorial, Novedades |
+
+### Tabs del portal (`PortalTabs`)
+
+- **Servicios**: listado de servicios del cliente con estado
+- **Planes**: cuotas pagadas, estado del plan
+- **Memorial**: bottom sheet por mascota — foto, fechas, dedicatoria, galería — editable con `EditarMemorialInline` (accesible con solo el token, no requiere login de Supabase)
+- **Novedades**: noticias del cementerio — solo muestra las `publicada = true`, ordenadas por `destacada DESC, creado_en DESC`
+
+### Estética del portal
+
+Misma paleta que el CRM:
+- Fondo general: `#f5f2ee`
+- Header: `#f0faf5` con borde `#d1ead9`
+- Cards y sheets: `white`
+- Verde acento: `#2d8a54`
+- Texto principal: `#111827`
+- No usar fondos oscuros fuera de heroes fotográficos
+
+---
+
+## Memorial público (`/memorial/`) — Fase 2
+
+Páginas públicas sin autenticación para mascotas con `memoria_publica = true`.
+
+| Ruta | Descripción |
+| --- | --- |
+| `/memorial` | Grilla pública de todos los memoriales activos |
+| `/memorial/[mascotaId]` | Memorial individual — foto hero, fechas, dedicatoria, galería |
+
+- Estética oscura (`#08080f`) — único lugar del sistema con fondo negro
+- `generateMetadata` para SEO por mascota
+- Filtro: solo mascotas con `memoria_publica = true`
+
+---
+
+## Novedades del cementerio
+
+Gestionadas en `/dashboard/novedades` (solo admin).
+
+### Características
+- **Borrador/Publicado**: `publicada = false` oculta la novedad del portal. Se puede crear en borrador desde el formulario con un toggle.
+- **Fijar arriba**: `destacada = true` ordena la novedad primero. El card muestra borde dorado y badge "★ Destacada".
+- **Optimistic UI**: todos los toggles actualizan el estado visual del card instantáneamente sin esperar al servidor (`NovedadCard` es un Client Component con estado local).
+- **Imágenes**: upload a Supabase Storage bucket `portal`, path `novedades/`.
+
+### Componentes
+| Componente | Descripción |
+| --- | --- |
+| `NovedadCard` | Card completo como Client Component — maneja `publicada`/`destacada` en estado local |
+| `NuevaNovedadForm` | Modal de creación con toggle "Publicar ahora / Guardar como borrador" |
+| `EditarNovedadBtn` | Modal de edición (texto + imagen) |
+| `EliminarNovedadBtn` | Botón con confirm dialog |
+
+---
+
+## Asistente IA (CRM interno)
+
+Existe un asistente IA funcional **dentro del CRM**, independiente del chatbot público de Fase 4.
+
+- **Chat:** `POST /api/asistente/chat` — responde preguntas sobre el negocio usando Claude Haiku
+- **Auditoría:** `/dashboard/asistente` (solo admin) — logs de uso, tokens consumidos y costo acumulado
+- **Rate limiting:** configurable por env vars (`ASISTENTE_RATE_LIMIT_POR_MINUTO`, `ASISTENTE_PRESUPUESTO_USD`)
+- **Presupuesto máximo:** $10 USD/mes (cap configurable)
 
 ---
 
@@ -291,6 +403,18 @@ El directorio existe pero `src/` está vacío.
 
 ---
 
+## Infraestructura y costos mensuales
+
+| Servicio | Plan | Costo |
+| --- | --- | --- |
+| Vercel | Pro | $20/mes |
+| Supabase | Pro | $25/mes |
+| Resend | Free (3.000 emails/mes) | $0 |
+| Anthropic (Claude Haiku) | Pay-per-use, cap $10 | ~$10/mes máx |
+| **Total** | | **~$55/mes** |
+
+---
+
 ## Fuera de scope (prohibiciones v1)
 
 - Sin integración chatbot ↔ CRM en v1
@@ -301,12 +425,18 @@ El directorio existe pero `src/` está vacío.
 
 ---
 
-## Contenido pendiente del cliente
+## Pendiente para lanzamiento
 
+### Contenido del cliente
 - [ ] Nombres y precios de los 3 planes de previsión
 - [ ] Precio de cremación individual, comunitaria y entierro
 - [ ] Dirección física del crematorio
-- [ ] Número de WhatsApp de contacto
-- [ ] Fotos del lugar y mascotas
+- [ ] Número de WhatsApp de contacto (hoy es placeholder `5493XXXXXXXXX`)
+- [ ] Fotos reales del lugar y mascotas (hoy hay fotos de stock en la landing)
 - [ ] Logo final de Huellas de Paz
 - [ ] Testimonios de clientes
+
+### Técnico
+- [ ] Configurar dominio propio en Resend y actualizar `from:` en los 4 archivos de email (`lib/email/invitacion.tsx`, `lib/email/estadoServicio.ts`, `lib/email/enviarEmailLead.ts`, `app/api/portal/recuperar/route.ts`) — hoy salen desde `onboarding@resend.dev`
+- [ ] Integración Mercado Pago (pagos online de servicios y cuotas de planes)
+- [ ] Activar cotizador en la landing cuando el crematorio esté operativo (hoy está comentado en `landing/src/pages/index.astro`)

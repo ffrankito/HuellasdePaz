@@ -1,4 +1,4 @@
-import { pgTable, uuid, text, timestamp, integer, numeric, pgEnum } from 'drizzle-orm/pg-core'
+import { pgTable, uuid, text, timestamp, integer, numeric, boolean, pgEnum } from 'drizzle-orm/pg-core'
 
 export const categoriaInventarioEnum = pgEnum('categoria_inventario', [
   'urna',
@@ -20,6 +20,7 @@ export const inventario = pgTable('inventario', {
   proveedor: text('proveedor'),
   foto: text('foto'),
   notas: text('notas'),
+  paraVenta: boolean('para_venta').notNull().default(false),
   creadoEn: timestamp('creado_en').defaultNow().notNull(),
   actualizadoEn: timestamp('actualizado_en').defaultNow().notNull()
   
