@@ -144,6 +144,9 @@ const navManager = [
 const navAgente = [
   { label: 'Mis leads',       href: '/dashboard/mis-leads' },
   { label: 'Mi rendimiento',  href: '/dashboard/mi-rendimiento' },
+  { label: 'Clientes',        href: '/dashboard/clientes' },
+  { label: 'Servicios',       href: '/dashboard/servicios' },
+  { label: 'Planes',          href: '/dashboard/planes' },
   { label: 'Comunicación',    href: '/dashboard/comunicacion' },
 ]
 
