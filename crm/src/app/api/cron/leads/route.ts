@@ -105,21 +105,30 @@ export async function GET(request: Request) {
         )
       )
 
-    // ── 4. "Perdido" hace más de 90 días → archivar
-    const hace90dias = new Date(ahora.getTime() - 90 * 24 * 60 * 60 * 1000)
-    await db.update(leads)
-      .set({ actualizadoEn: ahora, notas: 'archivado' })
+    // ── 4. "Perdido" hace más de 10 días → borrar definitivamente
+    const hace10dias = new Date(ahora.getTime() - 10 * 24 * 60 * 60 * 1000)
+    const perdidosViejos = await db
+      .select({ id: leads.id })
+      .from(leads)
       .where(
         and(
           eq(leads.estado, 'perdido'),
-          lt(leads.actualizadoEn, hace90dias)
+          lt(leads.actualizadoEn, hace10dias)
         )
       )
+
+    let borrados = 0
+    for (const lead of perdidosViejos) {
+      await db.delete(leadInteracciones).where(eq(leadInteracciones.leadId, lead.id))
+      await db.delete(leads).where(eq(leads.id, lead.id))
+      borrados++
+    }
 
     return NextResponse.json({
       ok: true,
       ejecutadoEn: ahora.toISOString(),
       seguimientos: interesadosSinActividad.length,
+      borrados,
     })
   } catch (error) {
     console.error('Error en cron de leads:', error)
