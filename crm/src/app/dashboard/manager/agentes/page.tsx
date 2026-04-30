@@ -2,6 +2,7 @@ import { db } from '@/db'
 import { usuarios, leads } from '@/db/schema'
 import { eq, and, count } from 'drizzle-orm'
 import Link from 'next/link'
+import NuevoAgenteBtn from '@/components/dashboard/NuevoAgenteBtn'
 
 export default async function ManagerAgentesPage() {
   const agentes = await db
@@ -34,11 +35,14 @@ export default async function ManagerAgentesPage() {
 
   return (
     <div className="page-container">
-      <div style={{ marginBottom: 32 }}>
-        <h1 style={{ fontSize: 24, fontWeight: 600, color: '#111827', margin: 0 }}>Agentes</h1>
-        <p style={{ fontSize: 14, color: '#6b7280', marginTop: 4, marginBottom: 0 }}>
-          {agentes.length} {agentes.length === 1 ? 'agente activo' : 'agentes activos'}
-        </p>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 32 }}>
+        <div>
+          <h1 style={{ fontSize: 24, fontWeight: 600, color: '#111827', margin: 0 }}>Agentes</h1>
+          <p style={{ fontSize: 14, color: '#6b7280', marginTop: 4, marginBottom: 0 }}>
+            {agentes.length} {agentes.length === 1 ? 'agente activo' : 'agentes activos'}
+          </p>
+        </div>
+        <NuevoAgenteBtn />
       </div>
 
       {metricas.length === 0 ? (
