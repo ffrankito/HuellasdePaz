@@ -13,6 +13,7 @@ type Lead = {
   origen: string | null
   estado: string
   mensaje: string | null
+  pickupMethod: string | null
   creadoEn: string
 }
 
@@ -65,6 +66,8 @@ type ModalConversion = {
   mascotaEspecie: string
   servicioConfigId: string
   tipoPlan: string
+  fechaRetiro: string
+  modalidadRetiro: string
   notas: string
   convenioId: string
   inventarioItemId: string | null
@@ -119,8 +122,8 @@ function Cronometro({ iniciado }: { iniciado: boolean }) {
 const modalInicial: ModalConversion = {
   abierto: false, tipo: '', apellido: '', dni: '', email: '',
   localidad: '', mascotaNombre: '', mascotaEspecie: '',
-  servicioConfigId: '', tipoPlan: '', notas: '', convenioId: '',
-  inventarioItemId: null,
+  servicioConfigId: '', tipoPlan: '', fechaRetiro: '', modalidadRetiro: '',
+  notas: '', convenioId: '', inventarioItemId: null,
 }
 
 export default function MisLeadsPage() {
@@ -219,6 +222,7 @@ export default function MisLeadsPage() {
         email: leadActual.email ?? '',
         mascotaNombre: mascotaItem?.value ?? '',
         mascotaEspecie: especieDetectada,
+        modalidadRetiro: leadActual.pickupMethod ?? '',
       }))
       return
     }
@@ -262,6 +266,8 @@ export default function MisLeadsPage() {
         notas: modal.notas,
         convenioId: modal.tipo === 'servicio' ? modal.convenioId || null : null,
         inventarioItemId: modal.tipo === 'servicio' ? modal.inventarioItemId || null : null,
+        fechaRetiro: modal.tipo === 'servicio' ? modal.fechaRetiro || null : null,
+        modalidadRetiro: modal.tipo === 'servicio' ? modal.modalidadRetiro || null : null,
       }),
     })
 
@@ -397,6 +403,33 @@ export default function MisLeadsPage() {
                     value={modal.inventarioItemId}
                     onChange={v => setModal(p => ({ ...p, inventarioItemId: v }))}
                     items={inventarioItems}
+                  />
+                </div>
+              )}
+              {modal.tipo === 'servicio' && (
+                <div style={{ borderTop: '1px solid #f3f4f6', paddingTop: 14 }}>
+                  <label style={{ fontSize: 13, fontWeight: 600, color: '#374151', display: 'block', marginBottom: 10 }}>Retiro</label>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 10 }}>
+                    <button
+                      type="button"
+                      onClick={() => setModal(p => ({ ...p, modalidadRetiro: 'sucursal' }))}
+                      style={{ padding: '10px', borderRadius: 10, border: '2px solid', borderColor: modal.modalidadRetiro === 'sucursal' ? '#2d8a54' : '#e5e7eb', background: modal.modalidadRetiro === 'sucursal' ? '#f0faf5' : 'white', color: modal.modalidadRetiro === 'sucursal' ? '#2d8a54' : '#374151', fontWeight: modal.modalidadRetiro === 'sucursal' ? 700 : 400, fontSize: 13, cursor: 'pointer' }}
+                    >
+                      🏠 El cliente trae la mascota
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setModal(p => ({ ...p, modalidadRetiro: 'domicilio' }))}
+                      style={{ padding: '10px', borderRadius: 10, border: '2px solid', borderColor: modal.modalidadRetiro === 'domicilio' ? '#2d8a54' : '#e5e7eb', background: modal.modalidadRetiro === 'domicilio' ? '#f0faf5' : 'white', color: modal.modalidadRetiro === 'domicilio' ? '#2d8a54' : '#374151', fontWeight: modal.modalidadRetiro === 'domicilio' ? 700 : 400, fontSize: 13, cursor: 'pointer' }}
+                    >
+                      🚗 Retiro a domicilio
+                    </button>
+                  </div>
+                  <input
+                    type="datetime-local"
+                    value={modal.fechaRetiro}
+                    onChange={e => setModal(p => ({ ...p, fechaRetiro: e.target.value }))}
+                    style={{ width: '100%', border: '1px solid #e5e7eb', borderRadius: 10, padding: '10px 12px', fontSize: 14, outline: 'none', boxSizing: 'border-box' as const }}
                   />
                 </div>
               )}

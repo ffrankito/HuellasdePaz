@@ -18,6 +18,7 @@ export type DatosLead = {
   dni?: string
   mensaje?: string
   origen: OrigenLead
+  pickupMethod?: string
   veterinariaId?: string
   importacionId?: string
 }
@@ -109,6 +110,7 @@ export async function crearLeadAutomatico(datos: DatosLead) {
     dni: datos.dni ?? null,
     mensaje: datos.mensaje ?? null,
     origen: datos.origen,
+    pickupMethod: datos.pickupMethod ?? null,
     asignadoAId,
     veterinariaId: datos.veterinariaId ?? null,
     importacionId: datos.importacionId ?? null,

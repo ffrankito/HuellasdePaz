@@ -28,6 +28,7 @@ export async function POST(request: NextRequest) {
       convenioId: body.convenioId || null,
       inventarioItemId: body.inventarioItemId || null,
       fechaRetiro: body.fechaRetiro ? new Date(body.fechaRetiro) : null,
+      modalidadRetiro: body.modalidadRetiro || null,
       notas: body.notas,
     }).returning()
 

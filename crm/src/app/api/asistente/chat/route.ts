@@ -127,7 +127,8 @@ export async function POST(request: NextRequest) {
             tokensInput,
             tokensOutput,
           })
-        } catch {
+        } catch (err) {
+          console.error('Error en stream del asistente:', err)
           controller.enqueue(encoder.encode(`data: ${JSON.stringify({ error: 'Error al generar respuesta' })}\n\n`))
           controller.close()
         }

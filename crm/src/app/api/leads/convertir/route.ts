@@ -7,7 +7,7 @@ import { eq, sql } from 'drizzle-orm'
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { leadId, nombre, apellido, telefono, email, dni, localidad, tipo, servicioConfigId, tipoPlan, notas, convenioId, mascotaNombre, mascotaEspecie, inventarioItemId } = body
+    const { leadId, nombre, apellido, telefono, email, dni, localidad, tipo, servicioConfigId, tipoPlan, notas, convenioId, mascotaNombre, mascotaEspecie, inventarioItemId, fechaRetiro, modalidadRetiro } = body
 
     // 1. Crear cliente
     const [cliente] = await db.insert(clientes).values({
@@ -59,6 +59,8 @@ export async function POST(request: NextRequest) {
         precio: precioBase !== null ? String(precioBase) : null,
         descuento: String(descuentoMonto),
         estado: 'pendiente',
+        fechaRetiro: fechaRetiro ? new Date(fechaRetiro) : null,
+        modalidadRetiro: modalidadRetiro || null,
         notas: notas ?? null,
       })
 

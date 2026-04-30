@@ -13,7 +13,20 @@ type Lead = {
   email: string | null
   origen: string | null
   estado: EstadoLead
+  agenteNombre: string | null
   creadoEn: string
+}
+
+const COLORES_AGENTE = ['#1d4ed8', '#15803d', '#dc2626', '#7e22ce', '#c2410c', '#0f766e', '#b45309', '#0369a1']
+
+function colorAgente(nombre: string): string {
+  let hash = 0
+  for (let i = 0; i < nombre.length; i++) hash = nombre.charCodeAt(i) + ((hash << 5) - hash)
+  return COLORES_AGENTE[Math.abs(hash) % COLORES_AGENTE.length]
+}
+
+function iniciales(nombre: string): string {
+  return nombre.split(' ').filter(Boolean).map(p => p[0]).join('').toUpperCase().slice(0, 2)
 }
 
 const columnas: { id: EstadoLead; label: string; color: string }[] = [
@@ -132,7 +145,18 @@ export default function LeadsPage() {
                                   cursor: 'grab', ...provided.draggableProps.style,
                                 }}
                               >
-                                <p style={{ fontSize: 14, fontWeight: 600, color: '#111827', margin: '0 0 4px' }}>{lead.nombre}</p>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 4 }}>
+                                  <p style={{ fontSize: 14, fontWeight: 600, color: '#111827', margin: 0, flex: 1 }}>{lead.nombre}</p>
+                                  {lead.agenteNombre && (
+                                    <span title={lead.agenteNombre} style={{
+                                      flexShrink: 0, marginLeft: 8, width: 26, height: 26, borderRadius: '50%',
+                                      background: colorAgente(lead.agenteNombre), color: 'white',
+                                      fontSize: 10, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                    }}>
+                                      {iniciales(lead.agenteNombre)}
+                                    </span>
+                                  )}
+                                </div>
                                 <p style={{ fontSize: 13, color: '#6b7280', margin: '0 0 8px' }}>{lead.telefono}</p>
                                 {lead.origen && (
                                   <span style={{ fontSize: 11, color: '#6b7280', background: '#f9fafb', padding: '3px 8px', borderRadius: 20, border: '1px solid #f3f4f6' }}>

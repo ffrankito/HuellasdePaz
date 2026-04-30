@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { revalidatePath } from 'next/cache'
 import { db } from '@/db'
-import { leads } from '@/db/schema'
+import { leads, usuarios } from '@/db/schema'
 import { eq, asc } from 'drizzle-orm'
 import { crearLeadAutomatico } from '@/lib/leads/crearLeadAutomatico'
 import type { OrigenLead } from '@/lib/leads/crearLeadAutomatico'
@@ -26,6 +26,7 @@ export async function POST(request: NextRequest) {
       dni: body.dni,
       mensaje: body.mensaje,
       origen: (body.origen as OrigenLead) ?? 'directo',
+      pickupMethod: body.pickupMethod,
       veterinariaId: body.veterinariaId,
       importacionId: body.importacionId,
     })
@@ -52,11 +53,34 @@ export async function GET(request: NextRequest) {
       userId = user?.id ?? null
     }
 
+    const query = db
+      .select({
+        id: leads.id,
+        nombre: leads.nombre,
+        telefono: leads.telefono,
+        email: leads.email,
+        dni: leads.dni,
+        mensaje: leads.mensaje,
+        origen: leads.origen,
+        estado: leads.estado,
+        pickupMethod: leads.pickupMethod,
+        asignadoAId: leads.asignadoAId,
+        agenteNombre: usuarios.nombre,
+        notas: leads.notas,
+        primerRespuestaEn: leads.primerRespuestaEn,
+        ultimaInteraccionEn: leads.ultimaInteraccionEn,
+        creadoEn: leads.creadoEn,
+        actualizadoEn: leads.actualizadoEn,
+      })
+      .from(leads)
+      .leftJoin(usuarios, eq(leads.asignadoAId, usuarios.id))
+      .orderBy(asc(leads.creadoEn))
+
     const data = userId
-      ? await db.select().from(leads).where(eq(leads.asignadoAId, userId)).orderBy(asc(leads.creadoEn))
+      ? await query.where(eq(leads.asignadoAId, userId))
       : agenteId
-        ? await db.select().from(leads).where(eq(leads.asignadoAId, agenteId)).orderBy(asc(leads.creadoEn))
-        : await db.select().from(leads).orderBy(asc(leads.creadoEn))
+        ? await query.where(eq(leads.asignadoAId, agenteId))
+        : await query
 
     return NextResponse.json(data, { headers: corsHeaders })
   } catch (error) {

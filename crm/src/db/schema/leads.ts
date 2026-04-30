@@ -34,6 +34,7 @@ export const leads = pgTable('leads', {
   asignadoAId: uuid('asignado_a_id').references(() => usuarios.id),
   veterinariaId: uuid('veterinaria_id').references(() => veterinarias.id),
   importacionId: uuid('importacion_id').references(() => importacionesLeads.id, { onDelete: 'set null' }),
+  pickupMethod: text('pickup_method'),
   notas: text('notas'),
   primerRespuestaEn: timestamp('primer_respuesta_en'),
   ultimaInteraccionEn: timestamp('ultima_interaccion_en'),

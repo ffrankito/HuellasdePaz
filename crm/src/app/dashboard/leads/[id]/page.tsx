@@ -141,7 +141,7 @@ export default async function LeadDetallePage({
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               <InfoRow
                 label="Fecha de ingreso"
-                value={new Date(lead.creadoEn).toLocaleDateString('es-AR', { day: 'numeric', month: 'long', year: 'numeric' })}
+                value={new Date(lead.creadoEn).toLocaleDateString('es-AR', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'America/Argentina/Buenos_Aires' })}
               />
               <InfoRow label="Agente asignado" value={agente?.nombre ?? 'Sin asignar'} />
               <InfoRow label="Primera respuesta" value={tiempoRespuesta ? `En ${tiempoRespuesta}` : 'Sin respuesta aún'} />
@@ -149,7 +149,7 @@ export default async function LeadDetallePage({
               <InfoRow
                 label="Última actividad"
                 value={lead.ultimaInteraccionEn
-                  ? new Date(lead.ultimaInteraccionEn).toLocaleDateString('es-AR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })
+                  ? new Date(lead.ultimaInteraccionEn).toLocaleDateString('es-AR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', timeZone: 'America/Argentina/Buenos_Aires' })
                   : '—'}
               />
               <InfoRow label="Estado actual" value={lead.estado.replace(/_/g, ' ')} />
@@ -190,7 +190,8 @@ export default async function LeadDetallePage({
                     <p style={{ fontSize: 11, color: '#9ca3af', margin: 0 }}>
                       {new Date(item.creadoEn).toLocaleDateString('es-AR', {
                         day: 'numeric', month: 'short', year: 'numeric',
-                        hour: '2-digit', minute: '2-digit'
+                        hour: '2-digit', minute: '2-digit',
+                        timeZone: 'America/Argentina/Buenos_Aires',
                       })}
                     </p>
                   </div>

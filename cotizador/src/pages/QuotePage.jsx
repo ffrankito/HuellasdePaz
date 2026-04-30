@@ -98,6 +98,7 @@ export default function QuotePage() {
           email: formData.email,
           origen: "cotizador",
           mensaje: calcularResumen(),
+          pickupMethod: formData.pickupMethod || null,
         }),
       });
     } catch (err) {

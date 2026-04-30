@@ -26,6 +26,7 @@ export function NuevoServicioForm({ clientes, mascotas, serviciosConfig }: {
   const [convenioId, setConvenioId] = useState('')
   const [conveniosActivos, setConveniosActivos] = useState<ConvenioActivo[]>([])
   const [inventarioItemId, setInventarioItemId] = useState<string | null>(null)
+  const [modalidadRetiro, setModalidadRetiro] = useState<string>('')
 
   const mascotasFiltradas = mascotas.filter(m => m.clienteId === clienteId)
   const configSeleccionada = serviciosConfig.find(s => s.id === servicioConfigId)
@@ -67,6 +68,7 @@ export function NuevoServicioForm({ clientes, mascotas, serviciosConfig }: {
       precio: precioBase !== null ? precioBase.toString() : null,
       descuento: comisionMonto > 0 ? comisionMonto.toString() : '0',
       fechaRetiro: (form.elements.namedItem('fechaRetiro') as HTMLInputElement).value || null,
+      modalidadRetiro: modalidadRetiro || null,
       notas: (form.elements.namedItem('notas') as HTMLTextAreaElement).value || null,
       convenioId: convenioId || null,
       inventarioItemId: inventarioItemId || null,
@@ -185,6 +187,26 @@ export function NuevoServicioForm({ clientes, mascotas, serviciosConfig }: {
       <div style={fieldStyle}>
         <label style={labelStyle}>Producto / Urna <span style={{ fontWeight: 400, color: '#9ca3af' }}>(opcional)</span></label>
         <SelectorProducto value={inventarioItemId} onChange={setInventarioItemId} />
+      </div>
+
+      <div style={fieldStyle}>
+        <label style={labelStyle}>Modalidad de retiro</label>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+          <button
+            type="button"
+            onClick={() => setModalidadRetiro(modalidadRetiro === 'sucursal' ? '' : 'sucursal')}
+            style={{ padding: '10px', borderRadius: 10, border: '2px solid', borderColor: modalidadRetiro === 'sucursal' ? '#2d8a54' : '#e5e7eb', background: modalidadRetiro === 'sucursal' ? '#f0faf5' : 'white', color: modalidadRetiro === 'sucursal' ? '#2d8a54' : '#374151', fontWeight: modalidadRetiro === 'sucursal' ? 700 : 400, fontSize: 13, cursor: 'pointer' }}
+          >
+            🏠 El cliente trae la mascota
+          </button>
+          <button
+            type="button"
+            onClick={() => setModalidadRetiro(modalidadRetiro === 'domicilio' ? '' : 'domicilio')}
+            style={{ padding: '10px', borderRadius: 10, border: '2px solid', borderColor: modalidadRetiro === 'domicilio' ? '#2d8a54' : '#e5e7eb', background: modalidadRetiro === 'domicilio' ? '#f0faf5' : 'white', color: modalidadRetiro === 'domicilio' ? '#2d8a54' : '#374151', fontWeight: modalidadRetiro === 'domicilio' ? 700 : 400, fontSize: 13, cursor: 'pointer' }}
+          >
+            🚗 Retiro a domicilio
+          </button>
+        </div>
       </div>
 
       <div style={fieldStyle}>

@@ -51,6 +51,7 @@ export const servicios = pgTable('servicios', {
   convenioId: uuid('convenio_id').references(() => convenios.id),
   servicioConfigId: uuid('servicio_config_id').references(() => serviciosConfig.id),
   inventarioItemId: uuid('inventario_item_id').references(() => inventario.id),
+  modalidadRetiro: text('modalidad_retiro'),
   pagado: boolean('pagado').default(false).notNull(),
   notas: text('notas'),
   creadoEn: timestamp('creado_en').defaultNow().notNull(),
