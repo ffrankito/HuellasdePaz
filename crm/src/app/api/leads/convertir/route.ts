@@ -77,6 +77,7 @@ export async function POST(request: NextRequest) {
       await db.insert(planes).values({
         numero: sql`nextval('planes_numero_seq')`,
         clienteId: cliente.id,
+        mascotaId,
         planConfigId: tipoPlan,
         cuotasMensual: config?.cuotaMensual ?? '0',
         cuotasTotales: config?.cuotasTotales ?? 12,
