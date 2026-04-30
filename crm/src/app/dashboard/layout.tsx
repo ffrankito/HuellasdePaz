@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import { Sidebar } from '@/components/layout/Sidebar'
 import { Header } from '@/components/layout/Header'
 import { AsistenteWidget } from '@/components/asistente/AsistenteWidget'
+import { DarkModeInit } from '@/components/DarkModeInit'
 import { db } from '@/db'
 import { usuarios } from '@/db/schema'
 import { eq } from 'drizzle-orm'
@@ -25,6 +26,7 @@ export default async function DashboardLayout({
 
   return (
     <div style={{ display: 'flex', height: '100vh', overflow: 'hidden' }}>
+      <DarkModeInit />
       <Sidebar usuario={usuario} />
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
         <Header nombre={usuario.nombre} />

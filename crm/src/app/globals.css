@@ -106,3 +106,13 @@ body {
     grid-template-columns: 1fr;
   }
 }
+
+/* Dark mode — filter sobre el body, re-invertimos imágenes y videos */
+body.dark {
+  filter: invert(1) hue-rotate(180deg);
+}
+body.dark img,
+body.dark video,
+body.dark [data-no-invert] {
+  filter: invert(1) hue-rotate(180deg);
+}

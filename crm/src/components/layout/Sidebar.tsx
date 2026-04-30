@@ -225,22 +225,11 @@ export function Sidebar({ usuario }: { usuario: Usuario }) {
   const pathname = usePathname()
   const router = useRouter()
   const [abierto, setAbierto] = useState(false)
-  const [resetEstado, setResetEstado] = useState<'idle' | 'cargando' | 'enviado'>('idle')
 
   async function handleLogout() {
     const supabase = createClient()
     await supabase.auth.signOut()
     router.push('/auth/login')
-  }
-
-  async function handleCambiarPassword() {
-    setResetEstado('cargando')
-    const supabase = createClient()
-    await supabase.auth.resetPasswordForEmail(usuario.email, {
-      redirectTo: `${window.location.origin}/auth/reset-password`,
-    })
-    setResetEstado('enviado')
-    setTimeout(() => setResetEstado('idle'), 5000)
   }
 
   const badge = rolColor[usuario.rol] ?? { bg: '#f3f4f6', color: '#374151' }
@@ -361,24 +350,23 @@ export function Sidebar({ usuario }: { usuario: Usuario }) {
           <p style={{ fontSize: 11, color: '#9ca3af', margin: 0 }}>{rolLabel[usuario.rol] ?? usuario.rol}</p>
         </div>
 
-        {resetEstado === 'enviado' && (
-          <span style={{ fontSize: 11, color: '#15803d', flex: 1, minWidth: 0 }}>
-            Mail enviado a {usuario.email}
-          </span>
-        )}
-
-        <button
-          onClick={handleCambiarPassword}
-          disabled={resetEstado === 'cargando' || resetEstado === 'enviado'}
-          title="Cambiar contraseña"
-          style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 30, height: 30, borderRadius: 8, color: resetEstado === 'enviado' ? '#15803d' : '#9ca3af', background: resetEstado === 'enviado' ? '#f0fdf4' : 'transparent', border: 'none', cursor: resetEstado === 'cargando' ? 'wait' : 'pointer', transition: 'color 0.15s, background 0.15s', flexShrink: 0 }}
-          onMouseEnter={e => { if (resetEstado === 'idle') { (e.currentTarget as HTMLButtonElement).style.color = '#2d8a54'; (e.currentTarget as HTMLButtonElement).style.background = '#f0fdf4' } }}
-          onMouseLeave={e => { if (resetEstado === 'idle') { (e.currentTarget as HTMLButtonElement).style.color = '#9ca3af'; (e.currentTarget as HTMLButtonElement).style.background = 'transparent' } }}
+        <Link
+          href="/dashboard/perfil"
+          title="Mi cuenta"
+          style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            width: 30, height: 30, borderRadius: 8,
+            color: pathname === '/dashboard/perfil' ? '#2d8a54' : '#9ca3af',
+            background: pathname === '/dashboard/perfil' ? '#f0fdf4' : 'transparent',
+            textDecoration: 'none', transition: 'color 0.15s, background 0.15s', flexShrink: 0,
+          }}
+          onMouseEnter={e => { if (pathname !== '/dashboard/perfil') { (e.currentTarget as HTMLAnchorElement).style.color = '#2d8a54'; (e.currentTarget as HTMLAnchorElement).style.background = '#f0fdf4' } }}
+          onMouseLeave={e => { if (pathname !== '/dashboard/perfil') { (e.currentTarget as HTMLAnchorElement).style.color = '#9ca3af'; (e.currentTarget as HTMLAnchorElement).style.background = 'transparent' } }}
         >
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
           </svg>
-        </button>
+        </Link>
 
         {usuario.rol === 'admin' && (
           <Link
