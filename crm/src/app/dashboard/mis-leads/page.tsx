@@ -49,10 +49,10 @@ type ItemInventario = {
   foto: string | null
 }
 
-function convenioAplica(c: ConvenioActivo, tipo: string | undefined): boolean {
-  if (!tipo) return true
+function convenioAplica(c: ConvenioActivo, configId: string | undefined): boolean {
+  if (!configId) return true
   if (!c.serviciosCubiertos || c.serviciosCubiertos.length === 0) return true
-  return c.serviciosCubiertos.includes(tipo)
+  return c.serviciosCubiertos.includes(configId)
 }
 
 type ModalConversion = {
@@ -363,10 +363,9 @@ export default function MisLeadsPage() {
                     value={modal.servicioConfigId}
                     onChange={e => {
                       const nuevoConfigId = e.target.value
-                      const nuevoTipo = serviciosConfig.find(s => s.id === nuevoConfigId)?.tipo
                       const convenioSigue = !modal.convenioId || convenioAplica(
                         conveniosActivos.find(c => c.id === modal.convenioId)!,
-                        nuevoTipo
+                        nuevoConfigId
                       )
                       setModal(p => ({ ...p, servicioConfigId: nuevoConfigId, convenioId: convenioSigue ? p.convenioId : '' }))
                     }}
@@ -438,13 +437,12 @@ export default function MisLeadsPage() {
                 <textarea placeholder="Detalles de la venta..." value={modal.notas} onChange={e => setModal(p => ({ ...p, notas: e.target.value }))} rows={3} style={{ width: '100%', border: '1px solid #e5e7eb', borderRadius: 10, padding: '10px 12px', fontSize: 14, outline: 'none', resize: 'vertical', fontFamily: 'inherit', boxSizing: 'border-box' }} />
               </div>
               {modal.tipo === 'servicio' && (() => {
-                const tipoServicio = serviciosConfig.find(s => s.id === modal.servicioConfigId)?.tipo
-                const aplicables = conveniosActivos.filter(c => convenioAplica(c, tipoServicio))
+                const aplicables = conveniosActivos.filter(c => convenioAplica(c, modal.servicioConfigId))
                 if (aplicables.length === 0) return null
                 return (
                   <div>
                     <label style={{ fontSize: 13, fontWeight: 600, color: '#374151', display: 'block', marginBottom: 6 }}>¿Vino por convenio? <span style={{ fontWeight: 400, color: '#9ca3af' }}>(opcional)</span></label>
-                    {tipoServicio && conveniosActivos.length > aplicables.length && (
+                    {modal.servicioConfigId && conveniosActivos.length > aplicables.length && (
                       <p style={{ fontSize: 12, color: '#6b7280', margin: '0 0 6px' }}>Solo convenios que cubren este servicio.</p>
                     )}
                     <select

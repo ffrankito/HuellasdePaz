@@ -1,6 +1,6 @@
 import { db } from '@/db'
-import { convenios, leads } from '@/db/schema'
-import { eq, count, sql } from 'drizzle-orm'
+import { convenios, leads, serviciosConfig } from '@/db/schema'
+import { eq, count, sql, inArray } from 'drizzle-orm'
 import { notFound, redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { ConvenioPortalClient } from '@/components/portal/ConvenioPortalClient'
@@ -46,6 +46,13 @@ export default async function ConvenioPortalPage({
   const perdidos    = Number(statsRow.perdidos)
   const enProceso   = total - convertidos - perdidos
 
+  const cubiertos = (convenio.serviciosCubiertos as string[] | null) ?? []
+  const todosConfigs = await db.select({ id: serviciosConfig.id, nombre: serviciosConfig.nombre })
+    .from(serviciosConfig).where(eq(serviciosConfig.activo, true))
+  const serviciosDisponibles = cubiertos.length > 0
+    ? todosConfigs.filter(c => cubiertos.includes(c.id))
+    : todosConfigs
+
   return (
     <div style={{ minHeight: '100vh', background: '#f5f2ee', fontFamily: '-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif' }}>
 
@@ -80,7 +87,7 @@ export default async function ConvenioPortalPage({
       <ConvenioPortalClient
         token={token}
         convenioNombre={convenio.nombre}
-        serviciosCubiertos={(convenio.serviciosCubiertos as string[] | null) ?? null}
+        serviciosDisponibles={serviciosDisponibles}
         initialStats={{ total, convertidos, perdidos, enProceso }}
         initialLeads={leadsData.map(l => ({
           ...l,

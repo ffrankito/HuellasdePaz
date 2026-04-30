@@ -34,29 +34,20 @@ const inputStyle = {
   borderRadius: 10, outline: 'none', boxSizing: 'border-box' as const,
 }
 
-const TODOS_LOS_SERVICIOS = [
-  { key: 'cremacion_individual',   label: 'Cremación individual' },
-  { key: 'cremacion_comunitaria',  label: 'Cremación comunitaria' },
-  { key: 'entierro',               label: 'Entierro en cementerio parque' },
-]
-
 export function ConvenioPortalClient({
   token,
   convenioNombre,
-  serviciosCubiertos,
+  serviciosDisponibles,
   initialStats,
   initialLeads,
 }: {
   token: string
   convenioNombre: string
-  serviciosCubiertos: string[] | null
+  serviciosDisponibles: { id: string; nombre: string }[]
   initialStats: Stats
   initialLeads: Lead[]
 }) {
   const router = useRouter()
-  const serviciosDisponibles = serviciosCubiertos && serviciosCubiertos.length > 0
-    ? TODOS_LOS_SERVICIOS.filter(s => serviciosCubiertos.includes(s.key))
-    : TODOS_LOS_SERVICIOS
   const [form, setForm] = useState({ nombre: '', telefono: '', dni: '', email: '', mascotaNombre: '', mascotaEspecie: '', servicioInteres: '', notas: '' })
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -154,7 +145,7 @@ export function ConvenioPortalClient({
             <select name="servicioInteres" value={form.servicioInteres} onChange={handleChange} style={inputStyle}>
               {serviciosDisponibles.length > 1 && <option value="">Por definir</option>}
               {serviciosDisponibles.map(s => (
-                <option key={s.key} value={s.label}>{s.label}</option>
+                <option key={s.id} value={s.nombre}>{s.nombre}</option>
               ))}
             </select>
           </div>

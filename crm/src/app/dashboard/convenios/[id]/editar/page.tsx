@@ -1,5 +1,5 @@
 import { db } from '@/db'
-import { convenios } from '@/db/schema'
+import { convenios, serviciosConfig } from '@/db/schema'
 import { eq } from 'drizzle-orm'
 import { notFound } from 'next/navigation'
 import { ConvenioForm } from '@/components/convenios/ConvenioForm'
@@ -11,9 +11,10 @@ export default async function EditarConvenioPage({
 }) {
   const { id } = await params
 
-  const convenio = await db.query.convenios.findFirst({
-    where: eq(convenios.id, id),
-  })
+  const [convenio, configs] = await Promise.all([
+    db.query.convenios.findFirst({ where: eq(convenios.id, id) }),
+    db.select().from(serviciosConfig).where(eq(serviciosConfig.activo, true)),
+  ])
 
   if (!convenio) notFound()
 
@@ -27,7 +28,7 @@ export default async function EditarConvenioPage({
           Actualizá los datos y el convenio
         </p>
       </div>
-      <ConvenioForm convenio={convenio} />
+      <ConvenioForm convenio={convenio} serviciosConfig={configs} />
     </div>
   )
 }

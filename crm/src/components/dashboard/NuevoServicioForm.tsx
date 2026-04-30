@@ -7,10 +7,10 @@ import { SelectorProducto } from '@/components/servicios/SelectorProducto'
 
 type ConvenioActivo = { id: string; nombre: string; descuentoPorcentaje: string | null; serviciosCubiertos: string[] | null }
 
-function convenioAplica(c: ConvenioActivo, tipo: string | undefined): boolean {
-  if (!tipo) return true
+function convenioAplica(c: ConvenioActivo, configId: string | undefined): boolean {
+  if (!configId) return true
   if (!c.serviciosCubiertos || c.serviciosCubiertos.length === 0) return true
-  return c.serviciosCubiertos.includes(tipo)
+  return c.serviciosCubiertos.includes(configId)
 }
 
 export function NuevoServicioForm({ clientes, mascotas, serviciosConfig }: {
@@ -31,7 +31,7 @@ export function NuevoServicioForm({ clientes, mascotas, serviciosConfig }: {
   const mascotasFiltradas = mascotas.filter(m => m.clienteId === clienteId)
   const configSeleccionada = serviciosConfig.find(s => s.id === servicioConfigId)
   const tipoSeleccionado = configSeleccionada?.tipo
-  const conveniosAplicables = conveniosActivos.filter(c => convenioAplica(c, tipoSeleccionado))
+  const conveniosAplicables = conveniosActivos.filter(c => convenioAplica(c, servicioConfigId))
   const convenioSeleccionado = conveniosAplicables.find(c => c.id === convenioId)
 
   const precioBase = configSeleccionada?.precio ? Number(configSeleccionada.precio) : null
@@ -51,7 +51,7 @@ export function NuevoServicioForm({ clientes, mascotas, serviciosConfig }: {
   useEffect(() => {
     if (!convenioId || !tipoSeleccionado) return
     const actual = conveniosActivos.find(c => c.id === convenioId)
-    if (actual && !convenioAplica(actual, tipoSeleccionado)) setConvenioId('')
+    if (actual && !convenioAplica(actual, servicioConfigId)) setConvenioId('')
   }, [tipoSeleccionado])
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {

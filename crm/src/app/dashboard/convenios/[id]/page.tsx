@@ -1,5 +1,5 @@
 import { db } from '@/db'
-import { convenios, leads, clientes, servicios } from '@/db/schema'
+import { convenios, leads, clientes, servicios, serviciosConfig } from '@/db/schema'
 import { eq, count, and, sql } from 'drizzle-orm'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
@@ -24,6 +24,9 @@ export default async function ConvenioDetallePage({
   })
 
   if (!convenio) notFound()
+
+  const todosLosConfigs = await db.select({ id: serviciosConfig.id, nombre: serviciosConfig.nombre }).from(serviciosConfig)
+  const configMap = Object.fromEntries(todosLosConfigs.map(c => [c.id, c.nombre]))
 
   const [
     totalLeads,
@@ -112,9 +115,7 @@ export default async function ConvenioDetallePage({
                 label="Servicios"
                 value={
                   convenio.serviciosCubiertos && (convenio.serviciosCubiertos as string[]).length > 0
-                    ? (convenio.serviciosCubiertos as string[])
-                        .map(s => ({ cremacion_individual: 'Cremación individual', cremacion_comunitaria: 'Cremación comunitaria', entierro: 'Entierro' })[s] ?? s)
-                        .join(', ')
+                    ? (convenio.serviciosCubiertos as string[]).map(id => configMap[id] ?? id).join(', ')
                     : 'Todos los servicios'
                 }
               />

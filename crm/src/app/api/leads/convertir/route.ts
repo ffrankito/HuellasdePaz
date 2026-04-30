@@ -42,9 +42,8 @@ export async function POST(request: NextRequest) {
       ])
 
       const precioBase = config?.precio ? Number(config.precio) : null
-      const tipoServicio = config?.tipo ?? ''
       const cubiertos = convenio?.serviciosCubiertos as string[] | null
-      const convenioAplica = !cubiertos || cubiertos.length === 0 || cubiertos.includes(tipoServicio)
+      const convenioAplica = !cubiertos || cubiertos.length === 0 || cubiertos.includes(servicioConfigId)
       const descuentoPct = convenioAplica && convenio?.descuentoPorcentaje ? Number(convenio.descuentoPorcentaje) : 0
       const descuentoMonto = precioBase ? Math.round(precioBase * descuentoPct / 100) : 0
 

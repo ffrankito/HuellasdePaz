@@ -1,6 +1,11 @@
+import { db } from '@/db'
+import { serviciosConfig } from '@/db/schema'
+import { eq } from 'drizzle-orm'
 import { ConvenioForm } from '@/components/convenios/ConvenioForm'
 
-export default function NuevoConvenioPage() {
+export default async function NuevoConvenioPage() {
+  const configs = await db.select().from(serviciosConfig).where(eq(serviciosConfig.activo, true))
+
   return (
     <div className="page-container">
       <div style={{ marginBottom: 32 }}>
@@ -9,7 +14,7 @@ export default function NuevoConvenioPage() {
           Registrá un convenio y configurá sus beneficios
         </p>
       </div>
-      <ConvenioForm />
+      <ConvenioForm serviciosConfig={configs} />
     </div>
   )
 }
