@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
+import { Configuracion2FA } from '@/components/configuracion/Configuracion2FA'
 
 export default function PerfilPage() {
   const [darkMode, setDarkMode] = useState(false)
@@ -87,6 +88,12 @@ export default function PerfilPage() {
             }} />
           </button>
         </div>
+      </div>
+
+      {/* Seguridad — 2FA */}
+      <div style={{ ...card, marginBottom: 20 }}>
+        <h2 style={{ fontSize: 15, fontWeight: 600, color: '#111827', margin: '0 0 20px' }}>Seguridad</h2>
+        <Configuracion2FA />
       </div>
 
       {/* Cambiar contraseña */}

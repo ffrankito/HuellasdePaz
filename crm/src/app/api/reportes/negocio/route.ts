@@ -1,11 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/db'
-import { clientes, servicios, leads, planes } from '@/db/schema'
-import { count, and, gte, lt, sql } from 'drizzle-orm'
+import { clientes, servicios, leads, planes, convenios } from '@/db/schema'
+import { count, and, gte, lt, sql, eq, desc } from 'drizzle-orm'
+import { requireAuth } from '@/lib/api-auth'
 
 export const dynamic = 'force-dynamic'
 
 export async function GET(request: NextRequest) {
+  const auth = await requireAuth(['admin', 'manager', 'contadora'])
+  if (!auth.ok) return auth.response
+
   const { searchParams } = new URL(request.url)
 
   const desde = searchParams.get('desde')
@@ -34,6 +38,7 @@ export async function GET(request: NextRequest) {
     serviciosPorTipo,
     leadsPorOrigen,
     leadsPorEstado,
+    leadsPorConvenio,
   ] = await Promise.all([
 
     db.select({ total: count() })
@@ -81,6 +86,13 @@ export async function GET(request: NextRequest) {
 
     db.select({ estado: leads.estado, count: count() })
       .from(leads).where(and(gte(leads.creadoEn, desde), lt(leads.creadoEn, hasta))).groupBy(leads.estado),
+
+    db.select({ nombre: convenios.nombre, tipo: convenios.tipo, count: count() })
+      .from(leads)
+      .innerJoin(convenios, eq(leads.veterinariaId, convenios.id))
+      .where(and(gte(leads.creadoEn, desde), lt(leads.creadoEn, hasta)))
+      .groupBy(convenios.id, convenios.nombre, convenios.tipo)
+      .orderBy(desc(count())),
   ])
 
   function delta(actual: number, anterior: number) {
@@ -113,5 +125,6 @@ export async function GET(request: NextRequest) {
     serviciosPorTipo,
     leadsPorOrigen,
     leadsPorEstado,
+    leadsPorConvenio,
   })
 }

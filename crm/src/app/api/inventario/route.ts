@@ -3,8 +3,12 @@ import { revalidatePath } from 'next/cache'
 import { db } from '@/db'
 import { inventario } from '@/db/schema'
 import { and, eq, gt } from 'drizzle-orm'
+import { requireAuth } from '@/lib/api-auth'
 
 export async function POST(request: NextRequest) {
+  const auth = await requireAuth(['admin', 'manager'])
+  if (!auth.ok) return auth.response
+
   try {
     const body = await request.json()
 
@@ -29,6 +33,9 @@ export async function POST(request: NextRequest) {
 }
 
 export async function GET(request: NextRequest) {
+  const auth = await requireAuth()
+  if (!auth.ok) return auth.response
+
   try {
     const { searchParams } = new URL(request.url)
     const selector = searchParams.get('selector') === 'true'

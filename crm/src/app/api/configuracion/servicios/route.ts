@@ -2,10 +2,17 @@ import { NextRequest, NextResponse } from 'next/server'
 import { revalidatePath } from 'next/cache'
 import { db } from '@/db'
 import { serviciosConfig } from '@/db/schema'
+import { eq } from 'drizzle-orm'
+import { getCorsHeaders } from '@/lib/cors'
 
-export async function GET() {
-  const data = await db.select().from(serviciosConfig)
-  return NextResponse.json(data)
+export async function OPTIONS(request: NextRequest) {
+  return NextResponse.json({}, { headers: getCorsHeaders(request.headers.get('origin')) })
+}
+
+export async function GET(request: NextRequest) {
+  const corsHeaders = getCorsHeaders(request.headers.get('origin'))
+  const data = await db.select().from(serviciosConfig).where(eq(serviciosConfig.activo, true))
+  return NextResponse.json(data, { headers: corsHeaders })
 }
 
 export async function POST(request: NextRequest) {

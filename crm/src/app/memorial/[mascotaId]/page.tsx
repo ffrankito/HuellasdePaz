@@ -4,6 +4,7 @@ import { and, eq } from 'drizzle-orm'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import type { Metadata } from 'next'
+import { CompartirButtonClient } from '@/components/portal/CompartirButton'
 
 export async function generateMetadata({ params }: { params: Promise<{ mascotaId: string }> }): Promise<Metadata> {
   const { mascotaId } = await params
@@ -43,129 +44,166 @@ export default async function MemorialPublicoPage({ params }: { params: Promise<
   if (!row) notFound()
 
   const galeria = (row.galeria ?? []) as string[]
-  const emoji = row.especie === 'perro' ? '🐕' : row.especie === 'gato' ? '🐈' : '🐾'
 
   function formatFecha(d: string) {
     return new Date(d).toLocaleDateString('es-AR', { day: 'numeric', month: 'long', year: 'numeric' })
   }
 
+  const especieLabel = row.especie
+    ? row.especie.charAt(0).toUpperCase() + row.especie.slice(1)
+    : null
+
+  const card: React.CSSProperties = {
+    background: 'rgba(255,255,255,0.04)',
+    border: '1px solid rgba(255,255,255,0.07)',
+    borderRadius: 20,
+    marginBottom: 12,
+  }
+
   return (
     <div style={{ minHeight: '100vh', background: '#08080f', fontFamily: '-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif' }}>
 
-      {/* Back link */}
-      <div style={{ padding: '16px 24px', position: 'absolute', top: 0, left: 0, zIndex: 10 }}>
+      {/* Back nav */}
+      <div style={{ position: 'absolute', top: 0, left: 0, right: 0, zIndex: 10, padding: '18px 20px' }}>
         <Link
           href="/memorial"
-          style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: 'rgba(255,255,255,0.4)', textDecoration: 'none', fontWeight: 500 }}
+          style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 13, color: 'rgba(255,255,255,0.45)', textDecoration: 'none', fontWeight: 500 }}
         >
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <polyline points="15 18 9 12 15 6"/>
           </svg>
           Memoriales
         </Link>
       </div>
 
-      <div style={{ maxWidth: 480, margin: '0 auto', padding: '0 0 72px' }}>
-
-        {/* Hero */}
+      {/* Hero */}
+      <div style={{ position: 'relative', height: '58vh', minHeight: 380, maxHeight: 540, overflow: 'hidden' }}>
         {row.foto ? (
-          <div style={{ borderRadius: '0 0 28px 28px', overflow: 'hidden', position: 'relative' }}>
-            <div style={{ aspectRatio: '4/3', width: '100%', position: 'relative' }}>
-              <img
-                src={row.foto}
-                alt=""
-                draggable={false}
-                style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-              />
-            </div>
-            <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(8,8,15,0.95) 0%, rgba(8,8,15,0.4) 45%, rgba(8,8,15,0.08) 100%)' }} />
-            <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '28px 32px 32px' }}>
-              <h1 style={{ fontSize: 44, fontWeight: 700, color: 'white', margin: '0 0 6px', fontFamily: 'Georgia, Times New Roman, serif', letterSpacing: '-0.01em', lineHeight: 1.1 }}>
-                {row.nombre}
-              </h1>
-              <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.5)', margin: 0, textTransform: 'capitalize' }}>
-                {row.especie}{row.raza ? ` · ${row.raza}` : ''}
-              </p>
-            </div>
-          </div>
+          <img
+            src={row.foto}
+            alt={row.nombre}
+            draggable={false}
+            style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center top', display: 'block' }}
+          />
         ) : (
-          <div style={{ textAlign: 'center', padding: '80px 0 40px' }}>
-            <span style={{ fontSize: 80, lineHeight: 1, display: 'block', marginBottom: 20 }}>{emoji}</span>
-            <h1 style={{ fontSize: 48, fontWeight: 700, color: 'white', margin: '0 0 8px', fontFamily: 'Georgia, Times New Roman, serif', letterSpacing: '-0.02em' }}>
+          <div style={{ width: '100%', height: '100%', background: 'linear-gradient(155deg, #1e1a16 0%, #0d0b09 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="1">
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+            </svg>
+          </div>
+        )}
+
+        {/* Gradient overlay */}
+        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, #08080f 0%, rgba(8,8,15,0.55) 38%, rgba(8,8,15,0.08) 68%, transparent 100%)' }} />
+
+        {/* Name overlay */}
+        <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '28px 24px 40px' }}>
+          <div style={{ maxWidth: 560, margin: '0 auto' }}>
+            {(especieLabel || row.raza) && (
+              <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', margin: '0 0 10px', letterSpacing: '0.1em', textTransform: 'uppercase', fontWeight: 500 }}>
+                {[especieLabel, row.raza].filter(Boolean).join(' · ')}
+              </p>
+            )}
+            <h1 style={{ fontSize: 'clamp(2.75rem, 8vw, 3.5rem)', fontWeight: 700, color: 'white', margin: 0, fontFamily: 'Georgia, "Times New Roman", serif', letterSpacing: '-0.02em', lineHeight: 1.05 }}>
               {row.nombre}
             </h1>
-            <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.35)', margin: 0, textTransform: 'capitalize' }}>
-              {row.especie}{row.raza ? ` · ${row.raza}` : ''}
+          </div>
+        </div>
+      </div>
+
+      {/* Content */}
+      <div style={{ maxWidth: 560, margin: '0 auto', padding: '20px 16px 80px' }}>
+
+        {/* Dates */}
+        {(row.fechaNacimiento || row.fechaFallecimiento) && (
+          <div style={{ ...card, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '28px 24px' }}>
+            {row.fechaNacimiento && (
+              <div style={{ textAlign: 'center', flex: 1 }}>
+                <p style={{ fontSize: 9, color: 'rgba(255,255,255,0.22)', margin: '0 0 8px', letterSpacing: '0.2em', textTransform: 'uppercase', fontWeight: 600 }}>Nació</p>
+                <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.65)', margin: 0, fontWeight: 500, lineHeight: 1.45 }}>
+                  {formatFecha(row.fechaNacimiento)}
+                </p>
+              </div>
+            )}
+            {row.fechaNacimiento && row.fechaFallecimiento && (
+              <div style={{ padding: '0 20px', flexShrink: 0 }}>
+                <span style={{ fontSize: 20, lineHeight: 1 }}>🕯️</span>
+              </div>
+            )}
+            {row.fechaFallecimiento && (
+              <div style={{ textAlign: 'center', flex: 1 }}>
+                <p style={{ fontSize: 9, color: 'rgba(255,255,255,0.22)', margin: '0 0 8px', letterSpacing: '0.2em', textTransform: 'uppercase', fontWeight: 600 }}>Partió</p>
+                <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.65)', margin: 0, fontWeight: 500, lineHeight: 1.45 }}>
+                  {formatFecha(row.fechaFallecimiento)}
+                </p>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Dedicatoria */}
+        {row.dedicatoria && (
+          <div style={{ ...card, padding: '28px 28px 28px', position: 'relative', overflow: 'hidden' }}>
+            <div style={{ position: 'absolute', top: 10, left: 18, fontSize: 96, color: 'rgba(45,138,84,0.1)', fontFamily: 'Georgia, serif', lineHeight: 1, userSelect: 'none', pointerEvents: 'none' }}>
+              &ldquo;
+            </div>
+            <p style={{ fontSize: 9, color: 'rgba(255,255,255,0.22)', margin: '0 0 16px', letterSpacing: '0.2em', textTransform: 'uppercase', fontWeight: 600, position: 'relative', zIndex: 1 }}>
+              Dedicatoria
+            </p>
+            <p style={{ fontSize: 17, color: 'rgba(255,255,255,0.7)', margin: 0, lineHeight: 1.85, fontStyle: 'italic', fontWeight: 300, fontFamily: 'Georgia, "Times New Roman", serif', position: 'relative', zIndex: 1 }}>
+              {row.dedicatoria}
             </p>
           </div>
         )}
 
-        <div style={{ padding: '0 20px' }}>
-
-          {/* Fechas */}
-          {(row.fechaNacimiento || row.fechaFallecimiento) && (
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '24px 0', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-              {row.fechaNacimiento && (
-                <div style={{ textAlign: 'center', flex: 1 }}>
-                  <p style={{ fontSize: 9, color: 'rgba(255,255,255,0.2)', margin: '0 0 4px', letterSpacing: '0.18em', textTransform: 'uppercase' }}>Nació</p>
-                  <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.65)', margin: 0, fontWeight: 500 }}>{formatFecha(row.fechaNacimiento)}</p>
+        {/* Galería */}
+        {galeria.length > 0 && (
+          <div style={{ ...card, padding: 16 }}>
+            <p style={{ fontSize: 9, color: 'rgba(255,255,255,0.22)', margin: '0 0 14px 4px', letterSpacing: '0.2em', textTransform: 'uppercase', fontWeight: 600 }}>
+              Galería
+            </p>
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: galeria.length === 1 ? '1fr' : 'repeat(2, 1fr)',
+              gap: 8,
+            }}>
+              {galeria.map((url, i) => (
+                <div key={i} style={{ aspectRatio: '1', borderRadius: 12, overflow: 'hidden', background: 'rgba(255,255,255,0.04)' }}>
+                  <img src={url} alt="" draggable={false} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
                 </div>
-              )}
-              {row.fechaNacimiento && row.fechaFallecimiento && (
-                <span style={{ fontSize: 18, opacity: 0.2, padding: '0 12px' }}>🕯️</span>
-              )}
-              {row.fechaFallecimiento && (
-                <div style={{ textAlign: 'center', flex: 1 }}>
-                  <p style={{ fontSize: 9, color: 'rgba(255,255,255,0.2)', margin: '0 0 4px', letterSpacing: '0.18em', textTransform: 'uppercase' }}>Partió</p>
-                  <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.65)', margin: 0, fontWeight: 500 }}>{formatFecha(row.fechaFallecimiento)}</p>
-                </div>
-              )}
+              ))}
             </div>
-          )}
+          </div>
+        )}
 
-          {/* Dedicatoria */}
-          {row.dedicatoria && (
-            <div style={{ padding: '28px 0 24px', display: 'flex', gap: 16 }}>
-              <div style={{ width: 2, flexShrink: 0, background: 'linear-gradient(to bottom, rgba(45,138,84,0.6), rgba(45,138,84,0.05))', borderRadius: 2, marginTop: 4 }} />
-              <div>
-                <p style={{ fontSize: 9, color: 'rgba(255,255,255,0.2)', margin: '0 0 12px', letterSpacing: '0.18em', textTransform: 'uppercase' }}>Dedicatoria</p>
-                <p style={{ fontSize: 17, color: 'rgba(255,255,255,0.7)', margin: 0, lineHeight: 1.85, fontStyle: 'italic', fontWeight: 300, fontFamily: 'Georgia, serif' }}>
-                  {row.dedicatoria}
-                </p>
-              </div>
-            </div>
-          )}
-
-          {/* Galería */}
-          {galeria.length > 0 && (
-            <div style={{ paddingBottom: 28 }}>
-              <p style={{ fontSize: 9, color: 'rgba(255,255,255,0.2)', margin: '0 0 12px', letterSpacing: '0.18em', textTransform: 'uppercase' }}>Galería</p>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 8 }}>
-                {galeria.map((url, i) => (
-                  <div key={i} style={{ aspectRatio: '1', borderRadius: 14, overflow: 'hidden' }}>
-                    <img src={url} alt="" draggable={false} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Footer */}
-          <div style={{ paddingTop: 28, borderTop: '1px solid rgba(255,255,255,0.05)', textAlign: 'center' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, marginBottom: 6 }}>
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                <path d="M12 2C8 2 4 6 4 10c0 5 8 12 8 12s8-7 8-12c0-4-4-8-8-8z" fill="#4db87a" fillOpacity="0.7"/>
-              </svg>
-              <span style={{ fontSize: 11, color: 'rgba(77,184,122,0.5)', letterSpacing: '0.12em', textTransform: 'uppercase', fontWeight: 500 }}>
-                Huellas de Paz · Rosario
-              </span>
-            </div>
-            <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.15)', margin: 0 }}>
-              Primer crematorio con habilitación formal en Rosario
+        {/* Compartir */}
+        <div style={{ ...card, padding: '22px 22px 22px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
+            <span style={{ fontSize: 18, lineHeight: 1 }}>🔗</span>
+            <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)', margin: 0, lineHeight: 1.5 }}>
+              Compartí el recuerdo de <span style={{ color: 'rgba(255,255,255,0.7)', fontWeight: 500 }}>{row.nombre}</span> con quienes lo amaban.
             </p>
           </div>
-
+          <div style={{ display: 'flex' }}>
+            <CompartirButtonClient nombre={row.nombre} />
+          </div>
         </div>
+
+        {/* Footer */}
+        <div style={{ paddingTop: 36, textAlign: 'center' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7, marginBottom: 6 }}>
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M12 2C8 2 4 6 4 10c0 5 8 12 8 12s8-7 8-12c0-4-4-8-8-8z" fill="#4db87a" fillOpacity="0.55"/>
+            </svg>
+            <span style={{ fontSize: 11, color: 'rgba(77,184,122,0.4)', letterSpacing: '0.14em', textTransform: 'uppercase', fontWeight: 500 }}>
+              Huellas de Paz · Rosario
+            </span>
+          </div>
+          <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.1)', margin: 0 }}>
+            Primer crematorio con habilitación formal en Rosario
+          </p>
+        </div>
+
       </div>
     </div>
   )

@@ -5,6 +5,7 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { CambiarEstadoLeadForm } from '@/components/leads/CambiarEstadoLeadForm'
 import { AgregarNotaForm } from '@/components/leads/AgregarNotaForm'
+import { createClient } from '@/lib/supabase/server'
 
 const estadoColors: Record<string, { bg: string; color: string }> = {
   nuevo: { bg: '#eff6ff', color: '#1d4ed8' },
@@ -44,11 +45,22 @@ export default async function LeadDetallePage({
 }) {
   const { id } = await params
 
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  const usuarioActual = user
+    ? await db.query.usuarios.findFirst({ where: eq(usuarios.id, user.id) })
+    : null
+
   const lead = await db.query.leads.findFirst({
     where: eq(leads.id, id),
   })
 
   if (!lead) notFound()
+
+  const puedeEditarEstado =
+    usuarioActual?.rol === 'admin' ||
+    usuarioActual?.rol === 'manager' ||
+    lead.asignadoAId === usuarioActual?.id
 
   const [agente, interacciones] = await Promise.all([
     lead.asignadoAId
@@ -89,7 +101,7 @@ export default async function LeadDetallePage({
             {lead.estado.replace(/_/g, ' ')}
           </span>
         </div>
-        <CambiarEstadoLeadForm leadId={lead.id} estadoActual={lead.estado} />
+        <CambiarEstadoLeadForm leadId={lead.id} estadoActual={lead.estado} canEdit={puedeEditarEstado} />
       </div>
 
       <div className="grid-2">

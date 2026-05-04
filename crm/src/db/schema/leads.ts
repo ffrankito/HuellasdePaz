@@ -38,6 +38,7 @@ export const leads = pgTable('leads', {
   notas: text('notas'),
   primerRespuestaEn: timestamp('primer_respuesta_en'),
   ultimaInteraccionEn: timestamp('ultima_interaccion_en'),
+  seguimientoEn: timestamp('seguimiento_en'),
   creadoEn: timestamp('creado_en').defaultNow().notNull(),
   actualizadoEn: timestamp('actualizado_en').defaultNow().notNull(),
 })

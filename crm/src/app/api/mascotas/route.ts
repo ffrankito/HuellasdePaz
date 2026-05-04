@@ -3,8 +3,12 @@ import { revalidatePath } from 'next/cache'
 import { db } from '@/db'
 import { mascotas } from '@/db/schema'
 import { eq } from 'drizzle-orm'
+import { requireAuth } from '@/lib/api-auth'
 
 export async function POST(request: NextRequest) {
+  const auth = await requireAuth(['admin', 'manager', 'televenta'])
+  if (!auth.ok) return auth.response
+
   try {
     const body = await request.json()
 
@@ -28,6 +32,9 @@ export async function POST(request: NextRequest) {
 }
 
 export async function GET(request: NextRequest) {
+  const auth = await requireAuth()
+  if (!auth.ok) return auth.response
+
   try {
     const { searchParams } = new URL(request.url)
     const clienteId = searchParams.get('clienteId')

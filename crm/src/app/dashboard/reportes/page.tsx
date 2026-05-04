@@ -20,6 +20,7 @@ type Datos = {
   serviciosPorTipo: { tipo: string; count: number }[]
   leadsPorOrigen: { origen: string | null; count: number }[]
   leadsPorEstado: { estado: string; count: number }[]
+  leadsPorConvenio: { nombre: string; tipo: string; count: number }[]
 }
 
 const PERIODOS = [
@@ -105,6 +106,16 @@ function KPI({
     </div>
   )
 }
+
+const CANALES = [
+  { key: 'whatsapp',    label: 'WhatsApp',         emoji: '💬', color: '#25D366' },
+  { key: 'instagram',   label: 'Instagram',        emoji: '📸', color: '#E1306C' },
+  { key: 'landing',     label: 'Página web',       emoji: '🌐', color: '#2d8a54' },
+  { key: 'telefono',    label: 'Teléfono',         emoji: '📞', color: '#2563eb' },
+  { key: 'directo',     label: 'Contacto directo', emoji: '🚶', color: '#374151' },
+  { key: 'veterinaria', label: 'Convenio',         emoji: '🏥', color: '#d97706' },
+  { key: 'cotizador',   label: 'Cotizador web',    emoji: '🧮', color: '#6b7280' },
+]
 
 const labelServicio: Record<string, string> = {
   cremacion_individual: 'Cremación individual',
@@ -329,26 +340,100 @@ export default function ReportesPage() {
             )}
           </div>
 
-          {/* ── Gráficos de leads ── */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
-            <GraficoPie
-              titulo="Leads por origen"
-              data={[
-                { label: 'Cotizador', valor: datos.leadsPorOrigen.find(l => l.origen === 'cotizador')?.count ?? 0, color: '#111827' },
-                { label: 'Landing', valor: datos.leadsPorOrigen.find(l => l.origen === 'landing')?.count ?? 0, color: '#374151' },
-                { label: 'WhatsApp', valor: datos.leadsPorOrigen.find(l => l.origen === 'whatsapp')?.count ?? 0, color: '#6b7280' },
-                { label: 'Convenio', valor: datos.leadsPorOrigen.find(l => l.origen === 'veterinaria')?.count ?? 0, color: '#9ca3af' },
-                { label: 'Directo', valor: datos.leadsPorOrigen.find(l => l.origen === 'directo')?.count ?? 0, color: '#d1d5db' },
-              ]}
-            />
+          {/* ── Leads por convenio ── */}
+          {datos.leadsPorConvenio.length > 0 && (
+            <div style={{ background: 'white', borderRadius: 16, border: '1px solid #f0f0f0', padding: '24px 28px', boxShadow: '0 1px 4px rgba(0,0,0,0.04)' }}>
+              <p style={{ fontSize: 13, fontWeight: 700, color: '#111827', margin: '0 0 20px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                Leads por convenio
+              </p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                {(() => {
+                  const total = datos.leadsPorConvenio.reduce((s, c) => s + c.count, 0)
+                  return datos.leadsPorConvenio.map(c => {
+                    const pct = total > 0 ? Math.round((c.count / total) * 100) : 0
+                    const tipoLabel: Record<string, string> = {
+                      veterinaria: '🏥', petshop: '🐾', refugio: '🏠', clinica: '💉', otro: '🤝'
+                    }
+                    return (
+                      <div key={c.nombre}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
+                          <span style={{ fontSize: 15, lineHeight: 1, flexShrink: 0 }}>{tipoLabel[c.tipo] ?? '🤝'}</span>
+                          <span style={{ fontSize: 14, fontWeight: 500, color: '#374151', flex: 1 }}>{c.nombre}</span>
+                          <span style={{ fontSize: 11, color: '#9ca3af', background: '#f3f4f6', padding: '2px 8px', borderRadius: 999, marginRight: 4 }}>{c.tipo}</span>
+                          <span style={{ fontSize: 14, fontWeight: 700, color: '#111827', minWidth: 28, textAlign: 'right' }}>{c.count}</span>
+                          <span style={{ fontSize: 12, color: '#9ca3af', minWidth: 36, textAlign: 'right' }}>{pct}%</span>
+                        </div>
+                        <div style={{ height: 7, background: '#f3f4f6', borderRadius: 4, overflow: 'hidden' }}>
+                          <div style={{ width: `${pct}%`, height: '100%', background: '#2d8a54', borderRadius: 4, transition: 'width 0.5s ease' }} />
+                        </div>
+                      </div>
+                    )
+                  })
+                })()}
+              </div>
+            </div>
+          )}
+
+          {/* ── Canal de adquisición + estado leads ── */}
+          <div style={{ display: 'grid', gridTemplateColumns: '3fr 2fr', gap: 14 }}>
+
+            {/* Canal de adquisición */}
+            <div style={{ background: 'white', borderRadius: 16, border: '1px solid #f0f0f0', padding: '24px 28px', boxShadow: '0 1px 4px rgba(0,0,0,0.04)' }}>
+              <p style={{ fontSize: 13, fontWeight: 700, color: '#111827', margin: '0 0 20px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                Canal de adquisición
+              </p>
+              {(() => {
+                const totalLeads = datos.leadsPorOrigen.reduce((s, l) => s + l.count, 0)
+                const canalesConDatos = CANALES
+                  .map(c => ({ ...c, count: datos.leadsPorOrigen.find(l => l.origen === c.key)?.count ?? 0 }))
+                  .filter(c => c.count > 0)
+                  .sort((a, b) => b.count - a.count)
+
+                // Leads de orígenes no mapeados en CANALES
+                const otrasCantidad = datos.leadsPorOrigen
+                  .filter(l => !CANALES.some(c => c.key === l.origen))
+                  .reduce((s, l) => s + l.count, 0)
+
+                const filas = otrasCantidad > 0
+                  ? [...canalesConDatos, { key: 'otro', label: 'Otros', emoji: '📋', color: '#9ca3af', count: otrasCantidad }]
+                  : canalesConDatos
+
+                if (filas.length === 0) return (
+                  <p style={{ fontSize: 14, color: '#9ca3af', margin: 0 }}>Sin leads en este período</p>
+                )
+
+                return (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                    {filas.map(canal => {
+                      const pct = totalLeads > 0 ? Math.round((canal.count / totalLeads) * 100) : 0
+                      return (
+                        <div key={canal.key}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
+                            <span style={{ fontSize: 16, lineHeight: 1, flexShrink: 0 }}>{canal.emoji}</span>
+                            <span style={{ fontSize: 14, fontWeight: 500, color: '#374151', flex: 1 }}>{canal.label}</span>
+                            <span style={{ fontSize: 14, fontWeight: 700, color: '#111827', minWidth: 28, textAlign: 'right' }}>{canal.count}</span>
+                            <span style={{ fontSize: 12, color: '#9ca3af', minWidth: 36, textAlign: 'right' }}>{pct}%</span>
+                          </div>
+                          <div style={{ height: 7, background: '#f3f4f6', borderRadius: 4, overflow: 'hidden' }}>
+                            <div style={{ width: `${pct}%`, height: '100%', background: canal.color, borderRadius: 4, transition: 'width 0.5s ease' }} />
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+                )
+              })()}
+            </div>
+
+            {/* Estado de leads */}
             <GraficoPie
               titulo="Estado de leads"
               data={[
-                { label: 'Nuevo', valor: datos.leadsPorEstado.find(l => l.estado === 'nuevo')?.count ?? 0, color: '#1d4ed8' },
+                { label: 'Nuevo',      valor: datos.leadsPorEstado.find(l => l.estado === 'nuevo')?.count ?? 0,      color: '#1d4ed8' },
                 { label: 'Contactado', valor: datos.leadsPorEstado.find(l => l.estado === 'contactado')?.count ?? 0, color: '#15803d' },
                 { label: 'Interesado', valor: datos.leadsPorEstado.find(l => l.estado === 'interesado')?.count ?? 0, color: '#a16207' },
                 { label: 'Convertido', valor: datos.leadsPorEstado.find(l => l.estado === 'convertido')?.count ?? 0, color: '#111827' },
-                { label: 'Perdido', valor: datos.leadsPorEstado.find(l => l.estado === 'perdido')?.count ?? 0, color: '#dc2626' },
+                { label: 'Perdido',    valor: datos.leadsPorEstado.find(l => l.estado === 'perdido')?.count ?? 0,    color: '#dc2626' },
               ]}
             />
           </div>

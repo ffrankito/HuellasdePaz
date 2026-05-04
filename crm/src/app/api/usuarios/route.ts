@@ -4,8 +4,12 @@ import { db } from '@/db'
 import { usuarios } from '@/db/schema'
 import { createClient as createAdminClient } from '@supabase/supabase-js'
 import { createClient } from '@/lib/supabase/server'
+import { requireAuth } from '@/lib/api-auth'
 
 export async function GET() {
+  const auth = await requireAuth(['admin'])
+  if (!auth.ok) return auth.response
+
   try {
     const todos = await db.select().from(usuarios)
     return NextResponse.json(todos)

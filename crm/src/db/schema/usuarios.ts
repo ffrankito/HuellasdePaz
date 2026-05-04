@@ -1,4 +1,4 @@
-import { pgTable, uuid, text, timestamp, pgEnum } from 'drizzle-orm/pg-core'
+import { pgTable, uuid, text, timestamp, pgEnum, boolean, integer } from 'drizzle-orm/pg-core'
 
 export const rolEnum = pgEnum('rol', [
   'admin',
@@ -28,6 +28,13 @@ export const usuarios = pgTable('usuarios', {
   email: text('email').notNull().unique(),
   rol: rolEnum('rol').notNull().default('televenta'),
   permisos: text('permisos').array().notNull().default([]),
+  // 2FA por email OTP
+  mfaEmailActivo: boolean('mfa_email_activo').notNull().default(false),
+  otpCodigo: text('otp_codigo'),
+  otpExpiraEn: timestamp('otp_expira_en'),
+  otpIntentos: integer('otp_intentos').default(0),
+  mfaSesionToken: text('mfa_sesion_token'),
+  mfaSesionExpiraEn: timestamp('mfa_sesion_expira_en'),
   creadoEn: timestamp('creado_en').defaultNow().notNull(),
   actualizadoEn: timestamp('actualizado_en').defaultNow().notNull(),
 })

@@ -3,18 +3,12 @@ import { revalidatePath } from 'next/cache'
 import { db } from '@/db'
 import { convenios } from '@/db/schema'
 import { eq } from 'drizzle-orm'
-
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'GET, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type',
-}
-
-export async function OPTIONS() {
-  return NextResponse.json({}, { headers: corsHeaders })
-}
+import { requireAuth } from '@/lib/api-auth'
 
 export async function GET(request: NextRequest) {
+  const auth = await requireAuth()
+  if (!auth.ok) return auth.response
+
   try {
     const { searchParams } = new URL(request.url)
     const soloActivos = searchParams.get('activos') === 'true'
@@ -23,14 +17,17 @@ export async function GET(request: NextRequest) {
       ? await db.select().from(convenios).where(eq(convenios.estadoConvenio, 'activo'))
       : await db.select().from(convenios)
 
-    return NextResponse.json(data, { headers: corsHeaders })
+    return NextResponse.json(data)
   } catch (error) {
     console.error('Error obteniendo convenios:', error)
-    return NextResponse.json({ error: 'Error interno' }, { status: 500, headers: corsHeaders })
+    return NextResponse.json({ error: 'Error interno' }, { status: 500 })
   }
 }
 
 export async function POST(request: NextRequest) {
+  const auth = await requireAuth(['admin', 'manager'])
+  if (!auth.ok) return auth.response
+
   try {
     const body = await request.json()
 

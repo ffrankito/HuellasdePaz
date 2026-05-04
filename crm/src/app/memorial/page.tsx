@@ -59,7 +59,7 @@ export default async function MemorialesPublicosPage() {
             <p style={{ fontSize: 16, margin: 0 }}>Todavía no hay memoriales públicos.</p>
           </div>
         ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: 20 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 24 }}>
             {rows.map(m => {
               const emoji = m.especie === 'perro' ? '🐕' : m.especie === 'gato' ? '🐈' : '🐾'
               return (
@@ -70,14 +70,13 @@ export default async function MemorialesPublicosPage() {
                 >
                   <article style={{
                     background: 'rgba(255,255,255,0.04)',
-                    border: '1px solid rgba(255,255,255,0.07)',
-                    borderRadius: 20,
+                    border: '1px solid rgba(255,255,255,0.08)',
+                    borderRadius: 22,
                     overflow: 'hidden',
-                    transition: 'border-color 0.2s, background 0.2s',
                     cursor: 'pointer',
                   }}>
                     {/* Foto */}
-                    <div style={{ height: 200, background: 'rgba(255,255,255,0.03)', position: 'relative', overflow: 'hidden' }}>
+                    <div style={{ height: 230, background: 'rgba(255,255,255,0.03)', position: 'relative', overflow: 'hidden' }}>
                       {m.foto ? (
                         <img
                           src={m.foto}
@@ -86,31 +85,54 @@ export default async function MemorialesPublicosPage() {
                           style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
                         />
                       ) : (
-                        <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 56 }}>
+                        <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(155deg, #1a1612 0%, #0d1a11 100%)', fontSize: 64 }}>
                           {emoji}
                         </div>
                       )}
-                      <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(10,10,16,0.85) 0%, rgba(10,10,16,0.1) 50%, transparent 100%)' }} />
-                      <div style={{ position: 'absolute', bottom: 14, left: 16, right: 16 }}>
-                        <p style={{ fontSize: 20, fontWeight: 700, color: 'white', margin: '0 0 2px', fontFamily: 'Georgia, serif', letterSpacing: '-0.01em' }}>
+                      <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(10,10,16,0.92) 0%, rgba(10,10,16,0.18) 55%, transparent 100%)' }} />
+                      <div style={{ position: 'absolute', bottom: 16, left: 18, right: 18 }}>
+                        <p style={{ fontSize: 22, fontWeight: 700, color: 'white', margin: '0 0 4px', fontFamily: 'Georgia, serif', letterSpacing: '-0.01em', lineHeight: 1.1 }}>
                           {m.nombre}
                         </p>
-                        <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.45)', margin: 0, textTransform: 'capitalize' }}>
+                        <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.42)', margin: 0, textTransform: 'capitalize' }}>
                           {m.especie}{m.raza ? ` · ${m.raza}` : ''}
                         </p>
                       </div>
                     </div>
 
-                    {/* Footer */}
-                    <div style={{ padding: '14px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      {m.fechaFallecimiento ? (
-                        <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.25)' }}>
-                          {new Date(m.fechaFallecimiento).toLocaleDateString('es-AR', { day: 'numeric', month: 'long', year: 'numeric' })}
-                        </span>
-                      ) : (
-                        <span />
+                    {/* Cuerpo */}
+                    <div style={{ padding: '14px 18px 18px' }}>
+                      <div style={{ height: 1, background: 'rgba(255,255,255,0.06)', marginBottom: 14 }} />
+
+                      {m.fechaFallecimiento && (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: m.dedicatoria ? 10 : 12 }}>
+                          <span style={{ fontSize: 13, lineHeight: 1 }}>🕯️</span>
+                          <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.28)' }}>
+                            {new Date(m.fechaFallecimiento).toLocaleDateString('es-AR', { day: 'numeric', month: 'long', year: 'numeric' })}
+                          </span>
+                        </div>
                       )}
-                      <span style={{ fontSize: 12, color: 'rgba(77,184,122,0.6)', fontWeight: 500 }}>Ver memorial →</span>
+
+                      {m.dedicatoria && (
+                        <p style={{
+                          fontSize: 12.5,
+                          color: 'rgba(255,255,255,0.32)',
+                          margin: '0 0 14px',
+                          fontStyle: 'italic',
+                          fontFamily: 'Georgia, serif',
+                          lineHeight: 1.65,
+                          display: '-webkit-box',
+                          WebkitLineClamp: 2,
+                          WebkitBoxOrient: 'vertical',
+                          overflow: 'hidden',
+                        }}>
+                          &ldquo;{m.dedicatoria}&rdquo;
+                        </p>
+                      )}
+
+                      <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                        <span style={{ fontSize: 12, color: 'rgba(77,184,122,0.65)', fontWeight: 500 }}>Ver memorial →</span>
+                      </div>
                     </div>
                   </article>
                 </Link>

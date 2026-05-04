@@ -5,8 +5,8 @@ import { leads, usuarios } from '@/db/schema'
 import { eq, asc } from 'drizzle-orm'
 import { crearLeadAutomatico } from '@/lib/leads/crearLeadAutomatico'
 import type { OrigenLead } from '@/lib/leads/crearLeadAutomatico'
-import { createClient } from '@/lib/supabase/server'
 import { getCorsHeaders } from '@/lib/cors'
+import { requireAuth } from '@/lib/api-auth'
 
 export async function OPTIONS(request: NextRequest) {
   return NextResponse.json({}, { headers: getCorsHeaders(request.headers.get('origin')) })
@@ -40,17 +40,20 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   const corsHeaders = getCorsHeaders(request.headers.get('origin'))
+
+  const auth = await requireAuth()
+  if (!auth.ok) return auth.response
+
   try {
     const { searchParams } = new URL(request.url)
     const agenteId = searchParams.get('agenteId')
     const misLeads = searchParams.get('misLeads')
 
-    let userId: string | null = null
+    const esAdminOManager = auth.usuario.rol === 'admin' || auth.usuario.rol === 'manager'
 
-    if (misLeads === 'true') {
-      const supabase = await createClient()
-      const { data: { user } } = await supabase.auth.getUser()
-      userId = user?.id ?? null
+    // Solo admin/manager pueden ver leads de otros agentes
+    if (agenteId && !esAdminOManager) {
+      return NextResponse.json({ error: 'Sin permisos' }, { status: 403, headers: corsHeaders })
     }
 
     const query = db
@@ -69,6 +72,7 @@ export async function GET(request: NextRequest) {
         notas: leads.notas,
         primerRespuestaEn: leads.primerRespuestaEn,
         ultimaInteraccionEn: leads.ultimaInteraccionEn,
+        seguimientoEn: leads.seguimientoEn,
         creadoEn: leads.creadoEn,
         actualizadoEn: leads.actualizadoEn,
       })
@@ -76,8 +80,8 @@ export async function GET(request: NextRequest) {
       .leftJoin(usuarios, eq(leads.asignadoAId, usuarios.id))
       .orderBy(asc(leads.creadoEn))
 
-    const data = userId
-      ? await query.where(eq(leads.asignadoAId, userId))
+    const data = misLeads === 'true'
+      ? await query.where(eq(leads.asignadoAId, auth.usuario.id))
       : agenteId
         ? await query.where(eq(leads.asignadoAId, agenteId))
         : await query

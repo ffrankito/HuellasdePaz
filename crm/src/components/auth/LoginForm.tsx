@@ -13,6 +13,7 @@ type Destino = {
   esCliente: boolean
   tokenPortal: string | null
   nombreCliente: string | null
+  mfaEmailActivo?: boolean
 }
 
 type LockState = { count: number; lockedUntil: number | null }
@@ -44,6 +45,12 @@ export function LoginForm({ dark = false }: { dark?: boolean }) {
   const [eleccion, setEleccion] = useState<Destino | null>(null)
   const [segundosRestantes, setSegundosRestantes] = useState(0)
   const [intentos, setIntentos] = useState(0)
+  // OTP step
+  const [paso, setPaso] = useState<'credenciales' | 'otp'>('credenciales')
+  const [destinoPendiente, setDestinoPendiente] = useState<Destino | null>(null)
+  const [codigoOtp, setCodigoOtp] = useState('')
+  const [loadingOtp, setLoadingOtp] = useState(false)
+  const [reenvioEn, setReenvioEn] = useState(0)
   const router = useRouter()
   const supabase = createClient()
 
@@ -95,10 +102,30 @@ export function LoginForm({ dark = false }: { dark?: boolean }) {
 
   const bloqueado = segundosRestantes > 0
 
+  // Countdown reenvío OTP
+  useEffect(() => {
+    if (reenvioEn <= 0) return
+    const id = setInterval(() => setReenvioEn(s => Math.max(0, s - 1)), 1000)
+    return () => clearInterval(id)
+  }, [reenvioEn])
+
   function formatearTiempo(seg: number) {
     const m = Math.floor(seg / 60)
     const s = seg % 60
     return m > 0 ? `${m}:${s.toString().padStart(2, '0')} min` : `${s} seg`
+  }
+
+  function redirigir(destino: Destino) {
+    if (destino.esEmpleado && destino.esCliente) {
+      setEleccion(destino)
+      return
+    }
+    if (destino.esCliente && destino.tokenPortal) {
+      router.push(`/portal/${destino.tokenPortal}`)
+    } else {
+      router.push('/dashboard')
+    }
+    router.refresh()
   }
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -108,7 +135,6 @@ export function LoginForm({ dark = false }: { dark?: boolean }) {
     setLoading(true)
     setError(null)
 
-    // Delay creciente según intentos previos (0→0ms, 1→500ms, 2→1s, 3→2s, 4→3s)
     const delays = [0, 500, 1000, 2000, 3000]
     const delay = delays[Math.min(intentos, delays.length - 1)]
     if (delay > 0) await new Promise(r => setTimeout(r, delay))
@@ -117,13 +143,11 @@ export function LoginForm({ dark = false }: { dark?: boolean }) {
 
     if (authError) {
       registrarFallo()
-      // Mismo mensaje siempre — no revelar si el email existe o no
       setError('Email o contraseña incorrectos.')
       setLoading(false)
       return
     }
 
-    // Login exitoso — limpiar contador de intentos
     limpiarLock()
 
     const res = await fetch('/api/auth/destino')
@@ -134,18 +158,49 @@ export function LoginForm({ dark = false }: { dark?: boolean }) {
     }
     const destino: Destino = await res.json()
 
-    if (destino.esEmpleado && destino.esCliente) {
-      setEleccion(destino)
+    // Si el empleado tiene 2FA activo, ir al paso OTP
+    if (destino.esEmpleado && destino.mfaEmailActivo) {
+      await fetch('/api/auth/otp/enviar', { method: 'POST' })
+      setDestinoPendiente(destino)
+      setPaso('otp')
+      setReenvioEn(60)
       setLoading(false)
       return
     }
 
-    if (destino.esCliente && destino.tokenPortal) {
-      router.push(`/portal/${destino.tokenPortal}`)
-    } else {
-      router.push('/dashboard')
+    setLoading(false)
+    redirigir(destino)
+  }
+
+  async function handleOtpSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault()
+    if (loadingOtp || codigoOtp.length !== 6) return
+
+    setLoadingOtp(true)
+    setError(null)
+
+    const res = await fetch('/api/auth/otp/verificar', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ codigo: codigoOtp, proposito: 'login' }),
+    })
+
+    if (!res.ok) {
+      const data = await res.json()
+      setError(data.error ?? 'Código incorrecto.')
+      setLoadingOtp(false)
+      return
     }
-    router.refresh()
+
+    setLoadingOtp(false)
+    if (destinoPendiente) redirigir(destinoPendiente)
+  }
+
+  async function reenviarOtp() {
+    if (reenvioEn > 0) return
+    setError(null)
+    await fetch('/api/auth/otp/enviar', { method: 'POST' })
+    setReenvioEn(60)
   }
 
   function irA(destino: 'dashboard' | 'portal') {
@@ -234,6 +289,132 @@ export function LoginForm({ dark = false }: { dark?: boolean }) {
           .lf-dest-btn:hover { border-color: #2d8a54; box-shadow: 0 0 0 3px rgba(45,138,84,0.08); }
         `}</style>
       </div>
+    )
+  }
+
+  if (paso === 'otp') {
+    return (
+      <>
+        <form onSubmit={handleOtpSubmit} className="lf-form">
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ width: 52, height: 52, borderRadius: 14, background: '#f0faf5', border: '1px solid #d1ead9', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 14px' }}>
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2d8a54" strokeWidth="1.8">
+                <rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+              </svg>
+            </div>
+            <p style={{ fontSize: 16, fontWeight: 600, color: t.inputColor, margin: '0 0 8px' }}>Verificación en dos pasos</p>
+            <p style={{ fontSize: 13, color: '#6b7280', margin: 0, lineHeight: 1.5 }}>
+              Ingresá el código de 6 dígitos que enviamos a tu email.
+            </p>
+          </div>
+
+          <div className="lf-field">
+            <label htmlFor="lf-otp" className="lf-label" style={{ color: t.label, textAlign: 'center' }}>
+              Código de verificación
+            </label>
+            <input
+              id="lf-otp"
+              type="text"
+              inputMode="numeric"
+              value={codigoOtp}
+              onChange={e => setCodigoOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
+              maxLength={6}
+              autoFocus
+              autoComplete="one-time-code"
+              placeholder="000000"
+              className="lf-otp-input"
+              style={{
+                background: t.inputBg,
+                borderColor: t.inputBorder,
+                color: t.inputColor,
+                '--ph': t.inputPh,
+                '--focus-border': t.focusBorder,
+                '--focus-shadow': t.focusShadow,
+              } as React.CSSProperties}
+            />
+          </div>
+
+          {error && (
+            <div className="lf-error" style={{ background: t.errBg, borderColor: t.errBorder, color: t.errColor }}>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+              </svg>
+              {error}
+            </div>
+          )}
+
+          <button type="submit" disabled={loadingOtp || codigoOtp.length !== 6} className="lf-btn">
+            {loadingOtp ? (
+              <>
+                <svg className="lf-spinner" width="16" height="16" viewBox="0 0 24 24" fill="none">
+                  <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeDasharray="40 60"/>
+                </svg>
+                Verificando...
+              </>
+            ) : 'Verificar código'}
+          </button>
+
+          <div style={{ textAlign: 'center' }}>
+            <button type="button" onClick={reenviarOtp} disabled={reenvioEn > 0} className="lf-reenvio-btn">
+              {reenvioEn > 0 ? `Reenviar en ${formatearTiempo(reenvioEn)}` : 'Reenviar código'}
+            </button>
+          </div>
+        </form>
+
+        <style>{`
+          .lf-form { display: flex; flex-direction: column; gap: 18px; }
+          .lf-field { display: flex; flex-direction: column; gap: 7px; }
+          .lf-label { font-size: 13px; font-weight: 500; }
+
+          .lf-otp-input {
+            width: 100%;
+            padding: 16px 12px;
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: 14px;
+            text-align: center;
+            border: 1.5px solid;
+            border-radius: 10px;
+            outline: none;
+            box-sizing: border-box;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            font-variant-numeric: tabular-nums;
+          }
+          .lf-otp-input::placeholder { color: var(--ph); letter-spacing: 8px; }
+          .lf-otp-input:focus {
+            border-color: var(--focus-border) !important;
+            box-shadow: 0 0 0 3px var(--focus-shadow);
+          }
+
+          .lf-error {
+            display: flex; align-items: center; gap: 8px;
+            border: 1px solid; border-radius: 10px;
+            padding: 10px 14px; font-size: 13px;
+          }
+
+          .lf-btn {
+            width: 100%; background: #2d8a54; color: white;
+            padding: 12px 0; border-radius: 10px; font-size: 14px; font-weight: 600;
+            border: none; cursor: pointer;
+            transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            font-family: inherit; margin-top: 4px; letter-spacing: 0.01em;
+          }
+          .lf-btn:hover:not(:disabled) { background: #1a5233; transform: translateY(-1px); box-shadow: 0 8px 24px rgba(45,138,84,0.3); }
+          .lf-btn:disabled { opacity: 0.65; cursor: not-allowed; }
+
+          .lf-reenvio-btn {
+            background: none; border: none; cursor: pointer;
+            font-size: 13px; color: #2d8a54; padding: 4px 8px;
+            font-family: inherit; transition: opacity 0.15s;
+          }
+          .lf-reenvio-btn:disabled { color: #9ca3af; cursor: default; }
+          .lf-reenvio-btn:not(:disabled):hover { text-decoration: underline; }
+
+          .lf-spinner { animation: lf-spin 0.8s linear infinite; }
+          @keyframes lf-spin { to { transform: rotate(360deg) } }
+        `}</style>
+      </>
     )
   }
 

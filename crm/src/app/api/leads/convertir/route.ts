@@ -3,8 +3,12 @@ import { revalidatePath } from 'next/cache'
 import { db } from '@/db'
 import { clientes, mascotas, servicios, planes, leadInteracciones, serviciosConfig, planesConfig, convenios, inventario } from '@/db/schema'
 import { eq, sql } from 'drizzle-orm'
+import { requireAuth } from '@/lib/api-auth'
 
 export async function POST(request: NextRequest) {
+  const auth = await requireAuth(['admin', 'manager', 'televenta'])
+  if (!auth.ok) return auth.response
+
   try {
     const body = await request.json()
     const { leadId, nombre, apellido, telefono, email, dni, localidad, tipo, servicioConfigId, tipoPlan, notas, convenioId, mascotaNombre, mascotaEspecie, inventarioItemId, fechaRetiro, modalidadRetiro } = body

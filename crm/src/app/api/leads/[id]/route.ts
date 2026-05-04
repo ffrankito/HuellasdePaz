@@ -3,12 +3,15 @@ import { revalidatePath } from 'next/cache'
 import { db } from '@/db'
 import { leads, leadInteracciones, usuarios } from '@/db/schema'
 import { eq } from 'drizzle-orm'
-import { createClient } from '@/lib/supabase/server'
+import { requireAuth } from '@/lib/api-auth'
 
 export async function GET(
   _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const auth = await requireAuth()
+  if (!auth.ok) return auth.response
+
   try {
     const { id } = await params
     const lead = await db.query.leads.findFirst({ where: eq(leads.id, id) })
@@ -24,19 +27,23 @@ export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const auth = await requireAuth()
+  if (!auth.ok) return auth.response
+
   try {
     const { id } = await params
     const body = await request.json()
 
-    // Obtener usuario logueado
-    const supabase = await createClient()
-    const { data: { user } } = await supabase.auth.getUser()
-    const usuario = user
-      ? await db.query.usuarios.findFirst({ where: eq(usuarios.id, user.id) })
-      : null
+    const usuario = auth.usuario
 
     const leadActual = await db.query.leads.findFirst({ where: eq(leads.id, id) })
     if (!leadActual) return NextResponse.json({ error: 'No encontrado' }, { status: 404 })
+
+    // Solo admin/manager pueden editar cualquier lead; televenta solo los propios
+    const esAdminOManager = usuario.rol === 'admin' || usuario.rol === 'manager'
+    if (!esAdminOManager && leadActual.asignadoAId !== usuario.id) {
+      return NextResponse.json({ error: 'Sin permisos' }, { status: 403 })
+    }
 
     const ahora = new Date()
     const updateData: Record<string, unknown> = { actualizadoEn: ahora }
@@ -79,6 +86,40 @@ export async function PATCH(
       })
     }
 
+    // Programar seguimiento
+    if (body.seguimientoEn !== undefined) {
+      updateData.seguimientoEn = body.seguimientoEn ? new Date(body.seguimientoEn) : null
+      if (body.seguimientoEn) {
+        const hora = new Date(body.seguimientoEn).toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' })
+        interaccionesACrear.push({
+          tipo: 'seguimiento',
+          descripcion: `Seguimiento programado para las ${hora}`,
+        })
+      } else {
+        interaccionesACrear.push({
+          tipo: 'seguimiento',
+          descripcion: 'Seguimiento cancelado',
+        })
+      }
+    }
+
+    // Traspaso a otro agente
+    if (body.traspasoAId !== undefined) {
+      const agenteDestino = body.traspasoAId
+        ? await db.query.usuarios.findFirst({ where: eq(usuarios.id, body.traspasoAId) })
+        : null
+      updateData.asignadoAId = body.traspasoAId || null
+      updateData.ultimaInteraccionEn = ahora
+
+      const nombreOrigen = usuario?.nombre ?? 'Sistema'
+      const nombreDestino = agenteDestino?.nombre ?? 'sin asignar'
+      const motivo = body.motivoTraspaso ? ` — Motivo: ${body.motivoTraspaso}` : ''
+      interaccionesACrear.push({
+        tipo: 'traspaso',
+        descripcion: `Traspasado de ${nombreOrigen} a ${nombreDestino}${motivo}`,
+      })
+    }
+
     // Actualizar el lead
     const [leadActualizado] = await db
       .update(leads)
@@ -108,6 +149,9 @@ export async function DELETE(
   _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const auth = await requireAuth(['admin'])
+  if (!auth.ok) return auth.response
+
   try {
     const { id } = await params
     await db.delete(leads).where(eq(leads.id, id))

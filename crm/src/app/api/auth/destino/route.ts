@@ -19,5 +19,6 @@ export async function GET() {
     esCliente: !!cliente,
     tokenPortal: cliente?.tokenPortal ?? null,
     nombreCliente: cliente?.nombre ?? null,
+    mfaEmailActivo: empleado?.mfaEmailActivo ?? false,
   })
 }
