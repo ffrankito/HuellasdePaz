@@ -24,6 +24,7 @@ type Agente = { id: string; nombre: string; rol: string }
 type ModalSeguimiento = { leadId: string; leadNombre: string; actual: string | null } | null
 type ModalTraspaso = { leadId: string; leadNombre: string } | null
 type FiltroAgente = 'todos' | 'mios' | string
+type FiltroOrigen = 'todos' | string
 
 // Paleta de colores claramente distintos, uno por agente
 const PALETA = ['#1d4ed8', '#dc2626', '#7e22ce', '#c2410c', '#0891b2', '#be185d', '#065f46', '#92400e']
@@ -89,6 +90,7 @@ export default function LeadsPage() {
   const [me, setMe] = useState<Me | null>(null)
   const [agentes, setAgentes] = useState<Agente[]>([])
   const [filtro, setFiltro] = useState<FiltroAgente>('todos')
+  const [filtroOrigen, setFiltroOrigen] = useState<FiltroOrigen>('todos')
 
   // Modal seguimiento
   const [modalSeg, setModalSeg] = useState<ModalSeguimiento>(null)
@@ -180,11 +182,37 @@ export default function LeadsPage() {
   )
   const colorDeAgente = (id: string | null) => (id ? (colorPorId[id] ?? '#6b7280') : '#6b7280')
 
-  const leadsFiltrados = leads.filter(l => {
-    if (filtro === 'todos') return true
-    if (filtro === 'mios') return l.asignadoAId === me?.id
-    return l.asignadoAId === filtro
-  })
+  const origenesPresentes = [...new Set(leads.map(l => l.origen).filter(Boolean))] as string[]
+
+  const origenLabel: Record<string, string> = {
+    cotizador:  'Cotizador',
+    landing:    'Landing',
+    whatsapp:   'WhatsApp',
+    instagram:  'Instagram',
+    directo:    'Directo',
+    veterinaria:'Convenio',
+  }
+
+  const origenBadge: Record<string, { bg: string; color: string }> = {
+    cotizador:  { bg: '#eff6ff', color: '#1d4ed8' },
+    landing:    { bg: '#f0fdf4', color: '#15803d' },
+    whatsapp:   { bg: '#f0fdf4', color: '#16a34a' },
+    instagram:  { bg: '#fdf4ff', color: '#9333ea' },
+    directo:    { bg: '#f9fafb', color: '#6b7280' },
+    veterinaria:{ bg: '#fff7ed', color: '#c2410c' },
+  }
+
+  const prioridadOrigen: Record<string, number> = {
+    cotizador: 0, landing: 1, whatsapp: 2, instagram: 3, directo: 4, veterinaria: 5,
+  }
+
+  const leadsFiltrados = leads
+    .filter(l => {
+      const passAgente = filtro === 'todos' || (filtro === 'mios' ? l.asignadoAId === me?.id : l.asignadoAId === filtro)
+      const passOrigen = filtroOrigen === 'todos' || l.origen === filtroOrigen
+      return passAgente && passOrigen
+    })
+    .sort((a, b) => (prioridadOrigen[a.origen ?? ''] ?? 99) - (prioridadOrigen[b.origen ?? ''] ?? 99))
 
   const puedeAccionar = (lead: Lead) =>
     me?.rol === 'admin' || me?.rol === 'manager' || lead.asignadoAId === me?.id
@@ -318,7 +346,7 @@ export default function LeadsPage() {
       </div>
 
       {/* ── Filtros por agente ── */}
-      <div style={{ display: 'flex', gap: 7, marginBottom: 18, flexWrap: 'wrap', alignItems: 'center' }}>
+      <div style={{ display: 'flex', gap: 7, marginBottom: 8, flexWrap: 'wrap', alignItems: 'center' }}>
         <button onClick={() => setFiltro('todos')} style={btnFiltro(filtro === 'todos')}>
           Todos ({leads.length})
         </button>
@@ -332,6 +360,21 @@ export default function LeadsPage() {
           </button>
         ))}
       </div>
+
+      {/* ── Filtros por origen ── */}
+      {origenesPresentes.length > 0 && (
+        <div style={{ display: 'flex', gap: 7, marginBottom: 18, flexWrap: 'wrap', alignItems: 'center' }}>
+          <span style={{ fontSize: 11, color: '#9ca3af', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Origen:</span>
+          <button onClick={() => setFiltroOrigen('todos')} style={btnFiltro(filtroOrigen === 'todos')}>
+            Todos
+          </button>
+          {origenesPresentes.map(origen => (
+            <button key={origen} onClick={() => setFiltroOrigen(origen)} style={btnFiltro(filtroOrigen === origen)}>
+              {origenLabel[origen] ?? origen} ({leads.filter(l => l.origen === origen).length})
+            </button>
+          ))}
+        </div>
+      )}
 
       {loading ? (
         <p style={{ fontSize: 14, color: '#9ca3af' }}>Cargando...</p>
@@ -390,11 +433,14 @@ export default function LeadsPage() {
                                   <p style={{ fontSize: 12, color: '#6b7280', margin: '0 0 7px' }}>{lead.telefono}</p>
 
                                   {/* Origen */}
-                                  {lead.origen && (
-                                    <span style={{ fontSize: 10, color: '#6b7280', background: '#f9fafb', padding: '2px 7px', borderRadius: 20, border: '1px solid #f3f4f6' }}>
-                                      {lead.origen}
-                                    </span>
-                                  )}
+                                  {lead.origen && (() => {
+                                    const badge = origenBadge[lead.origen] ?? { bg: '#f9fafb', color: '#6b7280' }
+                                    return (
+                                      <span style={{ fontSize: 10, fontWeight: 600, color: badge.color, background: badge.bg, padding: '2px 7px', borderRadius: 20, border: `1px solid ${badge.color}33` }}>
+                                        {origenLabel[lead.origen] ?? lead.origen}
+                                      </span>
+                                    )
+                                  })()}
 
                                   {/* Badge seguimiento */}
                                   {seg && (

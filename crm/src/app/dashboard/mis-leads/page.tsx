@@ -198,7 +198,7 @@ export default function MisLeadsPage() {
     setMostrarTraspasoGestion(false)
   }, [leadActual?.id])
 
-  const guardarSegGestion = (isoStr: string | null) => {
+  const guardarSegGestion = (isoStr: string | null, etiqueta?: string) => {
     if (!leadActual) return
     const esFuturo = isoStr && new Date(isoStr) > new Date()
     if (esFuturo) {
@@ -213,10 +213,11 @@ export default function MisLeadsPage() {
       setSegGestionActual(isoStr)
       setLeads(prev => prev.map(l => l.id === leadActual.id ? { ...l, seguimientoEn: isoStr } : l))
     }
+    const nota = etiqueta ? `Seguimiento agendado: ${etiqueta}` : undefined
     fetch(`/api/leads/${leadActual.id}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ seguimientoEn: isoStr }),
+      body: JSON.stringify({ seguimientoEn: isoStr, ...(nota ? { nota } : {}) }),
     })
   }
 
@@ -620,7 +621,7 @@ export default function MisLeadsPage() {
                     {TIEMPOS_RAPIDOS.map(t => (
                       <button
                         key={t.label}
-                        onClick={() => guardarSegGestion(t.fn())}
+                        onClick={() => guardarSegGestion(t.fn(), t.label)}
                         style={{ padding: '8px 10px', borderRadius: 9, border: '1.5px solid #e5e7eb', background: 'white', color: '#374151', fontSize: 12, fontWeight: 500, cursor: 'pointer' }}
                       >
                         {t.label}
