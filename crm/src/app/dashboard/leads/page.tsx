@@ -196,10 +196,10 @@ export default function LeadsPage() {
   const origenBadge: Record<string, { bg: string; color: string }> = {
     cotizador:  { bg: '#eff6ff', color: '#1d4ed8' },
     landing:    { bg: '#f0fdf4', color: '#15803d' },
-    whatsapp:   { bg: '#f0fdf4', color: '#16a34a' },
+    whatsapp:   { bg: '#dcfce7', color: '#16a34a' },
     instagram:  { bg: '#fdf4ff', color: '#9333ea' },
-    directo:    { bg: '#f9fafb', color: '#6b7280' },
-    veterinaria:{ bg: '#fff7ed', color: '#c2410c' },
+    directo:    { bg: '#fff7ed', color: '#c2410c' },
+    veterinaria:{ bg: '#fef9c3', color: '#a16207' },
   }
 
   const prioridadOrigen: Record<string, number> = {
@@ -347,6 +347,7 @@ export default function LeadsPage() {
 
       {/* ── Filtros por agente ── */}
       <div style={{ display: 'flex', gap: 7, marginBottom: 8, flexWrap: 'wrap', alignItems: 'center' }}>
+        <span style={{ fontSize: 11, color: '#9ca3af', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Agente:</span>
         <button onClick={() => setFiltro('todos')} style={btnFiltro(filtro === 'todos')}>
           Todos ({leads.length})
         </button>
