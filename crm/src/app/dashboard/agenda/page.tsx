@@ -1,30 +1,21 @@
 import { db } from '@/db'
 import { servicios, clientes, mascotas } from '@/db/schema'
-import { eq, ne, and, gte, lt } from 'drizzle-orm'
-import { AvanzarButtonClient } from '@/components/dashboard/AvanzarButton'
+import { eq, ne, and, gte, lt, isNull, asc } from 'drizzle-orm'
+import { AgendaCard } from '@/components/dashboard/AgendaCard'
+import { AgendaDatePicker } from '@/components/dashboard/AgendaDatePicker'
 import Link from 'next/link'
 
-const estadoColors: Record<string, { bg: string; color: string }> = {
-  pendiente:  { bg: '#fefce8', color: '#a16207' },
-  en_proceso: { bg: '#eff6ff', color: '#1d4ed8' },
-  listo:      { bg: '#f0fdf4', color: '#15803d' },
-  entregado:  { bg: '#f0fdf4', color: '#15803d' },
-  cancelado:  { bg: '#fef2f2', color: '#dc2626' },
+const serviciosSelect = {
+  id: servicios.id,
+  tipo: servicios.tipo,
+  estado: servicios.estado,
+  fechaRetiro: servicios.fechaRetiro,
+  clienteNombre: clientes.nombre,
+  clienteApellido: clientes.apellido,
+  clienteTelefono: clientes.telefono,
+  mascotaNombre: mascotas.nombre,
+  mascotaEspecie: mascotas.especie,
 }
-
-const estadoSiguiente: Record<string, string> = {
-  pendiente:  'en_proceso',
-  en_proceso: 'listo',
-  listo:      'entregado',
-}
-
-const tipoLabel: Record<string, string> = {
-  cremacion_individual: 'Cremación individual',
-  cremacion_comunitaria: 'Cremación comunitaria',
-  entierro: 'Entierro',
-}
-
-const HORAS = Array.from({ length: 13 }, (_, i) => i + 8)
 
 export default async function AgendaPage({
   searchParams,
@@ -36,57 +27,38 @@ export default async function AgendaPage({
   const fechaSeleccionada = fechaParam ?? hoy
 
   const inicioDia = new Date(fechaSeleccionada + 'T00:00:00')
-  const finDia = new Date(fechaSeleccionada + 'T23:59:59')
+  const finDia    = new Date(fechaSeleccionada + 'T23:59:59')
 
   const diaAnterior = new Date(inicioDia)
   diaAnterior.setDate(diaAnterior.getDate() - 1)
   const diaSiguiente = new Date(inicioDia)
   diaSiguiente.setDate(diaSiguiente.getDate() + 1)
 
-  const serviciosDia = await db
-    .select({
-      id: servicios.id,
-      tipo: servicios.tipo,
-      estado: servicios.estado,
-      fechaRetiro: servicios.fechaRetiro,
-      clienteNombre: clientes.nombre,
-      clienteApellido: clientes.apellido,
-      clienteTelefono: clientes.telefono,
-      mascotaNombre: mascotas.nombre,
-      mascotaEspecie: mascotas.especie,
-    })
-    .from(servicios)
-    .leftJoin(clientes, eq(servicios.clienteId, clientes.id))
-    .leftJoin(mascotas, eq(servicios.mascotaId, mascotas.id))
-    .where(
-      and(
+  const [serviciosDia, sinFecha] = await Promise.all([
+    db.select(serviciosSelect)
+      .from(servicios)
+      .leftJoin(clientes, eq(servicios.clienteId, clientes.id))
+      .leftJoin(mascotas, eq(servicios.mascotaId, mascotas.id))
+      .where(and(
         ne(servicios.estado, 'entregado'),
         ne(servicios.estado, 'cancelado'),
         gte(servicios.fechaRetiro, inicioDia),
         lt(servicios.fechaRetiro, finDia),
-      )
-    )
+      ))
+      .orderBy(asc(servicios.fechaRetiro)),
+    db.select(serviciosSelect)
+      .from(servicios)
+      .leftJoin(clientes, eq(servicios.clienteId, clientes.id))
+      .leftJoin(mascotas, eq(servicios.mascotaId, mascotas.id))
+      .where(and(
+        ne(servicios.estado, 'entregado'),
+        ne(servicios.estado, 'cancelado'),
+        isNull(servicios.fechaRetiro),
+      )),
+  ])
 
-  const sinFecha = await db
-    .select({
-      id: servicios.id,
-      tipo: servicios.tipo,
-      estado: servicios.estado,
-      fechaRetiro: servicios.fechaRetiro,
-      clienteNombre: clientes.nombre,
-      clienteApellido: clientes.apellido,
-      clienteTelefono: clientes.telefono,
-      mascotaNombre: mascotas.nombre,
-      mascotaEspecie: mascotas.especie,
-    })
-    .from(servicios)
-    .leftJoin(clientes, eq(servicios.clienteId, clientes.id))
-    .leftJoin(mascotas, eq(servicios.mascotaId, mascotas.id))
-    .where(and(ne(servicios.estado, 'entregado'), ne(servicios.estado, 'cancelado')))
-    .then(rows => rows.filter(r => !r.fechaRetiro))
-
-  const horaActual = new Date().getHours()
   const esHoy = fechaSeleccionada === hoy
+  const ahora = new Date()
 
   const etiquetaDia = () => {
     if (fechaSeleccionada === hoy) return 'Hoy'
@@ -94,129 +66,139 @@ export default async function AgendaPage({
     manana.setDate(manana.getDate() + 1)
     if (fechaSeleccionada === manana.toISOString().split('T')[0]) return 'Mañana'
     return new Date(fechaSeleccionada + 'T00:00:00').toLocaleDateString('es-AR', {
-      weekday: 'long', day: 'numeric', month: 'long'
+      weekday: 'long', day: 'numeric', month: 'long',
     })
   }
 
+  const etiqueta = etiquetaDia()
+  const fechaLarga = new Date(fechaSeleccionada + 'T00:00:00').toLocaleDateString('es-AR', {
+    weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
+  })
+
   return (
     <div className="page-container">
+
+      {/* Header */}
       <div className="page-header">
         <div>
           <h1 style={{ fontSize: 24, fontWeight: 600, color: '#111827', margin: 0 }}>Agenda</h1>
-          <p style={{ fontSize: 14, color: '#6b7280', marginTop: 4, marginBottom: 0 }}>
-            {serviciosDia.length} {serviciosDia.length === 1 ? 'servicio' : 'servicios'} para {etiquetaDia().toLowerCase()}
+          <p style={{ fontSize: 14, color: '#6b7280', marginTop: 4, marginBottom: 0, textTransform: 'capitalize' }}>
+            {fechaLarga}
           </p>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <Link href={`/dashboard/agenda?fecha=${diaAnterior.toISOString().split('T')[0]}`}
-            style={{ padding: '8px 14px', borderRadius: 10, fontSize: 13, fontWeight: 500, border: '1px solid #e5e7eb', background: 'white', color: '#374151', textDecoration: 'none' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+          <Link href={`/dashboard/agenda?fecha=${diaAnterior.toISOString().split('T')[0]}`} style={navBtn(false)}>
             ← Anterior
           </Link>
-          <Link href="/dashboard/agenda"
-            style={{ padding: '8px 16px', borderRadius: 10, fontSize: 13, fontWeight: 600, border: '1px solid', borderColor: esHoy ? '#111827' : '#e5e7eb', background: esHoy ? '#111827' : 'white', color: esHoy ? 'white' : '#374151', textDecoration: 'none' }}>
+          <Link href="/dashboard/agenda" style={navBtn(esHoy, true)}>
             Hoy
           </Link>
-          <Link href={`/dashboard/agenda?fecha=${diaSiguiente.toISOString().split('T')[0]}`}
-            style={{ padding: '8px 14px', borderRadius: 10, fontSize: 13, fontWeight: 500, border: '1px solid #e5e7eb', background: 'white', color: '#374151', textDecoration: 'none' }}>
+          <Link href={`/dashboard/agenda?fecha=${diaSiguiente.toISOString().split('T')[0]}`} style={navBtn(false)}>
             Siguiente →
           </Link>
+          <AgendaDatePicker value={fechaSeleccionada} />
         </div>
       </div>
 
-      <div style={{ marginBottom: 20 }}>
-        <h2 style={{ fontSize: 18, fontWeight: 600, color: '#111827', margin: 0, textTransform: 'capitalize' }}>
-          {etiquetaDia()} — {new Date(fechaSeleccionada + 'T00:00:00').toLocaleDateString('es-AR', { day: 'numeric', month: 'long', year: 'numeric' })}
-        </h2>
+      {/* Resumen del día */}
+      <div style={{
+        display: 'flex', gap: 12, marginBottom: 28, flexWrap: 'wrap',
+      }}>
+        <StatChip label="Programados" value={serviciosDia.length} color="#1d4ed8" />
+        <StatChip label="Sin fecha" value={sinFecha.length} color="#6b7280" />
+        <StatChip
+          label="Pendientes"
+          value={[...serviciosDia, ...sinFecha].filter(s => s.estado === 'pendiente').length}
+          color="#a16207"
+        />
+        <StatChip
+          label="En proceso"
+          value={[...serviciosDia, ...sinFecha].filter(s => s.estado === 'en_proceso').length}
+          color="#15803d"
+        />
       </div>
 
-      <div style={{ background: 'white', borderRadius: 16, border: '1px solid #f3f4f6', overflow: 'hidden', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', marginBottom: 32 }}>
-        {HORAS.map(hora => {
-          const eventosHora = serviciosDia.filter(s => s.fechaRetiro && new Date(s.fechaRetiro).getHours() === hora)
-          const esPasada = esHoy && hora < horaActual
-          const esActual = esHoy && hora === horaActual
-
-          return (
-            <div key={hora} style={{
-              display: 'flex', borderBottom: '1px solid #f9fafb',
-              background: esActual ? '#fafafa' : esPasada ? '#fdfdfd' : 'white',
-              minHeight: eventosHora.length > 0 ? 'auto' : 64,
-            }}>
-              <div style={{ width: 60, flexShrink: 0, borderRight: '1px solid #f3f4f6', display: 'flex', alignItems: 'flex-start', justifyContent: 'flex-end', padding: '16px 10px 0 0' }}>
-                <span style={{ fontSize: 11, fontWeight: esActual ? 700 : 400, color: esActual ? '#111827' : esPasada ? '#d1d5db' : '#9ca3af' }}>
-                  {hora.toString().padStart(2, '0')}:00
-                </span>
-              </div>
-              <div style={{ flex: 1, padding: eventosHora.length > 0 ? '10px 12px' : '0 12px', display: 'flex', flexDirection: 'column', gap: 8 }}>
-                {esActual && eventosHora.length === 0 && (
-                  <div style={{ height: 2, background: '#111827', borderRadius: 1, marginTop: 16, marginBottom: 16 }} />
-                )}
-                {eventosHora.map(s => {
-                  const badge = estadoColors[s.estado] ?? { bg: '#f3f4f6', color: '#374151' }
-                  const siguiente = estadoSiguiente[s.estado]
-                  const horaMinuto = new Date(s.fechaRetiro!).toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' })
+      {/* Lista del día */}
+      {serviciosDia.length === 0 && sinFecha.length === 0 ? (
+        <div style={{
+          background: 'white', borderRadius: 16, border: '1px solid #f3f4f6',
+          padding: '48px 24px', textAlign: 'center',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
+        }}>
+          <p style={{ fontSize: 15, color: '#9ca3af', margin: 0 }}>
+            No hay servicios para {etiqueta.toLowerCase()}
+          </p>
+        </div>
+      ) : (
+        <>
+          {serviciosDia.length > 0 && (
+            <div style={{ marginBottom: 32 }}>
+              <SectionLabel label={etiqueta} count={serviciosDia.length} />
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                {serviciosDia.map(s => {
+                  const hora = s.fechaRetiro ? new Date(s.fechaRetiro) : null
+                  const esPasado = esHoy && hora ? hora < ahora : false
                   return (
-                    <div key={s.id} className="agenda-card" style={{
-                      background: badge.bg, border: `1px solid ${badge.color}33`,
-                      borderRadius: 12, padding: '12px 14px',
-                    }}>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: 4, flex: 1 }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
-                          <span style={{ fontSize: 13, fontWeight: 700, color: badge.color }}>{horaMinuto}</span>
-                          <span style={{ fontSize: 14, fontWeight: 600, color: '#111827' }}>{s.mascotaNombre ?? '—'}</span>
-                          <span style={{ fontSize: 12, color: '#9ca3af' }}>{s.mascotaEspecie}</span>
-                          <span style={{ fontSize: 11, color: badge.color, fontWeight: 600, background: 'white', padding: '1px 8px', borderRadius: 20 }}>
-                            {s.estado.replace(/_/g, ' ')}
-                          </span>
-                        </div>
-                        <p style={{ fontSize: 13, color: '#6b7280', margin: 0 }}>
-                          {s.clienteNombre} {s.clienteApellido} · {s.clienteTelefono}
-                        </p>
-                      </div>
-                      {siguiente && <AvanzarButtonClient id={s.id} siguiente={siguiente} />}
+                    <div key={s.id} style={{ opacity: esPasado ? 0.6 : 1, transition: 'opacity .15s' }}>
+                      <AgendaCard s={s} />
                     </div>
                   )
                 })}
               </div>
             </div>
-          )
-        })}
-      </div>
+          )}
 
-      {sinFecha.length > 0 && (
-        <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
-            <span style={{ fontSize: 13, fontWeight: 600, color: '#6b7280' }}>Sin fecha asignada</span>
-            <span style={{ fontSize: 12, color: '#9ca3af', background: '#f3f4f6', padding: '2px 8px', borderRadius: 20 }}>{sinFecha.length}</span>
-            <div style={{ flex: 1, height: 1, background: '#e5e7eb' }} />
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-            {sinFecha.map(s => {
-              const badge = estadoColors[s.estado] ?? { bg: '#f3f4f6', color: '#374151' }
-              const siguiente = estadoSiguiente[s.estado]
-              return (
-                <div key={s.id} className="agenda-card" style={{
-                  background: 'white', borderRadius: 14, border: '1px solid #f3f4f6',
-                  padding: '16px 20px', boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
-                }}>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4, flexWrap: 'wrap' }}>
-                      <span style={{ fontSize: 14, fontWeight: 600, color: '#111827' }}>{s.mascotaNombre ?? '—'}</span>
-                      <span style={{ fontSize: 12, color: '#9ca3af' }}>{s.mascotaEspecie}</span>
-                      <span style={{ background: badge.bg, color: badge.color, padding: '2px 8px', borderRadius: 20, fontSize: 11, fontWeight: 500 }}>
-                        {s.estado.replace(/_/g, ' ')}
-                      </span>
-                    </div>
-                    <p style={{ fontSize: 13, color: '#6b7280', margin: 0 }}>
-                      {s.clienteNombre} {s.clienteApellido} · {s.clienteTelefono}
-                    </p>
-                  </div>
-                  {siguiente && <AvanzarButtonClient id={s.id} siguiente={siguiente} />}
-                </div>
-              )
-            })}
-          </div>
-        </div>
+          {sinFecha.length > 0 && (
+            <div>
+              <SectionLabel label="Sin fecha asignada" count={sinFecha.length} muted />
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                {sinFecha.map(s => <AgendaCard key={s.id} s={s} />)}
+              </div>
+            </div>
+          )}
+        </>
       )}
     </div>
   )
+}
+
+function StatChip({ label, value, color }: { label: string; value: number; color: string }) {
+  if (value === 0) return null
+  return (
+    <div style={{
+      background: 'white', border: '1px solid #f3f4f6', borderRadius: 12,
+      padding: '10px 16px', display: 'flex', alignItems: 'center', gap: 8,
+      boxShadow: '0 1px 2px rgba(0,0,0,0.04)',
+    }}>
+      <span style={{ fontSize: 20, fontWeight: 700, color }}>{value}</span>
+      <span style={{ fontSize: 12, color: '#6b7280', fontWeight: 500 }}>{label}</span>
+    </div>
+  )
+}
+
+function SectionLabel({ label, count, muted }: { label: string; count: number; muted?: boolean }) {
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
+      <span style={{ fontSize: 13, fontWeight: 600, color: muted ? '#9ca3af' : '#374151', textTransform: 'capitalize' }}>
+        {label}
+      </span>
+      <span style={{
+        fontSize: 11, fontWeight: 600, color: muted ? '#9ca3af' : '#6b7280',
+        background: '#f3f4f6', padding: '2px 8px', borderRadius: 20,
+      }}>
+        {count}
+      </span>
+      <div style={{ flex: 1, height: 1, background: '#f3f4f6' }} />
+    </div>
+  )
+}
+
+function navBtn(active: boolean, isHoy = false): React.CSSProperties {
+  return {
+    padding: '8px 14px', borderRadius: 10, fontSize: 13, fontWeight: isHoy ? 600 : 500,
+    border: '1px solid', borderColor: active ? '#111827' : '#e5e7eb',
+    background: active ? '#111827' : 'white',
+    color: active ? 'white' : '#374151',
+    textDecoration: 'none',
+  }
 }
