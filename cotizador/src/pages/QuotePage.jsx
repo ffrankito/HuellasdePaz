@@ -1,11 +1,31 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import StepIndicator from "../components/StepIndicator";
 import { petTypes } from "../data/petTypes";
 import { sizes } from "../data/sizes";
-import { services } from "../data/services";
+import { services as servicesFallback } from "../data/services";
 import { pickupMethods } from "../data/pickupMethods";
 import { ashesDelivery } from "../data/ashesDelivery";
 import { zones } from "../data/zones";
+
+const CRM_BASE_URL = import.meta.env.VITE_CRM_BASE_URL || "https://huellasde-paz.vercel.app";
+
+function mergePrecios(fallback, apiData) {
+  if (!apiData || apiData.length === 0) return fallback;
+
+  const comunitaria = apiData.find(s => s.tipo === "cremacion_comunitaria");
+  const entierro    = apiData.find(s => s.tipo === "entierro");
+  const individuales = apiData
+    .filter(s => s.tipo === "cremacion_individual" && s.precio != null)
+    .sort((a, b) => Number(a.precio) - Number(b.precio));
+
+  return fallback.map(s => {
+    if (s.id === "huellitas"           && comunitaria?.precio != null)      return { ...s, price: Number(comunitaria.precio) };
+    if (s.id === "amigos-para-siempre" && individuales[0]?.precio != null)  return { ...s, price: Number(individuales[0].precio) };
+    if (s.id === "amigos-de-verdad"    && individuales[1]?.precio != null)  return { ...s, price: Number(individuales[1].precio) };
+    if (s.id === "jardin-del-recuerdo" && entierro?.precio != null)         return { ...s, price: Number(entierro.precio) };
+    return s;
+  });
+}
 
 const initialFormData = {
   petType: "",
@@ -38,6 +58,14 @@ export default function QuotePage() {
   const [openFeatures, setOpenFeatures] = useState(initialOpenFeatures);
   const [animKey, setAnimKey] = useState(0);
   const [enviandoLead, setEnviandoLead] = useState(false);
+  const [services, setServices] = useState(servicesFallback);
+
+  useEffect(() => {
+    fetch(`${CRM_BASE_URL}/api/configuracion/servicios`)
+      .then(r => r.ok ? r.json() : null)
+      .then(data => { if (data) setServices(mergePrecios(servicesFallback, data)) })
+      .catch(() => {});
+  }, []);
 
   const needsZone = formData.pickupMethod === "domicilio";
   const needsSize = !SIN_TALLA.includes(formData.petType);

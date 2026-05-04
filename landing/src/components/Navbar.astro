@@ -1,6 +1,7 @@
 ---
 const WHATSAPP_NUMBER = '5493XXXXXXXXX'
 const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}`
+const CRM_URL = import.meta.env.PUBLIC_CRM_URL ?? 'https://huellasde-paz.vercel.app'
 const links = [
   { href: '#servicios', label: 'Servicios' },
   { href: '#planes', label: 'Planes' },
@@ -28,6 +29,26 @@ const links = [
       ))}
     </nav>
 
+    <!-- Dropdown Ingresar -->
+    <div class="hidden md:block relative" id="login-wrap">
+      <button id="login-toggle" class="inline-flex items-center gap-1 text-sm text-stone-600 hover:text-stone-900 transition-colors">
+        Ingresar
+        <svg id="login-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition:transform 0.2s">
+          <polyline points="6 9 12 15 18 9"/>
+        </svg>
+      </button>
+      <div id="login-menu" class="hidden absolute right-0 top-full mt-2 bg-white border border-stone-200 rounded-2xl shadow-lg overflow-hidden" style="min-width:200px;z-index:100">
+        <a href={`${CRM_URL}/portal/login`} class="flex flex-col px-4 py-3 hover:bg-stone-50 transition-colors border-b border-stone-100">
+          <span class="text-sm font-medium text-stone-800">Mi portal</span>
+          <span class="text-xs text-stone-400 mt-0.5">Clientes</span>
+        </a>
+        <a href={`${CRM_URL}/portal/convenio/login`} class="flex flex-col px-4 py-3 hover:bg-stone-50 transition-colors">
+          <span class="text-sm font-medium text-stone-800">Portal socios</span>
+          <span class="text-xs text-stone-400 mt-0.5">Veterinarias y convenios</span>
+        </a>
+      </div>
+    </div>
+
     <a
       href={WHATSAPP_URL}
       target="_blank"
@@ -54,6 +75,19 @@ const links = [
           {link.label}
         </a>
       ))}
+      <div class="border-t border-stone-200 pt-3 mt-1 flex flex-col gap-2">
+        <p class="text-xs font-medium text-stone-400 uppercase tracking-wider">Ingresar</p>
+        <a href={`${CRM_URL}/portal/login`}
+          class="text-stone-700 hover:text-brand-600 transition-colors text-sm"
+          onclick="document.getElementById('mobile-menu').classList.add('hidden')">
+          Mi portal <span class="text-stone-400">— Clientes</span>
+        </a>
+        <a href={`${CRM_URL}/portal/convenio/login`}
+          class="text-stone-700 hover:text-brand-600 transition-colors text-sm"
+          onclick="document.getElementById('mobile-menu').classList.add('hidden')">
+          Portal socios <span class="text-stone-400">— Veterinarias</span>
+        </a>
+      </div>
       <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer"
         class="inline-flex items-center justify-center bg-brand-600 text-white text-sm font-medium px-4 py-2 rounded-full">
         Consultar por WhatsApp
@@ -64,7 +98,6 @@ const links = [
 
 <style>
   /* ── SCROLL PROGRESS BAR — Uiverse scroll-driven technique ── */
-  /* La barra crece de izquierda a derecha mientras scrolleás   */
   .scroll-progress {
     position: fixed;
     top: 0;
@@ -84,7 +117,6 @@ const links = [
     to   { transform: scaleX(1); }
   }
 
-  /* Fallback para browsers sin animation-timeline */
   @supports not (animation-timeline: scroll()) {
     .scroll-progress { display: none; }
   }
@@ -110,17 +142,28 @@ const links = [
     transition: transform 0.25s ease;
   }
 
-  .nav-link:hover {
-    color: #2d8a54;
-  }
-
-  .nav-link:hover::after {
-    transform: scaleX(1);
-  }
+  .nav-link:hover { color: #2d8a54; }
+  .nav-link:hover::after { transform: scaleX(1); }
 </style>
 
 <script>
   const toggle = document.getElementById('menu-toggle')
   const menu = document.getElementById('mobile-menu')
   toggle?.addEventListener('click', () => menu?.classList.toggle('hidden'))
+
+  const loginToggle = document.getElementById('login-toggle')
+  const loginMenu = document.getElementById('login-menu')
+  const loginChevron = document.getElementById('login-chevron')
+
+  loginToggle?.addEventListener('click', (e) => {
+    e.stopPropagation()
+    const open = !loginMenu?.classList.contains('hidden')
+    loginMenu?.classList.toggle('hidden', open)
+    if (loginChevron) loginChevron.style.transform = open ? '' : 'rotate(180deg)'
+  })
+
+  document.addEventListener('click', () => {
+    loginMenu?.classList.add('hidden')
+    if (loginChevron) loginChevron.style.transform = ''
+  })
 </script>

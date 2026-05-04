@@ -17,9 +17,9 @@ const testimonios = [
 
   <div style="position:relative;z-index:1;max-width:72rem;margin:0 auto;padding:0 1.5rem">
 
-    <div class="text-center mb-12 reveal-item">
-      <p class="text-brand-600 text-xs md:text-sm font-medium tracking-widest uppercase mb-3">Testimonios</p>
-      <h2 class="font-display text-3xl md:text-4xl font-semibold text-stone-900">Lo que dicen las familias</h2>
+    <div style="text-align:center;margin-bottom:3rem" class="reveal-item">
+      <p style="color:#2d8a54;font-size:0.7rem;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;margin:0 0 14px">Testimonios</p>
+      <h2 class="font-display" style="font-size:clamp(1.75rem,4vw,2.5rem);font-weight:600;color:#1c1917;line-height:1.2;margin:0;letter-spacing:-0.02em">Lo que dicen las familias</h2>
     </div>
 
     <div style="display:grid;grid-template-columns:1fr;gap:1.5rem">
@@ -124,7 +124,7 @@ const testimonios = [
 <style>
   @media(min-width:768px){
     section[id="contacto"] > div { grid-template-columns:1fr 1fr !important; }
-    section:not([id]) > div > div:first-child { display:grid; grid-template-columns:repeat(3,1fr) !important; }
+    section:not([id]) > div > div:last-child { display:grid; grid-template-columns:repeat(3,1fr) !important; }
   }
 
   .testi-card { background:rgba(255,255,255,0.82); backdrop-filter:blur(10px); border:1px solid #e7e5e4; border-radius:1.25rem; padding:1.75rem; position:relative; overflow:hidden; transition:transform 0.3s,box-shadow 0.3s,border-color 0.3s; }
