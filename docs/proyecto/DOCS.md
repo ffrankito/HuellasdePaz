@@ -27,10 +27,10 @@ Huellas de Paz es el primer crematorio de mascotas con habilitación formal en R
 |------|-------------|--------|
 | Fase 0 | Landing + Cotizador | ✅ Live |
 | Fase 1a | CRM Core (clientes, servicios, planes, leads) | ✅ Implementado |
-| Fase 1b | Cobranzas, comunicación masiva, reportes | 🔄 En progreso |
-| Fase 2 | Portal cliente + memorial digital | 🔄 Parcialmente implementado |
-| Fase 3 | Portal B2B veterinarias | 📋 Planificado |
-| Fase 4 | Chatbot AI | 📋 Planificado (no antes de Fase 3) |
+| Fase 1b | Cobranzas, comunicación, reportes | ✅ Implementado (falta MP) |
+| Fase 2 | Portal cliente + memorial digital | ✅ Implementado |
+| Fase 3 | Portal B2B convenios (veterinarias, petshops) | ✅ Implementado |
+| Fase 4 | Chatbot AI (WhatsApp + Instagram) | 📋 Planificado |
 
 ---
 
@@ -53,6 +53,7 @@ Huellas de Paz es el primer crematorio de mascotas con habilitación formal en R
                    │  SUPABASE   │
                    │ PostgreSQL  │
                    │    Auth     │
+                   │   Storage   │
                    └─────────────┘
 ```
 
@@ -87,14 +88,14 @@ HuellasDePaz/
 Sistema de gestión interno para el equipo de Huellas de Paz.
 
 **Stack:**
-- Next.js 15.3.1 (App Router + TypeScript)
+- Next.js 15 (App Router + TypeScript)
 - Drizzle ORM + Supabase (PostgreSQL)
-- Supabase SSR Auth
+- Supabase SSR Auth + 2FA por email OTP
 - Resend (emails transaccionales)
 - PDFKit (generación de certificados)
 - XLSX (exportación/importación Excel)
 - @hello-pangea/dnd (drag & drop en agenda)
-- Tailwind CSS 4 + inline styles
+- Tailwind CSS 4 + inline styles + shadcn/ui
 
 **Variables de entorno:**
 ```env
@@ -102,11 +103,18 @@ NEXT_PUBLIC_SUPABASE_URL=https://ictjxquzsyftmgghjblc.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=...
 SUPABASE_SERVICE_ROLE_KEY=...
 DATABASE_URL=postgresql://...
+DATABASE_URL_UNPOOLED=postgresql://...
 NEXT_PUBLIC_APP_URL=https://huellasde-paz.vercel.app
+CORS_ALLOWED_ORIGINS=https://cotizador...,https://landing...
 RESEND_API_KEY=re_...
-MP_ACCESS_TOKEN=...
-MP_PUBLIC_KEY=...
-MP_WEBHOOK_SECRET=...
+MP_ACCESS_TOKEN=...         # pendiente
+MP_PUBLIC_KEY=...           # pendiente
+MP_WEBHOOK_SECRET=...       # pendiente
+ANTHROPIC_API_KEY_ASISTENTE=...
+ASISTENTE_MODELO=claude-haiku-4-5-20251001
+ASISTENTE_MAX_TOKENS=1000
+ASISTENTE_RATE_LIMIT_POR_MINUTO=5
+ASISTENTE_PRESUPUESTO_USD=10
 ```
 
 **Comandos:**
@@ -127,18 +135,20 @@ Página pública con información de servicios, planes y formulario de contacto.
 **Stack:** Astro 6 + TypeScript + Tailwind CSS 4
 
 **Secciones:**
-- `Hero.astro` — imagen de fondo, CTA WhatsApp, badges de confianza
+- `Hero.astro` — slideshow de fotos (10 slides, fade cada 5s) + huellas flotantes
 - `Servicios.astro` — cremación individual, comunitaria, entierro
 - `Planes.astro` — estructura lista, precios pendientes del cliente
-- `Cotizador.astro` — iframe del cotizador
-- `Convenios.astro` — formulario de postulación para veterinarias/petshops → POST /api/convenios/postulacion
+- `Memoriales.astro` — galería de memoriales públicos desde el CRM
+- `Convenios.astro` — formulario de postulación para veterinarias/petshops
 - `Contacto.astro` — formulario → POST /api/leads al CRM
+- `Ubicacion.astro` — mapas de las dos sedes
+- `Navbar.astro` — nav con dropdown "Ingresar" (Mi portal + Portal socios)
 - `Footer.astro`
 
 **Datos pendientes del cliente:**
 - Número de WhatsApp real (actualmente `5493XXXXXXXXX`)
-- Dirección física del crematorio
 - Precios y nombres finales de los planes
+- Logo final
 
 **Comandos:**
 ```bash
@@ -152,7 +162,7 @@ npm run build
 
 ### 3. Cotizador (`cotizador/`)
 
-Herramienta de cotización online embebida en la landing vía iframe.
+Herramienta de cotización online embebida en la landing vía iframe. Actualmente comentado en `index.astro` hasta apertura del crematorio.
 
 **Stack:** React 18 + Vite + Tailwind CSS 4
 
@@ -162,11 +172,11 @@ Paso 1: Tipo de mascota (canino/felino/otro)
         ├── Canino → Paso 2 (tamaño)
         └── Felino / Otro → Paso 3 directamente
 Paso 2: Tamaño (solo caninos)
-Paso 3: Servicio
-        ├── Plan Huellitas     $90.000 — cremación comunitaria
-        ├── Plan Compañeros   $120.000 — cremación individual diferida
-        ├── Plan Siempre Juntos $140.000 — cremación individual presencial
-        └── Jardín del Recuerdo $110.000 — entierro
+Paso 3: Servicio (precios cargados dinámicamente desde /api/configuracion/servicios)
+        ├── Plan Huellitas     — cremación comunitaria
+        ├── Plan Compañeros    — cremación individual diferida
+        ├── Plan Siempre Juntos — cremación individual presencial
+        └── Jardín del Recuerdo — entierro
 Paso 4: Método de retiro (domicilio / crematorio)
 Paso 5: Entrega de cenizas (inmediata / diferida)
 Paso 6: Zona (solo si eligió domicilio)
@@ -174,9 +184,9 @@ Paso 7: Datos de contacto → POST /api/leads (origen: cotizador)
 Paso 8: Pantalla de éxito
 ```
 
-**Mascotas sin talla:** `felino`, `mamifero-pequeno`, `reptil`, `ave-pez`
+**Precios:** Cargados dinámicamente desde `GET /api/configuracion/servicios` (CORS habilitado). Fallback a valores hardcodeados si la API falla.
 
-**CORS:** Habilitado en `/api/leads` y `/api/convenios` para el dominio del cotizador.
+**Mascotas sin talla:** `felino`, `mamifero-pequeno`, `reptil`, `ave-pez`
 
 **Comandos:**
 ```bash
@@ -201,7 +211,13 @@ npm run build
 | nombre | text | |
 | email | text unique | |
 | rol | enum | admin, manager, contadora, televenta, transporte, cremacion, entrega |
-| permisos | text[] | Permisos adicionales: gestion_equipo, ver_reportes, configuracion, cobranzas |
+| permisos | text[] | gestion_equipo, ver_reportes, configuracion, cobranzas |
+| mfaEmailActivo | boolean | Default: false — 2FA por OTP activado |
+| otpCodigo | text | Hash SHA-256(codigo+userId) — nulo cuando no hay OTP activo |
+| otpExpiraEn | timestamp | Expira a los 10 minutos |
+| otpIntentos | integer | Default: 0 — máximo 3 intentos |
+| mfaSesionToken | text | Token de sesión MFA (se invalida al expirar) |
+| mfaSesionExpiraEn | timestamp | 8 horas desde la verificación exitosa |
 | creadoEn | timestamp | |
 | actualizadoEn | timestamp | |
 
@@ -218,7 +234,7 @@ npm run build
 | provincia | text | Default: 'Santa Fe' |
 | origen | text | De dónde vino el cliente |
 | notas | text | |
-| tokenPortal | text unique | Token para acceso al portal cliente |
+| tokenPortal | text unique | Token para acceso al portal cliente (UUID) |
 | authUserId | text unique | UUID del user en Supabase Auth (portal) |
 | veterinariaId | uuid FK → convenios.id | Convenio de referencia del cliente |
 | creadoEn | timestamp | |
@@ -230,14 +246,15 @@ npm run build
 | id | uuid PK | |
 | clienteId | uuid FK → clientes.id | |
 | nombre | text | |
-| especie | text | perro, gato, conejo, etc. (libre, de configuracion_general) |
+| especie | text | perro, gato, conejo, etc. (de configuracion_general) |
 | raza | text | |
 | color | text | |
 | fechaNacimiento | date | |
 | fechaFallecimiento | date | |
 | foto | text | URL de foto principal |
-| galeria | jsonb (string[]) | Array de URLs para memorial |
+| galeria | jsonb (string[]) | Array de URLs para el memorial |
 | dedicatoria | text | Texto del memorial |
+| memoriaPublica | boolean | Default: false — visible en /memorial |
 | notas | text | |
 | creadoEn | timestamp | |
 | actualizadoEn | timestamp | |
@@ -250,14 +267,16 @@ npm run build
 | clienteId | uuid FK → clientes.id | |
 | mascotaId | uuid FK → mascotas.id | |
 | tipo | enum | cremacion_individual, cremacion_comunitaria, entierro |
-| estado | enum | Ver estados abajo |
+| estado | enum | **Ver estados abajo** |
 | precio | numeric(10,2) | Precio base del servicio |
 | descuento | numeric(10,2) | Monto de descuento por convenio |
 | convenioId | uuid FK → convenios.id | Convenio aplicado al servicio |
 | servicioConfigId | uuid FK → servicios_config.id | Config de servicio usada |
+| inventarioItemId | uuid FK → inventario.id | Urna asignada |
 | responsableTransporteId | uuid FK → usuarios.id | |
 | responsableCremacionId | uuid FK → usuarios.id | |
 | responsableEntregaId | uuid FK → usuarios.id | |
+| modalidadRetiro | text | domicilio / crematorio |
 | fechaRetiro | timestamp | |
 | fechaCremacion | timestamp | |
 | fechaEntrega | timestamp | |
@@ -266,17 +285,17 @@ npm run build
 | creadoEn | timestamp | |
 | actualizadoEn | timestamp | |
 
-**Estados del servicio:**
+**Estados del servicio (5 estados):**
 ```
-ingresado → retiro_pendiente → en_transporte → recibido → en_cremacion → cremado → listo_entrega → entregado
-                                                                                                   ↘ cancelado
+pendiente → en_proceso → listo → entregado
+                               ↘ cancelado
 ```
 
 #### `servicios_config`
 | Campo | Tipo | Notas |
 |-------|------|-------|
 | id | uuid PK | |
-| nombre | text | Ej: "Plan Huellitas", "Plan Compañeros" |
+| nombre | text | Ej: "Plan Huellitas", "Jardín del Recuerdo" |
 | tipo | enum | cremacion_individual, cremacion_comunitaria, entierro |
 | precio | numeric(10,2) | NULL = "Consultar" |
 | descripcion | text | |
@@ -284,7 +303,7 @@ ingresado → retiro_pendiente → en_transporte → recibido → en_cremacion �
 | creadoEn | timestamp | |
 | actualizadoEn | timestamp | |
 
-**Registros iniciales cargados:**
+**Registros cargados:**
 - Plan Huellitas — cremacion_comunitaria — $90.000
 - Plan Compañeros — cremacion_individual — $120.000
 - Plan Siempre Juntos — cremacion_individual — $140.000
@@ -299,9 +318,9 @@ ingresado → retiro_pendiente → en_transporte → recibido → en_cremacion �
 | mascotaId | uuid FK → mascotas.id | |
 | planConfigId | uuid FK → planes_config.id | |
 | estado | enum | activo, pausado, cancelado, utilizado, atrasado |
-| cuotasMensual | numeric(10,2) | |
+| cuotaMensual | numeric(10,2) | |
 | cuotasPagadas | integer | Default: 0 |
-| cuotasTotales | integer | Default: 0 (sin NOT NULL forzado) |
+| cuotasTotales | integer | |
 | porcentajeCobertura | numeric(5,2) | Calculado automáticamente |
 | mascotaAdicional | boolean | +50% sobre cuota base |
 | fechaUltimoPago | timestamp | |
@@ -321,9 +340,9 @@ ingresado → retiro_pendiente → en_transporte → recibido → en_cremacion �
 | nombre | text | |
 | descripcion | text | |
 | cuotaMensual | numeric(10,2) | |
-| cuotasTotales | integer | (sin NOT NULL forzado) |
+| cuotasTotales | integer | |
 | beneficios | jsonb | Lista de beneficios |
-| coberturaEscalonada | jsonb | { cuota: porcentaje } |
+| coberturaEscalonada | jsonb | `{ cuota: porcentaje }` |
 | activo | boolean | Default: true |
 | creadoEn | timestamp | |
 | actualizadoEn | timestamp | |
@@ -335,12 +354,16 @@ ingresado → retiro_pendiente → en_transporte → recibido → en_cremacion �
 | nombre | text | |
 | telefono | text | |
 | email | text | |
+| dni | text | Requerido para leads B2B (portal convenio) |
 | mensaje | text | |
 | origen | text | landing, cotizador, directo, base_propia, veterinaria |
 | estado | enum | nuevo, contactado, interesado, cotizado, convertido, perdido |
 | asignadoAId | uuid FK → usuarios.id | |
 | veterinariaId | uuid FK → convenios.id | |
+| importacionId | uuid FK → importaciones_leads.id | |
+| pickupMethod | text | domicilio / crematorio (desde cotizador) |
 | notas | text | |
+| seguimientoEn | timestamp | Fecha/hora programada para retomar el contacto |
 | primerRespuestaEn | timestamp | |
 | ultimaInteraccionEn | timestamp | |
 | creadoEn | timestamp | |
@@ -352,8 +375,18 @@ ingresado → retiro_pendiente → en_transporte → recibido → en_cremacion �
 | id | uuid PK | |
 | leadId | uuid FK → leads.id | |
 | usuarioId | uuid FK → usuarios.id | |
-| tipo | text | nota, llamada, email, whatsapp, seguimiento_24hs, etc. |
+| tipo | text | nota, llamada, email, whatsapp, seguimiento, convertido, etc. |
 | descripcion | text | |
+| creadoEn | timestamp | |
+
+#### `importaciones_leads`
+| Campo | Tipo | Notas |
+|-------|------|-------|
+| id | uuid PK | |
+| nombreArchivo | text | |
+| totalImportados | integer | |
+| totalDuplicados | integer | |
+| totalErrores | integer | |
 | creadoEn | timestamp | |
 
 #### `convenios`
@@ -371,13 +404,17 @@ ingresado → retiro_pendiente → en_transporte → recibido → en_cremacion �
 | estadoConvenio | enum | sin_convenio, en_negociacion, activo, pausado |
 | descuentoPorcentaje | numeric(5,2) | Default: 0 |
 | beneficioDescripcion | text | |
+| serviciosCubiertos | jsonb (string[]) | Tipos de servicio incluidos en el convenio |
 | fechaInicioConvenio | timestamp | |
 | fechaVencimientoConvenio | timestamp | |
 | notas | text | |
+| tokenPortal | uuid | Token único de acceso al portal B2B |
+| portalActivo | boolean | Default: false |
+| authUserId | text | UUID del socio en Supabase Auth (si fue invitado) |
 | creadoEn | timestamp | |
 | actualizadoEn | timestamp | |
 
-**Alias:** La tabla se llama `convenios` en DB. El schema exporta también `veterinarias = convenios` para compatibilidad con código legado. El campo `clientes.veterinariaId` apunta a `convenios.id`.
+**Alias:** `veterinarias = convenios` en el código (compatibilidad legado). `clientes.veterinariaId` apunta a `convenios.id`.
 
 #### `inventario`
 | Campo | Tipo | Notas |
@@ -414,9 +451,21 @@ ingresado → retiro_pendiente → en_transporte → recibido → en_cremacion �
 | clienteId | uuid FK → clientes.id | |
 | servicioId | uuid FK → servicios.id | |
 | templateId | uuid FK → templates_msg.id | |
-| canal | text | |
+| canal | text | whatsapp, email |
 | mensaje | text | |
 | estado | text | pendiente, enviado |
+| creadoEn | timestamp | |
+
+#### `noticias_cementerio`
+| Campo | Tipo | Notas |
+|-------|------|-------|
+| id | uuid PK | |
+| titulo | text | |
+| contenido | text | |
+| imagen | text | URL en Supabase Storage (`portal/novedades/`) |
+| creadoPorId | uuid FK → usuarios.id | |
+| publicada | boolean | Default: true — false = borrador |
+| destacada | boolean | Default: false — aparece primero |
 | creadoEn | timestamp | |
 
 #### `configuracion_general`
@@ -428,46 +477,65 @@ ingresado → retiro_pendiente → en_transporte → recibido → en_cremacion �
 | descripcion | text | |
 | actualizadoEn | timestamp | |
 
-#### `noticias_cementerio`
+#### `asistente_log`
 | Campo | Tipo | Notas |
 |-------|------|-------|
 | id | uuid PK | |
-| titulo | text | |
-| contenido | text | |
-| creadoPorId | uuid FK → usuarios.id | |
+| usuarioId | uuid FK → usuarios.id | |
+| rol | text | Rol del usuario al momento de la consulta |
+| pregunta | text | |
+| screenContext | text | Contexto de pantalla opcional |
+| tokensInput | integer | |
+| tokensOutput | integer | |
 | creadoEn | timestamp | |
-
-Las noticias se muestran en la ficha de cada cliente (últimas 5, desc).
 
 ### Migraciones
 
-10 migraciones Drizzle (0000–0009). Cambios post-migración aplicados con SQL directo en Supabase:
-- `veterinarias` renombrada a `convenios` (migración 0009)
-- `planes.cuotas_totales` — DROP NOT NULL
-- `planes_config.cuotas_totales` — DROP NOT NULL
-- Tablas `servicios_config` y `noticias_cementerio` — creadas con script Node.js directo
-- Columnas `convenio_id`, `servicio_config_id`, `pagado`, `descuento` en `servicios` — agregadas directamente
+| Migración | Método | Descripción |
+|-----------|--------|-------------|
+| 0000–0009 | drizzle-kit | Schema inicial, tablas core |
+| 0010 | SQL directo | Agrega `fecha_ultimo_pago` a `planes` |
+| 0011 | SQL directo | Agrega `galeria` (jsonb) a `mascotas` |
+| 0012 | SQL directo | Agrega `publicada` y `destacada` a `noticias_cementerio` |
+| 0013 | Script Node.js | Tablas `servicios_config` y `noticias_cementerio` |
+| 0014 | Script Node.js | Columnas B2B en `convenios`: `servicios_cubiertos`, `portal_activo`, `token_portal`, `auth_user_id` |
+| 0015 | Script Node.js | Columnas 2FA en `usuarios`: `mfa_email_activo`, `otp_codigo`, `otp_expira_en`, `otp_intentos`, `mfa_sesion_token`, `mfa_sesion_expira_en` |
+
+**Scripts de migración:** `crm/scripts/migrate-0014.mjs`, `crm/scripts/migrate-0015.mjs`
+
+**Importante:** No usar `drizzle-kit push` — detecta columnas eliminadas en otras tablas y pide confirmación destructiva. Para migraciones manuales usar `postgres.js` directamente.
 
 ---
 
 ## API Routes
 
-### Públicas (sin autenticación)
+### Públicas (sin autenticación, CORS habilitado)
 
 | Método | Ruta | Descripción |
 |--------|------|-------------|
-| POST | `/api/leads` | Crear lead (desde cotizador/landing — CORS habilitado) |
-| GET | `/api/leads` | Listar leads |
+| POST | `/api/leads` | Crear lead (desde cotizador/landing) |
+| GET | `/api/configuracion/servicios` | Listar servicios activos (usado por cotizador para precios) |
 | POST | `/api/convenios/postulacion` | Postulación pública de veterinarias desde landing |
-| GET | `/api/convenios` | Listar convenios activos (CORS — usado por cotizador) |
+
+### Autenticación
+
+| Método | Ruta | Descripción |
+|--------|------|-------------|
+| GET | `/api/me` | Devuelve el usuario logueado (id, nombre, rol) |
+| POST | `/api/auth/otp/enviar` | Envía OTP por email (skipMfa — no requiere MFA activo) |
+| POST | `/api/auth/otp/verificar` | Verifica OTP y setea cookie `mfa_s` (skipMfa) |
+| GET | `/api/auth/destino` | Resuelve redirect post-login según rol |
+| GET | `/api/agentes` | Lista agentes (televenta) para asignación de leads |
 
 ### Leads
 
 | Método | Ruta | Descripción |
 |--------|------|-------------|
+| GET | `/api/leads` | Listar leads (acepta `?misLeads=true`) |
 | GET/PATCH/DELETE | `/api/leads/[id]` | Ver / editar / eliminar lead |
 | POST | `/api/leads/[id]/email` | Enviar email al lead (Resend) |
-| POST | `/api/leads/convertir` | Convertir lead en cliente + crear servicio o plan |
+| POST | `/api/leads/convertir` | Convertir lead → cliente + mascota + plan/servicio |
+| POST | `/api/leads/importar` | Importación masiva desde Excel |
 
 ### Clientes y mascotas
 
@@ -483,14 +551,14 @@ Las noticias se muestran en la ficha de cada cliente (últimas 5, desc).
 | Método | Ruta | Descripción |
 |--------|------|-------------|
 | GET/POST | `/api/servicios` | Listar / crear servicios |
-| GET/PATCH | `/api/servicios/[id]` | Ver / actualizar servicio (estado, pagado, convenioId) |
+| GET/PATCH | `/api/servicios/[id]` | Ver / actualizar servicio |
 
 ### Planes
 
 | Método | Ruta | Descripción |
 |--------|------|-------------|
 | GET/POST | `/api/planes` | Listar / crear planes |
-| GET/PATCH | `/api/planes/[id]` | Ver / actualizar plan (estado, cuotasPagadas) |
+| GET/PATCH | `/api/planes/[id]` | Ver / actualizar plan |
 
 ### Convenios
 
@@ -498,6 +566,8 @@ Las noticias se muestran en la ficha de cada cliente (últimas 5, desc).
 |--------|------|-------------|
 | GET/POST | `/api/convenios` | Listar / crear convenios |
 | GET/PATCH | `/api/convenios/[id]` | Ver / actualizar convenio |
+| POST | `/api/portal/convenio/invitar` | Envía invitación al socio B2B (crea Supabase Auth user) |
+| GET | `/api/portal/convenio/mi-token` | Resuelve el token del convenio post-login |
 
 ### Configuración
 
@@ -506,7 +576,7 @@ Las noticias se muestran en la ficha de cada cliente (últimas 5, desc).
 | PATCH | `/api/configuracion/general` | Actualizar listas configurables |
 | GET/POST | `/api/configuracion/planes` | Listar / crear planes config |
 | PATCH | `/api/configuracion/planes/[id]` | Editar plan config |
-| GET/POST | `/api/configuracion/servicios` | Listar / crear servicios config |
+| GET/POST | `/api/configuracion/servicios` | Listar / crear servicios config (GET es público/CORS) |
 | PATCH | `/api/configuracion/servicios/[id]` | Editar servicio config |
 | GET/POST | `/api/configuracion/templates` | Listar / crear templates de mensajes |
 
@@ -516,7 +586,7 @@ Las noticias se muestran en la ficha de cada cliente (últimas 5, desc).
 |--------|------|-------------|
 | GET/POST | `/api/inventario` | Listar / crear items |
 | GET/PATCH | `/api/inventario/[id]` | Ver / editar item |
-| POST | `/api/storage/inventario` | Upload de foto de item a Supabase Storage |
+| POST | `/api/storage/inventario` | Upload de foto a Supabase Storage |
 
 ### Comunicaciones
 
@@ -524,11 +594,13 @@ Las noticias se muestran en la ficha de cada cliente (últimas 5, desc).
 |--------|------|-------------|
 | PATCH | `/api/comunicaciones/[id]` | Actualizar estado de comunicación |
 
-### Noticias
+### Novedades (solo admin)
 
 | Método | Ruta | Descripción |
 |--------|------|-------------|
-| GET/POST | `/api/noticias` | Listar / crear noticias (POST requiere rol admin) |
+| GET/POST | `/api/noticias` | Listar / crear noticias (`publicada`, `destacada`) |
+| PATCH | `/api/noticias/[id]` | Editar o toggle publicada/destacada |
+| DELETE | `/api/noticias/[id]` | Eliminar noticia |
 
 ### Reportes
 
@@ -550,14 +622,20 @@ Las noticias se muestran en la ficha de cada cliente (últimas 5, desc).
 |--------|------|-------------|
 | POST | `/api/portal/invitar` | Enviar invitación al portal con token único |
 | PATCH | `/api/portal/mascotas/[id]` | Editar mascota desde portal (dedicatoria, galería) |
-| GET | `/api/portal/certificado/[servicioId]` | Descargar certificado de cremación (PDF — PDFKit) |
+| GET | `/api/portal/certificado/[servicioId]` | Descargar certificado de cremación (PDF) |
 
 ### Cron (Vercel Cron Jobs)
 
 | Método | Ruta | Frecuencia | Descripción |
 |--------|------|------------|-------------|
-| GET | `/api/cron/leads` | Cada hora | Seguimiento y vencimiento de leads |
+| GET | `/api/cron/leads` | Cada hora | Vencimiento de leads: nuevo +72hs → perdido, interesado +48hs → perdido, perdido +10 días → eliminado |
 | GET | `/api/cron/planes` | Diaria | Detección de planes atrasados |
+
+### Asistente IA
+
+| Método | Ruta | Descripción |
+|--------|------|-------------|
+| POST | `/api/asistente/chat` | Chat con Claude Haiku — con rate limiting y cap de presupuesto |
 
 ---
 
@@ -565,6 +643,8 @@ Las noticias se muestran en la ficha de cada cliente (últimas 5, desc).
 
 ### Autenticación
 - `/auth/login` — Login con Supabase SSR
+- `/auth/verificar-mfa` — Verificación OTP cuando 2FA está activo
+- `/acceso` — Selector de portal (Mi portal / Portal socios) — para usuarios externos
 
 ### Dashboard
 - `/dashboard` — KPIs: servicios activos, leads nuevos, planes activos, clientes totales, cremaciones en curso, stock bajo
@@ -572,13 +652,13 @@ Las noticias se muestran en la ficha de cada cliente (últimas 5, desc).
 ### Clientes
 - `/dashboard/clientes` — Lista con búsqueda
 - `/dashboard/clientes/nuevo` — Formulario de creación
-- `/dashboard/clientes/[id]` — Ficha: datos, mascotas, servicios, planes, noticias del cementerio
+- `/dashboard/clientes/[id]` — Ficha: datos, mascotas, servicios, planes, novedades del cementerio
 - `/dashboard/clientes/[id]/mascotas/nueva` — Nueva mascota para el cliente
 
 ### Servicios
 - `/dashboard/servicios` — Lista: #, mascota, cliente, tipo, convenio, pago, estado, fecha retiro
 - `/dashboard/servicios/nuevo` — Formulario con selector de servicios config + convenio + cálculo automático de precio
-- `/dashboard/servicios/[id]` — Detalle: barra de progreso, datos del servicio, cliente, mascota, cambio de estado, estado de pago
+- `/dashboard/servicios/[id]` — Detalle: barra de progreso, datos, cambio de estado, pago
 
 ### Planes
 - `/dashboard/planes` — Lista: #, plan, cliente, mascota, cobertura, estado
@@ -592,13 +672,13 @@ Las noticias se muestran en la ficha de cada cliente (últimas 5, desc).
 - `/dashboard/leads/[id]` — Detalle con historial de interacciones
 
 ### Mis Leads (agente televenta)
-- `/dashboard/mis-leads` — Vista de trabajo un lead a la vez con cronómetro, WhatsApp popup, email integrado, modal de conversión (servicio o plan)
+- `/dashboard/mis-leads` — Vista de trabajo un lead a la vez con cronómetro, WhatsApp popup, email integrado, modal de conversión
 
 ### Agenda
 - `/dashboard/agenda` — Calendario de servicios filtrado por rol
 
 ### Comunicación
-- `/dashboard/comunicacion` — Templates de mensajes y envío masivo
+- `/dashboard/comunicacion` — Templates de mensajes y envío individual
 
 ### Inventario
 - `/dashboard/inventario` — Lista con alertas de stock bajo
@@ -608,11 +688,20 @@ Las noticias se muestran en la ficha de cada cliente (últimas 5, desc).
 ### Convenios B2B
 - `/dashboard/convenios` — Lista de convenios con estados y métricas
 - `/dashboard/convenios/nueva` — Crear convenio
-- `/dashboard/convenios/[id]` — Detalle: datos, leads derivados, clientes con servicios
+- `/dashboard/convenios/[id]` — Detalle: datos, leads derivados, clientes
 - `/dashboard/convenios/editar` — Editar convenio
+
+### Novedades (solo admin)
+- `/dashboard/novedades` — Gestión de novedades: borrador/publicado, pin destacado
 
 ### Reportes
 - `/dashboard/reportes` — Métricas de negocio con gráficos
+
+### Mi cuenta
+- `/dashboard/perfil` — Mi cuenta: cambio de contraseña, 2FA, apariencia (dark mode)
+
+### Asistente IA
+- `/dashboard/asistente` — Auditoría del asistente IA (solo admin): logs, tokens, costo
 
 ### Manager (admin/manager)
 - `/dashboard/manager/agentes` — Estado del equipo
@@ -621,56 +710,83 @@ Las noticias se muestran en la ficha de cada cliente (últimas 5, desc).
 - `/dashboard/mi-rendimiento` — Vista de rendimiento personal (televenta)
 
 ### Configuración
-- `/dashboard/configuracion` — Servicios config, planes config, templates, listas, usuarios y permisos, noticias del cementerio
+- `/dashboard/configuracion` — Servicios config, planes config, templates, listas, usuarios y permisos
 - `/dashboard/configuracion/importar-leads` — Importación masiva desde Excel
 
-### Portal cliente (Fase 2 — parcialmente implementado)
-- `/portal/login` — Login con email
+### Portal cliente (Fase 2)
+- `/portal/login` — Login con email/password
 - `/portal/activar` — Activación de cuenta con token
-- `/portal/[token]` — Home del portal: servicios, planes, mascotas
-- `/portal/[token]/memorial/[mascotaId]` — Memorial digital de la mascota
-- `/portal/[token]/memorial/[mascotaId]/editar` — Editar dedicatoria y galería de fotos
+- `/portal/[token]` — Home del portal: tabs Servicios · Planes · Memorial · Novedades
+
+### Memorial público (Fase 2)
+- `/memorial` — Grilla pública de memoriales activos (`memoria_publica = true`)
+- `/memorial/[mascotaId]` — Memorial individual con foto, fechas, dedicatoria, galería
+
+### Portal B2B convenios (Fase 3)
+- `/portal/convenio/login` — Login del socio B2B
+- `/portal/convenio/[token]` — Portal del socio: leads enviados, tabla de historial
 
 ---
 
 ## Componentes relevantes
 
+### Seguridad / Auth
+
+| Componente | Descripción |
+|------------|-------------|
+| `LoginForm` | Formulario de login con step 'otp' para 2FA (input de 6 dígitos, reenviar countdown) |
+| `Configuracion2FA` | Activa/desactiva 2FA desde Mi cuenta — requiere OTP para ambas acciones |
+
 ### Formularios principales
 
-| Componente | Ruta | Descripción |
-|------------|------|-------------|
-| `NuevoServicioForm` | `components/dashboard/` | Selector de servicios config, convenio, cálculo automático de precio con descuento |
-| `NuevoPlanForm` | `components/dashboard/` | Selector de plan config, cliente, mascota (sin convenio) |
-| `NuevoClienteForm` | `components/dashboard/` | Datos del cliente |
-| `NuevoLeadForm` | `components/dashboard/` | Crear lead manual |
-| `NuevoConvenioForm` | `components/convenios/` | Crear convenio B2B |
+| Componente | Descripción |
+|------------|-------------|
+| `NuevoServicioForm` | Selector de servicios config, convenio, cálculo automático de precio |
+| `NuevoPlanForm` | Selector de plan config, cliente, mascota |
+| `NuevoClienteForm` | Datos del cliente |
+| `NuevoLeadForm` | Crear lead manual |
+| `NuevoConvenioForm` | Crear convenio B2B |
+| `CambiarEstadoLeadForm` | Cambio de estado con validación de permisos |
 
 ### Servicios
 
 | Componente | Descripción |
 |------------|-------------|
-| `ServicioEstadoForm` | Select con 9 estados → PATCH /api/servicios/[id] |
-| `ServicioPagoForm` | Toggle de pago → PATCH /api/servicios/[id] |
+| `ServicioEstadoForm` | Select de 5 estados → PATCH /api/servicios/[id] |
+| `ServicioPagoForm` | Toggle de pago |
 
 ### Configuración
 
 | Componente | Descripción |
 |------------|-------------|
-| `EditarServicioConfigInline` | Card editable de servicio config (nombre, precio, tipo, descripcion) |
-| `NuevoServicioConfigForm` | Formulario colapsable para crear servicio config |
+| `EditarServicioConfigInline` | Card editable de servicio config |
+| `NuevoServicioConfigForm` | Formulario para crear servicio config |
 | `EditarPlanConfigInline` | Card editable de plan config |
-| `NuevoPlanConfigForm` | Formulario para crear plan config |
 | `GestionPermisosUsuario` | Toggle de permisos adicionales por usuario |
-| `NuevaNoticiaForm` | Publicar noticia del cementerio (solo admin) |
-| `EditarConfigListaForm` | Editor de listas configurables (tipos, orígenes, especies) |
 
-### Portal
+### Novedades
 
 | Componente | Descripción |
 |------------|-------------|
-| `PortalMascotaCard` | Card de mascota en el portal cliente |
-| `PortalServicioEstado` | Estado del servicio en tiempo real (Supabase Realtime) |
+| `NovedadCard` | Client Component — optimistic UI para publicada/destacada |
+| `NuevaNovedadForm` | Modal de creación con toggle borrador/publicado |
+| `EditarNovedadBtn` | Modal de edición |
+| `EliminarNovedadBtn` | Botón con confirm dialog |
+
+### Portal cliente
+
+| Componente | Descripción |
+|------------|-------------|
+| `PortalTabs` | Tabs: Servicios · Planes · Memorial · Novedades |
+| `EditarMemorialInline` | Edición de dedicatoria y galería — accesible solo con token |
+| `LogoutBtn` | Botón de salida para portales (cliente y convenio) |
 | `CertificadoDescarga` | Botón para descargar certificado PDF |
+
+### Asistente IA
+
+| Componente | Descripción |
+|------------|-------------|
+| `AsistenteChat` | Chat flotante en el dashboard |
 
 ---
 
@@ -681,36 +797,19 @@ Las noticias se muestran en la ficha de cada cliente (últimas 5, desc).
 ```
 ORIGEN DEL LEAD
 │
-├── Cotizador online
-│   └── POST /api/leads → crearLeadAutomatico() (origen: cotizador)
-│
-├── Formulario landing
-│   └── POST /api/leads → crearLeadAutomatico() (origen: landing)
-│
-├── Postulación convenio (landing)
-│   └── POST /api/convenios/postulacion → convenio estadoConvenio: en_negociacion
-│
-└── Importación Excel (CRM)
-    └── POST /api/leads (bulk) → origen: base_propia
+├── Cotizador online → POST /api/leads (origen: cotizador, pickupMethod)
+├── Formulario landing → POST /api/leads (origen: landing)
+├── Portal convenio (B2B) → POST /api/leads (origen: veterinaria, veterinariaId, dni)
+└── Importación Excel → POST /api/leads/importar (origen: base_propia)
 
 crearLeadAutomatico()
 ├── ¿Teléfono duplicado? → actualizar ultimaInteraccionEn + agregar nota
-└── Lead nuevo → asignarAgente() (round-robin entre televenta) → registrar interacción
-
-GESTIÓN EN MIS-LEADS (agente televenta)
-├── Ver lead → cronómetro inicia
-├── Contactar por WhatsApp (popup — no sale del CRM)
-├── Enviar email (Resend)
-├── Cambiar estado del lead
-├── Escribir reporte (obligatorio)
-└── Guardar → siguiente lead
-    └── Si convirtió → modal de conversión → crear cliente + servicio O plan
+└── Lead nuevo → asignarAgente() round-robin entre televenta → registrar interacción
 
 CRON (/api/cron/leads — cada hora)
-├── Interesado +24hs sin actividad → interacción "seguimiento_24hs"
-├── Interesado +48hs sin actividad → estado: perdido
 ├── Nuevo +72hs sin actividad → estado: perdido
-└── Perdido +90 días → archivar
+├── Interesado +48hs sin actividad → estado: perdido
+└── Perdido +10 días → eliminado (DELETE)
 ```
 
 ### Flujo de servicios
@@ -718,34 +817,23 @@ CRON (/api/cron/leads — cada hora)
 ```
 CREAR SERVICIO
 ├── Seleccionar cliente → autocompletar mascota
-├── Seleccionar tipo de servicio (desde servicios_config)
-│   └── Precio base cargado automáticamente
-├── Seleccionar convenio (opcional)
-│   └── Descuento calculado: precio * descuentoPorcentaje / 100
-│   └── Precio final = precio base − descuento
-├── Completar fechas, notas
+├── Seleccionar servicio config → precio base cargado
+├── Seleccionar convenio (opcional) → descuento calculado automáticamente
 └── Guardar → POST /api/servicios
-    └── Guarda: tipo, precio, descuento, convenioId, servicioConfigId, mascotaId
 
-CICLO DE VIDA DEL SERVICIO
-ingresado → retiro_pendiente → en_transporte → recibido → en_cremacion → cremado → listo_entrega → entregado
-                                                                                                   ↘ cancelado
+CICLO DE VIDA (5 estados)
+pendiente → en_proceso → listo → entregado
+                               ↘ cancelado
 
-CAMBIO DE ESTADO (en detalle del servicio)
-└── ServicioEstadoForm → PATCH /api/servicios/[id] { estado }
-    └── Dispara email al cliente si tiene email (Resend)
-
-GESTIÓN DE PAGO
-└── ServicioPagoForm → PATCH /api/servicios/[id] { pagado: true/false }
-    └── Muestra en tabla servicios: monto + badge Pagado/Pendiente
+RESPONSABLES
+├── responsableTransporteId → asignado en estado pendiente
+├── responsableCremacionId → asignado en estado en_proceso
+└── responsableEntregaId → asignado en estado listo
 ```
 
 ### Flujo de planes de previsión
 
 ```
-PLANES CONFIG DISPONIBLES (desde planes_config en DB)
-├── Nombre, cuota mensual, descripción configurables en /dashboard/configuracion
-
 COBERTURA ESCALONADA
 ├── Cuotas 1-6   → 0% cobertura
 ├── Cuotas 7-12  → 50% cobertura
@@ -753,100 +841,109 @@ COBERTURA ESCALONADA
 
 Mascota adicional: +50% sobre cuota base
 
-DETALLE DEL PLAN (CRM)
-├── Info del cliente, mascota y plan config
-├── Cobertura actual calculada por cuotas pagadas
-├── Botón "Registrar pago" → cuotasPagadas + 1 + actualiza fechaUltimoPago
-└── Total cobrado = cuotasPagadas × cuotaMensual
+REGISTRAR PAGO
+└── cuotasPagadas + 1 + fechaUltimoPago = now()
+    └── porcentajeCobertura recalculado automáticamente
 ```
 
-### Flujo de convenios
+### Flujo de convenios B2B
 
 ```
 POSTULACIÓN (desde landing)
 └── Formulario → POST /api/convenios/postulacion
     └── Crea convenio con estadoConvenio: en_negociacion
 
-GESTIÓN EN CRM (/dashboard/convenios)
-├── Ver todas las postulaciones y convenios
-├── Cambiar estado: sin_convenio → en_negociacion → activo → pausado
-├── Editar descuento (%) y beneficio descriptivo
-└── Ver métricas: leads y clientes derivados por convenio
+PORTAL B2B (Fase 3)
+├── Admin activa portalActivo = true + opcionalmente invita por email
+│   └── POST /api/portal/convenio/invitar → crea Supabase Auth user
+├── Socio accede a /portal/convenio/[tokenPortal]
+│   └── Sin email: solo tokenPortal en URL
+│   └── Con email: login en /portal/convenio/login
+└── Socio envía lead desde el portal → POST /api/leads (origen: veterinaria, veterinariaId)
+    └── Lead aparece en kanban con etiqueta del convenio
 
-USO EN SERVICIOS
-├── Al crear un servicio → selector de convenio activo
-├── Si el convenio tiene descuentoPorcentaje → calcula descuento automáticamente
-└── Servicio guarda: convenioId + precio + descuento (monto fijo)
-
-USO EN CLIENTES
-└── clientes.veterinariaId → convenio de referencia del cliente (para estadísticas)
-
-CONFIGURACIÓN
-└── /dashboard/configuracion → "Tipos de convenio"
-    └── Lista editable: veterinaria, petshop, refugio, clínica, otro
+AL CONVERTIR UN SERVICIO
+└── convenioId + descuentoPorcentaje → descuento calculado automáticamente
 ```
 
-### Flujo del portal cliente (Fase 2)
+### Flujo de autenticación CRM (con 2FA)
+
+```
+LOGIN NORMAL (sin 2FA)
+└── /auth/login → Supabase signInWithPassword → /dashboard
+
+LOGIN CON 2FA ACTIVO
+├── /auth/login → Supabase signInWithPassword OK
+├── /api/me devuelve { mfaRequerido: true }
+├── Redirige a /auth/verificar-mfa
+│   └── Auto-envía OTP por email (Resend)
+├── Usuario ingresa código de 6 dígitos
+├── POST /api/auth/otp/verificar
+│   ├── Verifica hash SHA-256(codigo+userId)
+│   ├── Genera mfaSesionToken → SET COOKIE mfa_s={userId}:{token} (8hs, httpOnly)
+│   └── Redirige a /dashboard
+└── requireAuth() en cada ruta valida la cookie mfa_s
+
+ACTIVAR 2FA (desde /dashboard/perfil)
+├── Solicita OTP de verificación para confirmar identidad
+└── Si OTP válido → mfaEmailActivo = true
+
+DURACIÓN DE SESIÓN MFA
+└── 8 horas → al expirar, redirige automáticamente a /auth/verificar-mfa
+```
+
+### Flujo del portal cliente
 
 ```
 INVITACIÓN
 └── Admin en ficha cliente → POST /api/portal/invitar
-    └── Genera tokenPortal único → envía email con Resend
+    └── Genera tokenPortal único → envía email con link
 
-ACCESO
-├── /portal/activar?token=X → cliente crea contraseña
-└── /portal/login → login posterior
+ACCESO (dos mecanismos independientes)
+├── Token en URL: /portal/[tokenPortal] — sin login, mecanismo principal
+└── Supabase Auth: login con email/password en /portal/login
 
 PORTAL (/portal/[token])
-├── Ver servicios propios con estado en tiempo real (Supabase Realtime)
-├── Descargar certificado de cremación (PDF con PDFKit)
-├── Ver mascotas y memoriales
-└── /portal/[token]/memorial/[mascotaId] → memorial con dedicatoria y galería
-    └── /editar → cliente edita dedicatoria y sube fotos
+└── Tabs: Servicios · Planes · Memorial · Novedades
+    └── Memorial → edición de dedicatoria y galería sin login adicional
+        └── memoriaPublica = true → visible en /memorial/[mascotaId]
+
+LOGOUT
+└── LogoutBtn → supabase.auth.signOut() → redirect a /auth/login (cliente) o /portal/convenio/login (B2B)
 ```
 
 ---
 
 ## Pendientes
 
-### 🔴 Alta prioridad
+### 🔴 Alta prioridad (bloqueante para launch)
 
-- [ ] Verificar dominio en Resend para envío de emails a cualquier destinatario (actualmente limitado a emails verificados)
-- [ ] Estado "atrasado" en planes — cron `/api/cron/planes` detecta cuotas impagas y actualiza estado
+- [ ] Configurar dominio en Resend — emails salen desde `onboarding@resend.dev`. Actualizar `from:` en:
+  - `lib/email/invitacion.tsx`
+  - `lib/email/estadoServicio.ts`
+  - `lib/email/enviarEmailLead.ts`
+  - `app/api/portal/recuperar/route.ts`
+- [ ] Número de WhatsApp real (actualmente `5493XXXXXXXXX` en landing)
+- [ ] Logo final de Huellas de Paz
 
 ### 🟡 Funcionalidades pendientes
 
-- [ ] Notificación WhatsApp desde plan — template pre-armado para cobrar cuota
-- [ ] Asignación de leads por origen — leads de convenio a agente dedicado
-- [ ] Comunicación masiva en `/dashboard/comunicacion` — funcionalidad de envío pendiente
-- [ ] Módulo de cobranzas con Mercado Pago (permiso `cobranzas` ya existe)
-- [ ] Agregar `base_propia` como opción en orígenes de lead (configuración)
+- [ ] Integración Mercado Pago (env vars presentes, pendiente de cuenta y webhook)
+- [ ] Activar cotizador en landing (comentado en `landing/src/pages/index.astro`)
+- [ ] Paginación en tabla de leads del portal convenio (hardcodeado a 50)
+- [ ] Notificación al socio B2B cuando cambia el estado de su lead
+- [ ] Comunicación masiva en `/dashboard/comunicacion`
 
-### 🟢 Portal cliente (Fase 2 — en progreso)
+### 📋 Contenido del cliente
 
-- [ ] Memorial rediseñado — más emotivo, con mejor layout de galería
-- [ ] Certificado de cremación — completar diseño del PDF
-
-### 📋 Datos reales pendientes del cliente
-
-- [ ] Número de WhatsApp real (actualmente `5493XXXXXXXXX`)
-- [ ] Dirección física del crematorio
-- [ ] Teléfono de contacto
 - [ ] Precios y nombres finales de los 3 planes de previsión
-- [ ] Fotos del lugar y mascotas
-- [ ] Logo final de Huellas de Paz
+- [ ] Dirección física del crematorio para contacto
+- [ ] Fotos del lugar y mascotas (actualmente de stock)
 - [ ] Testimonios de clientes
-
-### 🔒 Seguridad
-
-- [ ] Mover proyectos a team nuevo en Vercel
-- [ ] Regenerar `SUPABASE_SERVICE_ROLE_KEY`
 
 ### 🚀 Fases siguientes
 
-- [ ] **Fase 3** — Portal B2B para veterinarias (acceso con link único, ver derivaciones y servicios)
-- [ ] **Fase 4** — Chatbot IA en la landing (bloqueado hasta completar Fase 3)
-- [ ] **Fase 1b restante** — Integración Jaque Mate (exportación contable)
+- [ ] **Fase 4** — Chatbot IA en WhatsApp + Instagram (bloqueado hasta ahora)
 
 ---
 
@@ -855,9 +952,8 @@ PORTAL (/portal/[token])
 - **No hardcodear** listas, tipos o configuraciones — usar `configuracion_general` en DB
 - **No crear archivos innecesarios** — verificar en el repo antes de crear algo nuevo
 - **No duplicar lógica** — reusar helpers y componentes existentes
-- Usar `[skip ci]` en commits que no requieran deploy en Vercel
 - El schema de Drizzle es la fuente de verdad para los tipos
-- Cambios de schema sin migración Drizzle → aplicar con SQL directo en Supabase y documentar acá
+- Migraciones manuales (post-0009): aplicar con script Node.js + `postgres.js` directamente. No usar `drizzle-kit push`.
 - Los tipos de Drizzle se exportan desde `@/db/schema`
 - Todo texto visible al usuario en **español rioplatense argentino**
 - Código, comentarios y documentación técnica en inglés

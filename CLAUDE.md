@@ -37,8 +37,8 @@ Desarrollado por **Ravenna** (Tomás Pinolini + Franco Zancocchia).
 | **Fase 1a** | CRM Core (clientes, servicios, planes, leads) | ✅ Implementado |
 | **Fase 1b** | Cobranzas, comunicación, reportes | ✅ Implementado (falta integración Mercado Pago) |
 | **Fase 2** | Portal cliente + memorial digital | ✅ Implementado |
-| **Fase 3** | Portal B2B convenios (veterinarias, petshops, clínicas) | 📋 Planificado |
-| **Fase 4** | Chatbot AI | 📋 Planificado (no antes de Fase 3) |
+| **Fase 3** | Portal B2B convenios (veterinarias, petshops, clínicas) | ✅ Implementado |
+| **Fase 4** | Chatbot AI (WhatsApp + Instagram) | 📋 Planificado (no antes de Fase 3) |
 
 ---
 
@@ -168,9 +168,11 @@ Cotizador embebible como iframe en Wix. Envía leads al CRM.
 #### Estados de un servicio
 
 ```
-ingresado → retiro_pendiente → en_transporte → recibido → en_cremacion → cremado → listo_entrega → entregado
-                                                                                                  ↘ cancelado
+pendiente → en_proceso → listo → entregado
+                               ↘ cancelado
 ```
+
+El servicio tiene campos de fecha separados: `fecha_retiro`, `fecha_cremacion`, `fecha_entrega` y tres responsables: `responsable_transporte_id`, `responsable_cremacion_id`, `responsable_entrega_id`.
 
 #### Estados de un lead
 
@@ -201,10 +203,16 @@ const sql = postgres(process.env.DATABASE_URL_UNPOOLED)
 
 **Leads**
 - `POST /api/leads` — creación pública (desde cotizador/landing, con CORS)
-- `GET /api/leads` — listado
+- `GET /api/leads` — listado (acepta `?misLeads=true` para filtrar por agente logueado)
 - `GET|PATCH|DELETE /api/leads/[id]`
 - `POST /api/leads/[id]/email`
 - `POST /api/leads/convertir` — convierte lead en cliente + crea mascota si viene `mascotaNombre`
+- `POST /api/leads/importar` — importación masiva desde Excel (detecta duplicados por teléfono)
+
+**Usuarios**
+- `GET /api/me` — devuelve el usuario logueado (id, nombre, rol)
+- `GET /api/agentes` — lista agentes disponibles para traspaso y filtros del kanban
+- `PATCH /api/usuarios/[id]/permisos`
 
 **Clientes / Mascotas / Servicios / Planes**
 - CRUD estándar: `GET|POST /api/{recurso}`, `GET|PATCH|DELETE /api/{recurso}/[id]`
@@ -214,10 +222,13 @@ const sql = postgres(process.env.DATABASE_URL_UNPOOLED)
 
 **Convenios**
 - `GET|POST /api/convenios`, `GET|PATCH /api/convenios/[id]`
+- `POST /api/portal/convenio/invitar` — envía invitación al socio B2B (crea usuario Supabase Auth)
+- `GET /api/portal/convenio/mi-token` — resuelve el token del convenio post-login
 
 **Configuración**
 - `PATCH /api/configuracion/general`
 - `GET|POST /api/configuracion/planes`, `PATCH /api/configuracion/planes/[id]`
+- `GET /api/configuracion/servicios` — lista ServicioConfig activos
 - `GET|POST /api/configuracion/templates`
 
 **Novedades (solo admin)**

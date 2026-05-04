@@ -1,54 +1,80 @@
-# CRM — Roadmap
+# Huellas de Paz — Roadmap
 
-## v1 — Sistema operativo completo (Fases 1a + 1b)
+## Estado actual (Mayo 2026)
 
-### Fase 1a — CRM Core (4 semanas)
+Todas las fases 0–3 están implementadas y en producción.
 
-| Módulo | Descripción |
-| --- | --- |
-| M1 — Clientes | Dueños + mascotas asociadas, historial, canal de origen |
-| M2 — Servicios | Cremación individual/comunitaria, entierro. Asignación de roles |
-| M3 — Planes | 3 planes con cobertura escalonada 0%/50%/100%. Multicuota +50% |
-| M4 — Agenda | Calendario operativo con vista por rol |
-| M5 — Roles | 4 roles: televenta, transporte, cremación, entrega |
-| M9 — Trazabilidad | 9 estados del servicio. Actualización desde mobile |
+---
 
-### Fase 1b — CRM Extendido (4 semanas)
+## v1 — Sistema operativo (Fases 1a + 1b) ✅
 
-| Módulo | Descripción |
-| --- | --- |
-| M6 — Inventario | Productos con stock, precios, alertas de stock bajo |
-| M7 — Dashboard | Métricas en tiempo real: servicios, leads, cuotas, ingresos |
-| M8 — Comunicación | WhatsApp + email automatizados, templates editables |
-| M10 — Cobranzas | Mercado Pago, escalamiento de recordatorios, registro automático |
-| M11 — Atribución | Canal de origen por cliente, reportes por canal |
-| M12 — Documentos | Certificados, comprobantes, pre-facturas Jaque Mate |
+### Módulos implementados
 
-## v2 — Portales externos (Fases 2 + 3)
+| Módulo | Descripción | Estado |
+|--------|-------------|--------|
+| M1 — Clientes | Dueños + mascotas, historial, origen | ✅ |
+| M2 — Servicios | Cremación individual/comunitaria, entierro. 5 estados. 3 responsables. | ✅ |
+| M3 — Planes | Cobertura escalonada 0%/50%/100%. Mascota adicional +50%. | ✅ |
+| M4 — Agenda | Calendario operativo con vista por rol | ✅ |
+| M5 — Roles | 7 roles: admin, manager, contadora, televenta, transporte, cremacion, entrega | ✅ |
+| M6 — Inventario | Stock con alertas de bajo stock, foto, categorías | ✅ |
+| M7 — Dashboard | KPIs en tiempo real | ✅ |
+| M8 — Comunicación | WhatsApp link + email via Resend, templates editables | ✅ |
+| M9 — Leads | Kanban, importación masiva Excel, cron de vencimiento | ✅ |
+| M10 — Convenios | Estados, descuentos, servicios cubiertos, portal B2B | ✅ |
+| M11 — Reportes | Métricas de negocio, rendimiento del equipo | ✅ |
+| M12 — Novedades | Borrador/publicado/destacado visible en portal cliente | ✅ |
+| M13 — Asistente IA | Claude Haiku interno con rate limit y cap de presupuesto | ✅ |
+| M14 — 2FA OTP | Autenticación en dos factores por email (por usuario, opcional) | ✅ |
 
-### Fase 2 — Portal Cliente Premium (4 semanas)
+---
 
-| Feature | Descripción |
-| --- | --- |
-| P1 | Memorial digital compartible en redes |
-| P2 | Pagos de cuotas online via Mercado Pago |
-| P3 | Seguimiento del servicio en tiempo real |
-| P4 | Mapa digital del cementerio |
+## v2 — Portales externos (Fases 2 + 3) ✅
 
-### Fase 3 — Portal B2B Veterinarias (3 semanas)
+### Fase 2 — Portal Cliente
 
-| Feature | Descripción |
-| --- | --- |
-| V1 | Carga directa de servicios por la veterinaria |
-| V2 | Seguimiento de servicios referidos |
-| V3 | Facturación mensual automática |
+| Feature | Descripción | Estado |
+|---------|-------------|--------|
+| P1 | Acceso por token en URL (sin login requerido) | ✅ |
+| P2 | Tabs: Servicios · Planes · Memorial · Novedades | ✅ |
+| P3 | Memorial editable: dedicatoria + galería de fotos | ✅ |
+| P4 | Memorial público en /memorial/[mascotaId] | ✅ |
+| P5 | Novedades del cementerio (publicadas y destacadas) | ✅ |
+| P6 | Login opcional con Supabase Auth | ✅ |
+| P7 | Logout desde el portal | ✅ |
 
-## v3 — Módulos opcionales (Fase 4)
+**Pendiente:** Certificado de cremación PDF (PDFKit integrado, diseño final pendiente). Mercado Pago para pago de cuotas online.
 
-| Módulo | Inversión estimada |
-| --- | --- |
-| E1 — Chatbot IA | Desde USD 1.200 |
-| E2 — Referidos | Desde USD 800 |
-| E3 — QR memorial | Desde USD 500 |
-| E4 — Campañas | Desde USD 1.000 |
-| E5 — Reseñas | Desde USD 600 |
+### Fase 3 — Portal B2B Convenios
+
+| Feature | Descripción | Estado |
+|---------|-------------|--------|
+| V1 | Portal por tokenPortal — sin login obligatorio | ✅ |
+| V2 | Envío de leads desde el portal con datos del cliente | ✅ |
+| V3 | Login con Supabase Auth (invitación por email) | ✅ |
+| V4 | Servicios cubiertos configurables por convenio | ✅ |
+| V5 | Historial de leads enviados por el convenio | ✅ |
+| V6 | Logout desde el portal B2B | ✅ |
+
+**Pendiente:** Notificación al socio cuando cambia el estado de su lead. Paginación en tabla de leads.
+
+---
+
+## v3 — Módulos opcionales (Fase 4) 📋
+
+| Módulo | Descripción | Estimación |
+|--------|-------------|------------|
+| E1 — Chatbot IA | WhatsApp + Instagram con Claude — captura leads automáticamente | Desde USD 1.200 |
+| E2 — Referidos | Sistema de referidos con tracking | Desde USD 800 |
+| E3 — QR memorial | Placa física con QR → memorial digital | Desde USD 500 |
+| E4 — Campañas | Envío masivo segmentado | Desde USD 1.000 |
+| E5 — Mercado Pago | Pago online de cuotas y servicios (env vars ya presentes) | Desde USD 600 |
+
+---
+
+## Deuda técnica conocida
+
+- `veterinarias` como alias de `convenios` — limpiar en v2 de schema
+- `clientes.veterinariaId` apunta a `convenios.id` — nombre legacy
+- Comunicación masiva en `/dashboard/comunicacion` — UI lista, funcionalidad de envío pendiente
+- Emails salen desde `onboarding@resend.dev` — pendiente dominio propio en Resend
