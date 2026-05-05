@@ -91,6 +91,7 @@ export default function LeadsPage() {
   const [agentes, setAgentes] = useState<Agente[]>([])
   const [filtro, setFiltro] = useState<FiltroAgente>('todos')
   const [filtroOrigen, setFiltroOrigen] = useState<FiltroOrigen>('todos')
+  const [busqueda, setBusqueda] = useState('')
 
   // Modal seguimiento
   const [modalSeg, setModalSeg] = useState<ModalSeguimiento>(null)
@@ -206,11 +207,14 @@ export default function LeadsPage() {
     cotizador: 0, landing: 1, whatsapp: 2, instagram: 3, directo: 4, veterinaria: 5,
   }
 
+  const q = busqueda.toLowerCase().trim()
+
   const leadsFiltrados = leads
     .filter(l => {
       const passAgente = filtro === 'todos' || (filtro === 'mios' ? l.asignadoAId === me?.id : l.asignadoAId === filtro)
       const passOrigen = filtroOrigen === 'todos' || l.origen === filtroOrigen
-      return passAgente && passOrigen
+      const passBusqueda = !q || l.nombre.toLowerCase().includes(q) || l.telefono.includes(q)
+      return passAgente && passOrigen && passBusqueda
     })
     .sort((a, b) => (prioridadOrigen[a.origen ?? ''] ?? 99) - (prioridadOrigen[b.origen ?? ''] ?? 99))
 
@@ -340,9 +344,18 @@ export default function LeadsPage() {
           <h1 style={{ fontSize: 24, fontWeight: 600, color: '#111827', margin: 0 }}>Leads</h1>
           <p style={{ fontSize: 14, color: '#6b7280', marginTop: 4, marginBottom: 0 }}>{leadsFiltrados.length} leads</p>
         </div>
-        <Link href="/dashboard/leads/nuevo" style={{ background: '#111827', color: 'white', padding: '10px 20px', borderRadius: 10, fontSize: 14, fontWeight: 500, textDecoration: 'none' }}>
-          + Nuevo lead
-        </Link>
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+          <input
+            type="text"
+            placeholder="Buscar por nombre o teléfono..."
+            value={busqueda}
+            onChange={e => setBusqueda(e.target.value)}
+            style={{ padding: '9px 14px', borderRadius: 10, border: '1px solid #e5e7eb', fontSize: 13, outline: 'none', width: 240, color: '#111827' }}
+          />
+          <Link href="/dashboard/leads/nuevo" style={{ background: '#111827', color: 'white', padding: '10px 20px', borderRadius: 10, fontSize: 14, fontWeight: 500, textDecoration: 'none', whiteSpace: 'nowrap' }}>
+            + Nuevo lead
+          </Link>
+        </div>
       </div>
 
       {/* ── Filtros por agente ── */}
