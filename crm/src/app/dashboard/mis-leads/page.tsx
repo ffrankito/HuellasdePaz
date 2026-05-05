@@ -151,6 +151,8 @@ export default function MisLeadsPage() {
   const [segGestionActual, setSegGestionActual] = useState<string | null>(null)
   const [segPersonalizado, setSegPersonalizado] = useState('')
   const [mostrarTraspasoGestion, setMostrarTraspasoGestion] = useState(false)
+  const [pendingFollowUp, setPendingFollowUp] = useState<{ iso: string; label: string } | null>(null)
+  const [notaFollowUp, setNotaFollowUp] = useState('')
 
   useEffect(() => {
     Promise.all([
@@ -196,6 +198,8 @@ export default function MisLeadsPage() {
   useEffect(() => {
     setSegGestionActual(leadActual?.seguimientoEn ?? null)
     setMostrarTraspasoGestion(false)
+    setPendingFollowUp(null)
+    setNotaFollowUp('')
   }, [leadActual?.id])
 
   const guardarSegGestion = (isoStr: string | null, etiqueta?: string) => {
@@ -617,17 +621,53 @@ export default function MisLeadsPage() {
 
                   {/* Atajos rápidos */}
                   <p style={{ fontSize: 11, color: '#9ca3af', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', margin: '0 0 7px' }}>Atajos rápidos</p>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 7 }}>
-                    {TIEMPOS_RAPIDOS.map(t => (
-                      <button
-                        key={t.label}
-                        onClick={() => guardarSegGestion(t.fn(), t.label)}
-                        style={{ padding: '8px 10px', borderRadius: 9, border: '1.5px solid #e5e7eb', background: 'white', color: '#374151', fontSize: 12, fontWeight: 500, cursor: 'pointer' }}
-                      >
-                        {t.label}
-                      </button>
-                    ))}
-                  </div>
+                  {pendingFollowUp ? (
+                    <div style={{ background: '#fffbeb', border: '1px solid #fde68a', borderRadius: 12, padding: 14 }}>
+                      <p style={{ fontSize: 12, fontWeight: 600, color: '#92400e', margin: '0 0 8px' }}>
+                        {pendingFollowUp.label} — ¿Qué pasó en esta gestión?
+                      </p>
+                      <textarea
+                        autoFocus
+                        value={notaFollowUp}
+                        onChange={e => setNotaFollowUp(e.target.value)}
+                        placeholder="Ej: No atendió, dejé mensaje de voz..."
+                        rows={2}
+                        style={{ width: '100%', border: '1.5px solid #fde68a', borderRadius: 8, padding: '8px 10px', fontSize: 13, outline: 'none', resize: 'none', fontFamily: 'inherit', boxSizing: 'border-box', background: 'white' }}
+                      />
+                      <div style={{ display: 'flex', gap: 7, marginTop: 8 }}>
+                        <button
+                          onClick={() => { setPendingFollowUp(null); setNotaFollowUp('') }}
+                          style={{ flex: 1, padding: '7px', borderRadius: 8, border: '1px solid #e5e7eb', background: 'white', color: '#6b7280', fontSize: 12, fontWeight: 500, cursor: 'pointer' }}
+                        >
+                          Cancelar
+                        </button>
+                        <button
+                          onClick={() => {
+                            if (!notaFollowUp.trim()) return
+                            guardarSegGestion(pendingFollowUp.iso, `${pendingFollowUp.label} — ${notaFollowUp.trim()}`)
+                            setPendingFollowUp(null)
+                            setNotaFollowUp('')
+                          }}
+                          disabled={!notaFollowUp.trim()}
+                          style={{ flex: 2, padding: '7px', borderRadius: 8, border: 'none', background: notaFollowUp.trim() ? '#111827' : '#e5e7eb', color: notaFollowUp.trim() ? 'white' : '#9ca3af', fontSize: 12, fontWeight: 600, cursor: notaFollowUp.trim() ? 'pointer' : 'not-allowed' }}
+                        >
+                          Confirmar →
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 7 }}>
+                      {TIEMPOS_RAPIDOS.map(t => (
+                        <button
+                          key={t.label}
+                          onClick={() => setPendingFollowUp({ iso: t.fn(), label: t.label })}
+                          style={{ padding: '8px 10px', borderRadius: 9, border: '1.5px solid #e5e7eb', background: 'white', color: '#374151', fontSize: 12, fontWeight: 500, cursor: 'pointer' }}
+                        >
+                          {t.label}
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
               </div>
