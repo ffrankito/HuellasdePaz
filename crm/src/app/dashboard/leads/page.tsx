@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo, useCallback, memo } from 'react'
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd'
 import Link from 'next/link'
 
@@ -26,10 +26,50 @@ type ModalTraspaso = { leadId: string; leadNombre: string } | null
 type FiltroAgente = 'todos' | 'mios' | string
 type FiltroOrigen = 'todos' | string
 
-// Paleta de colores claramente distintos, uno por agente
+// ── Constantes estáticas fuera del componente ──────────────────────────────
+
 const PALETA = ['#1d4ed8', '#dc2626', '#7e22ce', '#c2410c', '#0891b2', '#be185d', '#065f46', '#92400e']
 
-function iniciales(nombre: string): string {
+const ORIGEN_LABEL: Record<string, string> = {
+  cotizador:   'Cotizador',
+  landing:     'Landing',
+  whatsapp:    'WhatsApp',
+  instagram:   'Instagram',
+  directo:     'Directo',
+  veterinaria: 'Convenio',
+}
+
+const ORIGEN_BADGE: Record<string, { bg: string; color: string }> = {
+  cotizador:   { bg: '#eff6ff', color: '#1d4ed8' },
+  landing:     { bg: '#f0fdf4', color: '#15803d' },
+  whatsapp:    { bg: '#dcfce7', color: '#16a34a' },
+  instagram:   { bg: '#fdf4ff', color: '#9333ea' },
+  directo:     { bg: '#fff7ed', color: '#c2410c' },
+  veterinaria: { bg: '#fef9c3', color: '#a16207' },
+}
+
+const PRIORIDAD_ORIGEN: Record<string, number> = {
+  cotizador: 0, landing: 1, whatsapp: 2, instagram: 3, directo: 4, veterinaria: 5,
+}
+
+const COLUMNAS: { id: EstadoLead; label: string; color: string }[] = [
+  { id: 'nuevo',      label: 'Nuevo',      color: '#1d4ed8' },
+  { id: 'contactado', label: 'Contactado', color: '#15803d' },
+  { id: 'interesado', label: 'Interesado', color: '#a16207' },
+  { id: 'cotizado',   label: 'Cotizado',   color: '#7e22ce' },
+  { id: 'convertido', label: 'Convertido', color: '#15803d' },
+  { id: 'perdido',    label: 'Perdido',    color: '#dc2626' },
+]
+
+const TIEMPOS = [
+  { label: '+30 min',    fn: () => agregarMin(30) },
+  { label: '+1 hora',    fn: () => agregarMin(60) },
+  { label: '+2 horas',   fn: () => agregarMin(120) },
+  { label: '+4 horas',   fn: () => agregarMin(240) },
+  { label: 'Mañana 9am', fn: mañana9am },
+]
+
+function iniciales(nombre: string) {
   return nombre.split(' ').filter(Boolean).map(p => p[0]).join('').toUpperCase().slice(0, 2)
 }
 
@@ -37,11 +77,30 @@ function badgeSeg(fechaStr: string | null) {
   if (!fechaStr) return null
   const diff = (new Date(fechaStr).getTime() - Date.now()) / 60000
   if (diff < -60) return null
-  if (diff <= 5) return { texto: '¡Ahora!', color: '#dc2626', bg: '#fef2f2' }
+  if (diff <= 5)  return { texto: '¡Ahora!', color: '#dc2626', bg: '#fef2f2' }
   if (diff <= 60) return { texto: `en ${Math.round(diff)}m`, color: '#d97706', bg: '#fffbeb' }
   const hora = new Date(fechaStr).toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' })
   return { texto: hora, color: '#6b7280', bg: '#f3f4f6' }
 }
+
+function agregarMin(min: number) {
+  const d = new Date(); d.setMinutes(d.getMinutes() + min); return d.toISOString()
+}
+function mañana9am() {
+  const d = new Date(); d.setDate(d.getDate() + 1); d.setHours(9, 0, 0, 0); return d.toISOString()
+}
+
+function btnFiltro(activo: boolean): React.CSSProperties {
+  return {
+    padding: '6px 14px', borderRadius: 999, border: '1.5px solid',
+    borderColor: activo ? '#111827' : '#e5e7eb',
+    background: activo ? '#111827' : 'white',
+    color: activo ? 'white' : '#6b7280',
+    fontWeight: activo ? 600 : 400, fontSize: 12, cursor: 'pointer',
+  }
+}
+
+// ── Íconos SVG (estáticos, fuera del componente) ───────────────────────────
 
 const IcoReloj = () => (
   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -59,48 +118,128 @@ const IcoTelefono = () => (
   </svg>
 )
 
-function agregarMin(min: number) {
-  const d = new Date(); d.setMinutes(d.getMinutes() + min); return d.toISOString()
-}
-function mañana9am() {
-  const d = new Date(); d.setDate(d.getDate() + 1); d.setHours(9, 0, 0, 0); return d.toISOString()
+// ── LeadCard (memoizado) ───────────────────────────────────────────────────
+
+type LeadCardProps = {
+  lead: Lead
+  index: number
+  puedeCambiar: boolean
+  agenteColor: string
+  onSeguimiento: (leadId: string, leadNombre: string, actual: string | null) => void
+  onTraspaso: (leadId: string, leadNombre: string) => void
 }
 
-const TIEMPOS = [
-  { label: '+30 min', fn: () => agregarMin(30) },
-  { label: '+1 hora', fn: () => agregarMin(60) },
-  { label: '+2 horas', fn: () => agregarMin(120) },
-  { label: '+4 horas', fn: () => agregarMin(240) },
-  { label: 'Mañana 9am', fn: mañana9am },
-]
+const LeadCard = memo(function LeadCard({ lead, index, puedeCambiar, agenteColor, onSeguimiento, onTraspaso }: LeadCardProps) {
+  const [, tick] = useState(0)
+  useEffect(() => {
+    if (!lead.seguimientoEn) return
+    const t = setInterval(() => tick(n => n + 1), 60_000)
+    return () => clearInterval(t)
+  }, [lead.seguimientoEn])
 
-const columnas: { id: EstadoLead; label: string; color: string }[] = [
-  { id: 'nuevo', label: 'Nuevo', color: '#1d4ed8' },
-  { id: 'contactado', label: 'Contactado', color: '#15803d' },
-  { id: 'interesado', label: 'Interesado', color: '#a16207' },
-  { id: 'cotizado', label: 'Cotizado', color: '#7e22ce' },
-  { id: 'convertido', label: 'Convertido', color: '#15803d' },
-  { id: 'perdido', label: 'Perdido', color: '#dc2626' },
-]
+  const seg = badgeSeg(lead.seguimientoEn)
+  const now = Date.now()
+  const haySegVencido = !!lead.seguimientoEn && new Date(lead.seguimientoEn).getTime() <= now
+  const haySegFuturo  = !!lead.seguimientoEn && new Date(lead.seguimientoEn).getTime() > now
+
+  return (
+    <Draggable draggableId={lead.id} index={index} isDragDisabled={!puedeCambiar}>
+      {(provided, snapshot) => (
+        <div
+          ref={provided.innerRef}
+          {...provided.draggableProps}
+          {...provided.dragHandleProps}
+          style={{
+            background: haySegVencido ? '#fff5f5' : haySegFuturo ? '#fffbeb' : 'white',
+            borderRadius: 12, padding: '13px 14px',
+            border: haySegVencido ? '1.5px solid #fca5a5' : haySegFuturo ? '1.5px solid #fde68a' : '1px solid #f3f4f6',
+            boxShadow: snapshot.isDragging ? '0 8px 24px rgba(0,0,0,0.12)' : '0 1px 3px rgba(0,0,0,0.04)',
+            cursor: 'grab', ...provided.draggableProps.style,
+          }}
+        >
+          {/* Nombre + avatar agente */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 3 }}>
+            <p style={{ fontSize: 13, fontWeight: 600, color: '#111827', margin: 0, flex: 1, lineHeight: 1.3 }}>{lead.nombre}</p>
+            {lead.agenteNombre && (
+              <span title={lead.agenteNombre} style={{ flexShrink: 0, marginLeft: 6, width: 24, height: 24, borderRadius: '50%', background: agenteColor, color: 'white', fontSize: 9, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                {iniciales(lead.agenteNombre)}
+              </span>
+            )}
+          </div>
+
+          {/* Teléfono */}
+          <p style={{ fontSize: 12, color: '#6b7280', margin: '0 0 7px' }}>{lead.telefono}</p>
+
+          {/* Origen */}
+          {lead.origen && (() => {
+            const badge = ORIGEN_BADGE[lead.origen] ?? { bg: '#f9fafb', color: '#6b7280' }
+            return (
+              <span style={{ fontSize: 10, fontWeight: 600, color: badge.color, background: badge.bg, padding: '2px 7px', borderRadius: 20, border: `1px solid ${badge.color}33` }}>
+                {ORIGEN_LABEL[lead.origen] ?? lead.origen}
+              </span>
+            )
+          })()}
+
+          {/* Badge seguimiento */}
+          {seg && (
+            <div style={{ marginTop: 6 }}>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 999, color: seg.color, background: seg.bg }}>
+                <IcoTelefono />{seg.texto}
+              </span>
+            </div>
+          )}
+
+          {/* Acciones */}
+          <div style={{ display: 'flex', gap: 5, marginTop: 9 }}>
+            <Link
+              href={`/dashboard/leads/${lead.id}`}
+              style={{ flex: 1, display: 'block', fontSize: 11, fontWeight: 600, color: '#1d4ed8', textDecoration: 'none', textAlign: 'center', background: '#eff6ff', padding: '5px 6px', borderRadius: 7 }}
+              onClick={e => e.stopPropagation()}
+            >
+              Ver →
+            </Link>
+            {puedeCambiar && (
+              <>
+                <button
+                  title="Programar seguimiento"
+                  onClick={e => { e.stopPropagation(); onSeguimiento(lead.id, lead.nombre, lead.seguimientoEn) }}
+                  style={{ width: 26, height: 26, borderRadius: 7, border: '1px solid #e5e7eb', background: lead.seguimientoEn ? '#fffbeb' : 'white', color: lead.seguimientoEn ? '#d97706' : '#6b7280', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}
+                >
+                  <IcoReloj />
+                </button>
+                <button
+                  title="Traspasar a otro agente"
+                  onClick={e => { e.stopPropagation(); onTraspaso(lead.id, lead.nombre) }}
+                  style={{ width: 26, height: 26, borderRadius: 7, border: '1px solid #e5e7eb', background: 'white', color: '#6b7280', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}
+                >
+                  <IcoTraspaso />
+                </button>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+    </Draggable>
+  )
+})
+
+// ── Página principal ───────────────────────────────────────────────────────
 
 export default function LeadsPage() {
-  const [leads, setLeads] = useState<Lead[]>([])
-  const [loading, setLoading] = useState(true)
+  const [leads, setLeads]             = useState<Lead[]>([])
+  const [loading, setLoading]         = useState(true)
   const [nuevosCount, setNuevosCount] = useState(0)
-  const [me, setMe] = useState<Me | null>(null)
-  const [agentes, setAgentes] = useState<Agente[]>([])
-  const [filtro, setFiltro] = useState<FiltroAgente>('todos')
+  const [me, setMe]                   = useState<Me | null>(null)
+  const [agentes, setAgentes]         = useState<Agente[]>([])
+  const [filtro, setFiltro]           = useState<FiltroAgente>('todos')
   const [filtroOrigen, setFiltroOrigen] = useState<FiltroOrigen>('todos')
-  const [busqueda, setBusqueda] = useState('')
+  const [busqueda, setBusqueda]       = useState('')
 
-  // Modal seguimiento
-  const [modalSeg, setModalSeg] = useState<ModalSeguimiento>(null)
+  const [modalSeg, setModalSeg]               = useState<ModalSeguimiento>(null)
   const [segPersonalizado, setSegPersonalizado] = useState('')
-
-  // Modal traspaso
-  const [modalTraspaso, setModalTraspaso] = useState<ModalTraspaso>(null)
+  const [modalTraspaso, setModalTraspaso]     = useState<ModalTraspaso>(null)
   const [traspasoAgenteId, setTraspasoAgenteId] = useState('')
-  const [motivoTraspaso, setMotivoTraspaso] = useState('')
+  const [motivoTraspaso, setMotivoTraspaso]   = useState('')
 
   useEffect(() => {
     Promise.all([
@@ -130,21 +269,51 @@ export default function LeadsPage() {
     return () => clearInterval(poll)
   }, [])
 
-  async function onDragEnd(result: DropResult) {
-    if (!result.destination) return
-    const leadId = result.draggableId
-    const lead = leads.find(l => l.id === leadId)
-    if (!lead || !puedeAccionar(lead)) return
-    const nuevoEstado = result.destination.droppableId as EstadoLead
-    setLeads(prev => prev.map(l => l.id === leadId ? { ...l, estado: nuevoEstado } : l))
-    await fetch(`/api/leads/${leadId}`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ estado: nuevoEstado }),
-    })
-  }
+  // ── Valores derivados memoizados ─────────────────────────────────────────
 
-  const guardarSeg = (isoStr: string | null) => {
+  const colorPorId = useMemo(() => {
+    const todos = [...agentes, ...(me && !agentes.find(a => a.id === me.id) ? [me] : [])]
+    return Object.fromEntries(todos.map((ag, i) => [ag.id, PALETA[i % PALETA.length]]))
+  }, [agentes, me])
+
+  const colorDeAgente = useCallback(
+    (id: string | null) => (id ? (colorPorId[id] ?? '#6b7280') : '#6b7280'),
+    [colorPorId]
+  )
+
+  const origenesPresentes = useMemo(
+    () => [...new Set(leads.map(l => l.origen).filter(Boolean))] as string[],
+    [leads]
+  )
+
+  const leadsFiltrados = useMemo(() => {
+    const q = busqueda.toLowerCase().trim()
+    return leads
+      .filter(l => {
+        const passAgente   = filtro === 'todos' || (filtro === 'mios' ? l.asignadoAId === me?.id : l.asignadoAId === filtro)
+        const passOrigen   = filtroOrigen === 'todos' || l.origen === filtroOrigen
+        const passBusqueda = !q || l.nombre.toLowerCase().includes(q) || l.telefono.includes(q)
+        return passAgente && passOrigen && passBusqueda
+      })
+      .sort((a, b) => (PRIORIDAD_ORIGEN[a.origen ?? ''] ?? 99) - (PRIORIDAD_ORIGEN[b.origen ?? ''] ?? 99))
+  }, [leads, filtro, filtroOrigen, busqueda, me])
+
+  const puedeAccionar = useCallback(
+    (lead: Lead) => me?.rol === 'admin' || me?.rol === 'manager' || lead.asignadoAId === me?.id,
+    [me]
+  )
+
+  // ── Handlers estables (useCallback para que LeadCard no re-renderice) ────
+
+  const handleSeguimiento = useCallback((leadId: string, leadNombre: string, actual: string | null) => {
+    setModalSeg({ leadId, leadNombre, actual })
+  }, [])
+
+  const handleTraspaso = useCallback((leadId: string, leadNombre: string) => {
+    setModalTraspaso({ leadId, leadNombre })
+  }, [])
+
+  const guardarSeg = useCallback((isoStr: string | null) => {
     if (!modalSeg) return
     const leadId = modalSeg.leadId
     setLeads(prev => prev.map(l => l.id === leadId ? { ...l, seguimientoEn: isoStr } : l))
@@ -155,18 +324,16 @@ export default function LeadsPage() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ seguimientoEn: isoStr }),
     })
-  }
+  }, [modalSeg])
 
-  const confirmarTraspaso = () => {
+  const confirmarTraspaso = useCallback(() => {
     if (!modalTraspaso || !traspasoAgenteId || !motivoTraspaso.trim()) return
-    const dest = agentes.find(a => a.id === traspasoAgenteId)
-    setLeads(prev => prev.map(l =>
-      l.id === modalTraspaso.leadId
-        ? { ...l, asignadoAId: traspasoAgenteId, agenteNombre: dest?.nombre ?? null }
-        : l
-    ))
+    const dest   = agentes.find(a => a.id === traspasoAgenteId)
     const leadId = modalTraspaso.leadId
     const motivo = motivoTraspaso.trim()
+    setLeads(prev => prev.map(l =>
+      l.id === leadId ? { ...l, asignadoAId: traspasoAgenteId, agenteNombre: dest?.nombre ?? null } : l
+    ))
     setModalTraspaso(null)
     setTraspasoAgenteId('')
     setMotivoTraspaso('')
@@ -175,59 +342,23 @@ export default function LeadsPage() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ traspasoAId: traspasoAgenteId, motivoTraspaso: motivo }),
     })
-  }
+  }, [modalTraspaso, traspasoAgenteId, motivoTraspaso, agentes])
 
-  // Color único por agente basado en su posición en la lista
-  const colorPorId = Object.fromEntries(
-    [...agentes, ...(me && !agentes.find(a => a.id === me.id) ? [me] : [])].map((ag, i) => [ag.id, PALETA[i % PALETA.length]])
-  )
-  const colorDeAgente = (id: string | null) => (id ? (colorPorId[id] ?? '#6b7280') : '#6b7280')
-
-  const origenesPresentes = [...new Set(leads.map(l => l.origen).filter(Boolean))] as string[]
-
-  const origenLabel: Record<string, string> = {
-    cotizador:  'Cotizador',
-    landing:    'Landing',
-    whatsapp:   'WhatsApp',
-    instagram:  'Instagram',
-    directo:    'Directo',
-    veterinaria:'Convenio',
-  }
-
-  const origenBadge: Record<string, { bg: string; color: string }> = {
-    cotizador:  { bg: '#eff6ff', color: '#1d4ed8' },
-    landing:    { bg: '#f0fdf4', color: '#15803d' },
-    whatsapp:   { bg: '#dcfce7', color: '#16a34a' },
-    instagram:  { bg: '#fdf4ff', color: '#9333ea' },
-    directo:    { bg: '#fff7ed', color: '#c2410c' },
-    veterinaria:{ bg: '#fef9c3', color: '#a16207' },
-  }
-
-  const prioridadOrigen: Record<string, number> = {
-    cotizador: 0, landing: 1, whatsapp: 2, instagram: 3, directo: 4, veterinaria: 5,
-  }
-
-  const q = busqueda.toLowerCase().trim()
-
-  const leadsFiltrados = leads
-    .filter(l => {
-      const passAgente = filtro === 'todos' || (filtro === 'mios' ? l.asignadoAId === me?.id : l.asignadoAId === filtro)
-      const passOrigen = filtroOrigen === 'todos' || l.origen === filtroOrigen
-      const passBusqueda = !q || l.nombre.toLowerCase().includes(q) || l.telefono.includes(q)
-      return passAgente && passOrigen && passBusqueda
+  async function onDragEnd(result: DropResult) {
+    if (!result.destination) return
+    const leadId = result.draggableId
+    const lead   = leads.find(l => l.id === leadId)
+    if (!lead || !puedeAccionar(lead)) return
+    const nuevoEstado = result.destination.droppableId as EstadoLead
+    setLeads(prev => prev.map(l => l.id === leadId ? { ...l, estado: nuevoEstado } : l))
+    await fetch(`/api/leads/${leadId}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ estado: nuevoEstado }),
     })
-    .sort((a, b) => (prioridadOrigen[a.origen ?? ''] ?? 99) - (prioridadOrigen[b.origen ?? ''] ?? 99))
+  }
 
-  const puedeAccionar = (lead: Lead) =>
-    me?.rol === 'admin' || me?.rol === 'manager' || lead.asignadoAId === me?.id
-
-  const btnFiltro = (activo: boolean): React.CSSProperties => ({
-    padding: '6px 14px', borderRadius: 999, border: '1.5px solid',
-    borderColor: activo ? '#111827' : '#e5e7eb',
-    background: activo ? '#111827' : 'white',
-    color: activo ? 'white' : '#6b7280',
-    fontWeight: activo ? 600 : 400, fontSize: 12, cursor: 'pointer',
-  })
+  // ── Render ───────────────────────────────────────────────────────────────
 
   return (
     <div className="page-container" style={{ display: 'flex', flexDirection: 'column' }}>
@@ -250,18 +381,16 @@ export default function LeadsPage() {
               </div>
             )}
 
-            {/* Input libre — opción principal */}
             <div style={{ display: 'flex', gap: 7, marginBottom: 16 }}>
               <input type="datetime-local" value={segPersonalizado} onChange={e => setSegPersonalizado(e.target.value)}
                 style={{ flex: 1, border: '1.5px solid #e5e7eb', borderRadius: 9, padding: '9px 12px', fontSize: 13, outline: 'none', minWidth: 0 }} />
-              <button onClick={() => { if (segPersonalizado) { guardarSeg(new Date(segPersonalizado).toISOString()); } }}
+              <button onClick={() => { if (segPersonalizado) guardarSeg(new Date(segPersonalizado).toISOString()) }}
                 disabled={!segPersonalizado}
                 style={{ padding: '9px 16px', borderRadius: 9, border: 'none', background: segPersonalizado ? '#111827' : '#e5e7eb', color: segPersonalizado ? 'white' : '#9ca3af', fontSize: 13, fontWeight: 600, cursor: segPersonalizado ? 'pointer' : 'not-allowed', flexShrink: 0 }}>
                 OK
               </button>
             </div>
 
-            {/* Atajos rápidos */}
             <p style={{ fontSize: 11, color: '#9ca3af', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', margin: '0 0 8px' }}>Atajos rápidos</p>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 7, marginBottom: 16 }}>
               {TIEMPOS.map(t => (
@@ -384,7 +513,7 @@ export default function LeadsPage() {
           </button>
           {origenesPresentes.map(origen => (
             <button key={origen} onClick={() => setFiltroOrigen(origen)} style={btnFiltro(filtroOrigen === origen)}>
-              {origenLabel[origen] ?? origen} ({leads.filter(l => l.origen === origen).length})
+              {ORIGEN_LABEL[origen] ?? origen} ({leads.filter(l => l.origen === origen).length})
             </button>
           ))}
         </div>
@@ -395,7 +524,7 @@ export default function LeadsPage() {
       ) : (
         <DragDropContext onDragEnd={onDragEnd}>
           <div style={{ display: 'flex', gap: 16, overflowX: 'auto', paddingBottom: 16, flex: 1, alignItems: 'start' }}>
-            {columnas.map(col => {
+            {COLUMNAS.map(col => {
               const leadsColumna = leadsFiltrados.filter(l => l.estado === col.id)
               return (
                 <div key={col.id} style={{ minWidth: 200, flex: '0 0 200px' }}>
@@ -411,94 +540,17 @@ export default function LeadsPage() {
                         {...provided.droppableProps}
                         style={{ minHeight: 200, background: snapshot.isDraggingOver ? '#f0f9ff' : '#f3f4f6', borderRadius: 14, padding: 8, transition: 'background 0.15s', display: 'flex', flexDirection: 'column', gap: 8 }}
                       >
-                        {leadsColumna.map((lead, index) => {
-                          const seg = badgeSeg(lead.seguimientoEn)
-                          const puedeCambiar = puedeAccionar(lead)
-                          return (
-                            <Draggable key={lead.id} draggableId={lead.id} index={index} isDragDisabled={!puedeAccionar(lead)}>
-                              {(provided, snapshot) => {
-                                const ahora = new Date()
-                                const haySegVencido = lead.seguimientoEn && new Date(lead.seguimientoEn) <= ahora
-                                const haySegFuturo = lead.seguimientoEn && new Date(lead.seguimientoEn) > ahora
-                                return (
-                                <div
-                                  ref={provided.innerRef}
-                                  {...provided.draggableProps}
-                                  {...provided.dragHandleProps}
-                                  style={{
-                                    background: haySegVencido ? '#fff5f5' : haySegFuturo ? '#fffbeb' : 'white',
-                                    borderRadius: 12, padding: '13px 14px',
-                                    border: haySegVencido ? '1.5px solid #fca5a5' : haySegFuturo ? '1.5px solid #fde68a' : '1px solid #f3f4f6',
-                                    boxShadow: snapshot.isDragging ? '0 8px 24px rgba(0,0,0,0.12)' : '0 1px 3px rgba(0,0,0,0.04)',
-                                    cursor: 'grab', ...provided.draggableProps.style,
-                                  }}
-                                >
-                                  {/* Nombre + avatar agente */}
-                                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 3 }}>
-                                    <p style={{ fontSize: 13, fontWeight: 600, color: '#111827', margin: 0, flex: 1, lineHeight: 1.3 }}>{lead.nombre}</p>
-                                    {lead.agenteNombre && (
-                                      <span title={lead.agenteNombre} style={{ flexShrink: 0, marginLeft: 6, width: 24, height: 24, borderRadius: '50%', background: colorDeAgente(lead.asignadoAId), color: 'white', fontSize: 9, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                        {iniciales(lead.agenteNombre)}
-                                      </span>
-                                    )}
-                                  </div>
-
-                                  {/* Teléfono */}
-                                  <p style={{ fontSize: 12, color: '#6b7280', margin: '0 0 7px' }}>{lead.telefono}</p>
-
-                                  {/* Origen */}
-                                  {lead.origen && (() => {
-                                    const badge = origenBadge[lead.origen] ?? { bg: '#f9fafb', color: '#6b7280' }
-                                    return (
-                                      <span style={{ fontSize: 10, fontWeight: 600, color: badge.color, background: badge.bg, padding: '2px 7px', borderRadius: 20, border: `1px solid ${badge.color}33` }}>
-                                        {origenLabel[lead.origen] ?? lead.origen}
-                                      </span>
-                                    )
-                                  })()}
-
-                                  {/* Badge seguimiento */}
-                                  {seg && (
-                                    <div style={{ marginTop: 6 }}>
-                                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 999, color: seg.color, background: seg.bg }}>
-                                        <IcoTelefono />{seg.texto}
-                                      </span>
-                                    </div>
-                                  )}
-
-                                  {/* Acciones */}
-                                  <div style={{ display: 'flex', gap: 5, marginTop: 9 }}>
-                                    <Link
-                                      href={`/dashboard/leads/${lead.id}`}
-                                      style={{ flex: 1, display: 'block', fontSize: 11, fontWeight: 600, color: '#1d4ed8', textDecoration: 'none', textAlign: 'center', background: '#eff6ff', padding: '5px 6px', borderRadius: 7 }}
-                                      onClick={e => e.stopPropagation()}
-                                    >
-                                      Ver →
-                                    </Link>
-                                    {puedeCambiar && (
-                                      <>
-                                        <button
-                                          title="Programar seguimiento"
-                                          onClick={e => { e.stopPropagation(); setModalSeg({ leadId: lead.id, leadNombre: lead.nombre, actual: lead.seguimientoEn }) }}
-                                          style={{ width: 26, height: 26, borderRadius: 7, border: '1px solid #e5e7eb', background: lead.seguimientoEn ? '#fffbeb' : 'white', color: lead.seguimientoEn ? '#d97706' : '#6b7280', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}
-                                        >
-                                          <IcoReloj />
-                                        </button>
-                                        <button
-                                          title="Traspasar a otro agente"
-                                          onClick={e => { e.stopPropagation(); setModalTraspaso({ leadId: lead.id, leadNombre: lead.nombre }) }}
-                                          style={{ width: 26, height: 26, borderRadius: 7, border: '1px solid #e5e7eb', background: 'white', color: '#6b7280', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}
-                                        >
-                                          <IcoTraspaso />
-                                        </button>
-                                      </>
-                                    )}
-                                  </div>
-                                </div>
-                              )
-                              }}
-                            </Draggable>
-                          )
-                        })}
+                        {leadsColumna.map((lead, index) => (
+                          <LeadCard
+                            key={lead.id}
+                            lead={lead}
+                            index={index}
+                            puedeCambiar={puedeAccionar(lead)}
+                            agenteColor={colorDeAgente(lead.asignadoAId)}
+                            onSeguimiento={handleSeguimiento}
+                            onTraspaso={handleTraspaso}
+                          />
+                        ))}
                         {provided.placeholder}
                       </div>
                     )}

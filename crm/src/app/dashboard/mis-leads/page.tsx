@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useMemo } from 'react'
 import { EmailLeadForm } from '@/components/leads/EmailLeadForm'
 import { SelectorProducto } from '@/components/servicios/SelectorProducto'
 
@@ -53,14 +53,19 @@ function convenioAplica(c: ConvenioActivo, configId: string | undefined): boolea
   return c.serviciosCubiertos.includes(configId)
 }
 
+const PALABRAS_SERVICIO = ['HUELLITA', 'COMPAÑERO', 'SIEMPRE JUNTO', 'JARDÍN', 'CREMACIÓN', 'INHUMACIÓN']
+const PALABRAS_TAMAÑO   = ['PEQUEÑO', 'MEDIANO', 'GRANDE', 'EXTRA GRANDE']
+const PALABRAS_RETIRO   = ['TRAERLA', 'RETIREN', 'SUCURSAL', 'DOMICILIO']
+
 function parsearMensaje(mensaje: string): { label: string; value: string }[] | null {
   if (!mensaje || !mensaje.includes(' · ')) return null
   return mensaje.split(' · ').map(parte => {
-    if (parte.startsWith('Zona:')) return { label: 'Zona', value: parte.replace('Zona: ', '') }
-    if (parte.startsWith('Mascota:')) return { label: 'Mascota', value: parte.replace('Mascota: ', '') }
-    if (['HUELLITA', 'COMPAÑERO', 'SIEMPRE JUNTO', 'JARDÍN', 'CREMACIÓN', 'INHUMACIÓN'].some(s => parte.toUpperCase().includes(s))) return { label: 'Servicio', value: parte }
-    if (['PEQUEÑO', 'MEDIANO', 'GRANDE', 'EXTRA GRANDE'].some(s => parte.toUpperCase().includes(s))) return { label: 'Tamaño', value: parte }
-    if (['TRAERLA', 'RETIREN', 'SUCURSAL', 'DOMICILIO'].some(s => parte.toUpperCase().includes(s))) return { label: 'Retiro', value: parte }
+    if (parte.startsWith('Zona:'))    return { label: 'Zona',     value: parte.replace('Zona: ', '') }
+    if (parte.startsWith('Mascota:')) return { label: 'Mascota',  value: parte.replace('Mascota: ', '') }
+    const up = parte.toUpperCase()
+    if (PALABRAS_SERVICIO.some(s => up.includes(s))) return { label: 'Servicio', value: parte }
+    if (PALABRAS_TAMAÑO.some(s => up.includes(s)))   return { label: 'Tamaño',   value: parte }
+    if (PALABRAS_RETIRO.some(s => up.includes(s)))   return { label: 'Retiro',   value: parte }
     return { label: 'Detalle', value: parte }
   })
 }
@@ -256,8 +261,7 @@ export default function MisLeadsPage() {
   const cerrarYPasar = async () => {
     if (!reporte.trim()) { setError('Tenés que completar el reporte antes de pasar al siguiente lead.'); return }
     if (nuevoEstado === 'convertido') {
-      const sels = leadActual.mensaje ? parsearMensaje(leadActual.mensaje) : null
-      const mascotaItem = sels?.find(s => s.label === 'Mascota')
+      const mascotaItem = seleccionesActual?.find(s => s.label === 'Mascota')
       const especie = leadActual.mensaje
         ? (['perro', 'gato', 'conejo', 'hurón', 'ave', 'reptil'] as const).find(e => leadActual.mensaje!.toLowerCase().includes(e)) ?? ''
         : ''
@@ -304,7 +308,11 @@ export default function MisLeadsPage() {
     avanzarSiguiente()
   }
 
-  const seleccionesActual = leadActual?.mensaje ? parsearMensaje(leadActual.mensaje) : null
+  const seleccionesActual = useMemo(
+    () => leadActual?.mensaje ? parsearMensaje(leadActual.mensaje) : null,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [leadActual?.mensaje]
+  )
 
   return (
     <div className="page-container">
