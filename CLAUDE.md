@@ -153,7 +153,7 @@ Cotizador embebible como iframe en Wix. Envía leads al CRM.
 | `usuarios` | Equipo interno (rol, permisos) |
 | `clientes` | Dueños de mascotas — incluye `token_portal` (UUID único de acceso al portal) y `auth_user_id` (Supabase Auth, opcional) |
 | `mascotas` | Mascotas — incluye `galeria` (jsonb array de URLs), `dedicatoria`, `memoria_publica` (boolean), `fecha_nacimiento`, `fecha_fallecimiento` |
-| `servicios` | Servicios de cremación/entierro con ciclo de vida de 9 estados |
+| `servicios` | Servicios de cremación/entierro con ciclo de vida de 5 estados |
 | `planes` | Planes de previsión contratados |
 | `planes_config` | Templates de planes configurables |
 | `leads` | Prospectos del landing/cotizador/directo/veterinaria |

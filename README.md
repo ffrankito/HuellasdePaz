@@ -19,6 +19,18 @@ Cada app es independiente. Se configuran y corren por separado.
 
 ---
 
+## Documentation
+
+| Tool | Purpose | Link |
+|---|---|---|
+| **Linear** | Tasks, bugs, milestones | [HdP team →](https://linear.app/ravennarosario/team/HDP/issues) |
+| **Obsidian vault** | ADRs, architecture, domain, meetings | `<!-- vault repo URL -->` |
+| **`docs/`** | Setup, schema, changelog | [`docs/`](./docs/) |
+
+See [`docs/superpowers/specs/2026-05-06-documentation-ecosystem-design.md`](./docs/superpowers/specs/2026-05-06-documentation-ecosystem-design.md) for the full ecosystem design.
+
+---
+
 ## Roadmap general
 
 | Fase | App | Entregable | Timeline |
