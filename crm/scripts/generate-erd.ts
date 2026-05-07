@@ -27,7 +27,7 @@ import { fileURLToPath } from 'node:url'
 import { is } from 'drizzle-orm'
 import { PgTable, getTableConfig } from 'drizzle-orm/pg-core'
 
-import * as schema from '../src/db/schema/index.ts'
+import * as schema from '../src/db/schema/index'
 
 // ---------------------------------------------------------------------------
 // Domain map — single source of truth for ERD partitioning.
