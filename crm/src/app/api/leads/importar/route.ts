@@ -82,6 +82,7 @@ export async function POST(request: NextRequest) {
         origen: 'directo' as const,
         importacionId: importacion.id,
         asignadoAId: asignarAgente(),
+        ultimaInteraccionEn: new Date(),
       }))
     ).returning()
 

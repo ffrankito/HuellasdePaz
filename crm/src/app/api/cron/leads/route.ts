@@ -91,6 +91,8 @@ export async function GET(request: Request) {
       )
 
     // ── 3. "Nuevo" sin actividad 72hs → perdido
+    // Considera ultimaInteraccionEn Y actualizadoEn: si cualquiera de los dos
+    // es reciente, el lead tuvo actividad y no se marca como perdido.
     const hace72hs = new Date(ahora.getTime() - 72 * 60 * 60 * 1000)
     await db.update(leads)
       .set({ estado: 'perdido', actualizadoEn: ahora })
@@ -98,6 +100,7 @@ export async function GET(request: Request) {
         and(
           eq(leads.estado, 'nuevo'),
           lt(leads.creadoEn, hace72hs),
+          lt(leads.actualizadoEn, hace72hs),
           or(
             isNull(leads.ultimaInteraccionEn),
             lt(leads.ultimaInteraccionEn, hace72hs)
