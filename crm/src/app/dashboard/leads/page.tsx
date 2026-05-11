@@ -16,6 +16,7 @@ type Lead = {
   asignadoAId: string | null
   agenteNombre: string | null
   seguimientoEn: string | null
+  ultimaNotaDesc: string | null
   creadoEn: string
 }
 
@@ -168,7 +169,18 @@ const LeadCard = memo(function LeadCard({ lead, index, puedeCambiar, agenteColor
           </div>
 
           {/* Teléfono */}
-          <p style={{ fontSize: 12, color: '#6b7280', margin: '0 0 7px' }}>{lead.telefono}</p>
+          <p style={{ fontSize: 12, color: '#6b7280', margin: '0 0 5px' }}>{lead.telefono}</p>
+
+          {/* Última interacción */}
+          {lead.ultimaNotaDesc && (
+            <p style={{
+              fontSize: 11, color: '#6b7280', margin: '0 0 7px', lineHeight: 1.35,
+              overflow: 'hidden', display: '-webkit-box',
+              WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as const,
+            }}>
+              💬 {lead.ultimaNotaDesc}
+            </p>
+          )}
 
           {/* Origen */}
           {lead.origen && (() => {

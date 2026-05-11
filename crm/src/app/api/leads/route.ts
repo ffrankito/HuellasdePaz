@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { revalidatePath } from 'next/cache'
 import { db } from '@/db'
 import { leads, usuarios } from '@/db/schema'
-import { eq, asc } from 'drizzle-orm'
+import { eq, asc, sql } from 'drizzle-orm'
 import { crearLeadAutomatico } from '@/lib/leads/crearLeadAutomatico'
 import type { OrigenLead } from '@/lib/leads/crearLeadAutomatico'
 import { getCorsHeaders } from '@/lib/cors'
@@ -75,6 +75,14 @@ export async function GET(request: NextRequest) {
         seguimientoEn: leads.seguimientoEn,
         creadoEn: leads.creadoEn,
         actualizadoEn: leads.actualizadoEn,
+        ultimaNotaDesc: sql<string | null>`(
+          SELECT li.descripcion
+          FROM lead_interacciones li
+          WHERE li.lead_id = leads.id
+            AND li.tipo NOT IN ('asignacion', 'seguimiento_24hs', 'seguimiento_48hs')
+          ORDER BY li.creado_en DESC
+          LIMIT 1
+        )`,
       })
       .from(leads)
       .leftJoin(usuarios, eq(leads.asignadoAId, usuarios.id))

@@ -2,11 +2,11 @@ import { NextRequest, NextResponse } from 'next/server'
 import { revalidatePath } from 'next/cache'
 import { db } from '@/db'
 import { leads, leadInteracciones, usuarios } from '@/db/schema'
-import { eq } from 'drizzle-orm'
+import { eq, asc } from 'drizzle-orm'
 import { requireAuth } from '@/lib/api-auth'
 
 export async function GET(
-  _request: NextRequest,
+  request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   const auth = await requireAuth()
@@ -16,6 +16,17 @@ export async function GET(
     const { id } = await params
     const lead = await db.query.leads.findFirst({ where: eq(leads.id, id) })
     if (!lead) return NextResponse.json({ error: 'No encontrado' }, { status: 404 })
+
+    const { searchParams } = new URL(request.url)
+    if (searchParams.get('withInteracciones') === 'true') {
+      const interacciones = await db
+        .select()
+        .from(leadInteracciones)
+        .where(eq(leadInteracciones.leadId, id))
+        .orderBy(asc(leadInteracciones.creadoEn))
+      return NextResponse.json({ ...lead, interacciones })
+    }
+
     return NextResponse.json(lead)
   } catch (error) {
     console.error('Error obteniendo lead:', error)
@@ -95,7 +106,8 @@ export async function PATCH(
           tipo: 'seguimiento',
           descripcion: `Seguimiento programado para las ${hora}`,
         })
-      } else {
+      } else if (leadActual.seguimientoEn && leadActual.seguimientoEn > ahora) {
+        // Solo logueamos "cancelado" si el seguimiento era futuro (no si ya había vencido)
         interaccionesACrear.push({
           tipo: 'seguimiento',
           descripcion: 'Seguimiento cancelado',

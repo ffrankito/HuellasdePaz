@@ -17,8 +17,16 @@ type Lead = {
   asignadoAId: string | null
   agenteNombre: string | null
   seguimientoEn: string | null
+  ultimaNotaDesc: string | null
   creadoEn: string
   actualizadoEn: string
+}
+
+type Interaccion = {
+  id: string
+  tipo: string
+  descripcion: string
+  creadoEn: string
 }
 
 type Me = { id: string; nombre: string; rol: string }
@@ -158,6 +166,9 @@ export default function MisLeadsPage() {
   const [mostrarTraspasoGestion, setMostrarTraspasoGestion] = useState(false)
   const [pendingFollowUp, setPendingFollowUp] = useState<{ iso: string; label: string } | null>(null)
   const [notaFollowUp, setNotaFollowUp] = useState('')
+  const [interacciones, setInteracciones] = useState<Interaccion[]>([])
+  const [cargandoInteracciones, setCargandoInteracciones] = useState(false)
+  const gestionadosRef = useRef<Set<string>>(new Set())
 
   useEffect(() => {
     Promise.all([
@@ -176,6 +187,9 @@ export default function MisLeadsPage() {
           const activos = data.filter(l => {
             if (l.estado === 'convertido' || l.estado === 'perdido') return false
             if (l.seguimientoEn && new Date(l.seguimientoEn) > ahora) return false
+            if (gestionadosRef.current.has(l.id)) return false
+            // "contactado" sin seguimiento vencido no necesita gestión inmediata
+            if (l.estado === 'contactado' && !l.seguimientoEn) return false
             return true
           })
           setLeads(prev => {
@@ -249,11 +263,20 @@ export default function MisLeadsPage() {
   const abrirLead = () => {
     setLeadAbierto(true); setCronometroActivo(true)
     setReporte(''); setNuevoEstado(leadActual?.estado ?? ''); setError('')
+    if (leadActual) {
+      setCargandoInteracciones(true)
+      fetch(`/api/leads/${leadActual.id}?withInteracciones=true`)
+        .then(r => r.json())
+        .then(data => { setInteracciones(data.interacciones ?? []); setCargandoInteracciones(false) })
+        .catch(() => setCargandoInteracciones(false))
+    }
   }
 
   const avanzarSiguiente = () => {
+    if (leadActual) gestionadosRef.current.add(leadActual.id)
     setCronometroActivo(false); setLeadAbierto(false)
     setReporte(''); setNuevoEstado(''); setError('')
+    setInteracciones([])
     setLeads(prev => prev.filter((_, i) => i !== indiceActual))
     setIndiceActual(i => Math.max(0, Math.min(i, leads.length - 2)))
   }
@@ -269,10 +292,16 @@ export default function MisLeadsPage() {
       return
     }
     setEnviando(true)
+    // Si el seguimiento ya venció, lo limpiamos para que no reaparezca en la próxima sesión
+    const seguimientoVencido = leadActual.seguimientoEn && new Date(leadActual.seguimientoEn) <= new Date()
     await fetch(`/api/leads/${leadActual.id}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ estado: nuevoEstado || leadActual.estado, nota: reporte }),
+      body: JSON.stringify({
+        estado: nuevoEstado || leadActual.estado,
+        nota: reporte,
+        ...(seguimientoVencido ? { seguimientoEn: null } : {}),
+      }),
     })
     setEnviando(false)
     avanzarSiguiente()
@@ -539,6 +568,12 @@ export default function MisLeadsPage() {
                     </div>
                   ) : null
                 })()}
+                {leadActual?.ultimaNotaDesc && (
+                  <div style={{ marginTop: 16, background: '#f9fafb', border: '1px solid #e5e7eb', borderRadius: 10, padding: '10px 14px', textAlign: 'left' }}>
+                    <p style={{ fontSize: 11, color: '#9ca3af', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', margin: '0 0 4px' }}>Última interacción</p>
+                    <p style={{ fontSize: 13, color: '#374151', margin: 0, lineHeight: 1.4 }}>💬 {leadActual.ultimaNotaDesc}</p>
+                  </div>
+                )}
                 {seleccionesActual && (
                   <div style={{ marginTop: 20, textAlign: 'left' }}>
                     <p style={{ fontSize: 12, color: '#9ca3af', marginBottom: 8, textTransform: 'uppercase', letterSpacing: 1 }}>Seleccionó en el cotizador</p>
@@ -581,6 +616,26 @@ export default function MisLeadsPage() {
                     💬 Contactar por WhatsApp
                   </button>
                   {leadActual.email && <EmailLeadForm leadId={leadActual.id} emailDestinatario={leadActual.email} nombreDestinatario={leadActual.nombre} />}
+                </div>
+
+                <div style={{ background: 'white', borderRadius: 16, border: '1px solid #f3f4f6', padding: 20, boxShadow: '0 1px 4px rgba(0,0,0,0.05)' }}>
+                  <h3 style={{ fontSize: 14, fontWeight: 600, color: '#111827', margin: '0 0 14px' }}>Historial de actividad</h3>
+                  {cargandoInteracciones ? (
+                    <p style={{ fontSize: 13, color: '#9ca3af', margin: 0 }}>Cargando...</p>
+                  ) : interacciones.length === 0 ? (
+                    <p style={{ fontSize: 13, color: '#9ca3af', margin: 0 }}>Sin actividad previa</p>
+                  ) : (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 10, maxHeight: 240, overflowY: 'auto' }}>
+                      {[...interacciones].reverse().map(item => (
+                        <div key={item.id} style={{ borderLeft: '2px solid #e5e7eb', paddingLeft: 10 }}>
+                          <p style={{ fontSize: 12, color: '#374151', margin: '0 0 2px', lineHeight: 1.4 }}>{item.descripcion}</p>
+                          <p style={{ fontSize: 10, color: '#9ca3af', margin: 0 }}>
+                            {new Date(item.creadoEn).toLocaleDateString('es-AR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', timeZone: 'America/Argentina/Buenos_Aires' })}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
                 {seleccionesActual && (

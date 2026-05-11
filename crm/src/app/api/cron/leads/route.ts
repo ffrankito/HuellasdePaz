@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { db } from '@/db'
 import { leads, leadInteracciones } from '@/db/schema'
-import { eq, and, lt, isNull, or } from 'drizzle-orm'
+import { eq, and, lt } from 'drizzle-orm'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -18,7 +18,6 @@ export async function GET(request: Request) {
     // ── 1. "Interesado" sin actividad 24hs → registrar seguimiento pendiente
     // Esto hace que vuelva a aparecer en la cola del agente con una nota de seguimiento
     const hace24hs = new Date(ahora.getTime() - 24 * 60 * 60 * 1000)
-    const hace48hs = new Date(ahora.getTime() - 48 * 60 * 60 * 1000)
 
     const interesadosSinActividad = await db
       .select()
@@ -80,58 +79,10 @@ export async function GET(request: Request) {
       }
     }
 
-    // ── 2. "Interesado" sin actividad 48hs → perdido
-    await db.update(leads)
-      .set({ estado: 'perdido', actualizadoEn: ahora })
-      .where(
-        and(
-          eq(leads.estado, 'interesado'),
-          lt(leads.ultimaInteraccionEn, hace48hs)
-        )
-      )
-
-    // ── 3. "Nuevo" sin actividad 72hs → perdido
-    // Considera ultimaInteraccionEn Y actualizadoEn: si cualquiera de los dos
-    // es reciente, el lead tuvo actividad y no se marca como perdido.
-    const hace72hs = new Date(ahora.getTime() - 72 * 60 * 60 * 1000)
-    await db.update(leads)
-      .set({ estado: 'perdido', actualizadoEn: ahora })
-      .where(
-        and(
-          eq(leads.estado, 'nuevo'),
-          lt(leads.creadoEn, hace72hs),
-          lt(leads.actualizadoEn, hace72hs),
-          or(
-            isNull(leads.ultimaInteraccionEn),
-            lt(leads.ultimaInteraccionEn, hace72hs)
-          )
-        )
-      )
-
-    // ── 4. "Perdido" hace más de 10 días → borrar definitivamente
-    const hace10dias = new Date(ahora.getTime() - 10 * 24 * 60 * 60 * 1000)
-    const perdidosViejos = await db
-      .select({ id: leads.id })
-      .from(leads)
-      .where(
-        and(
-          eq(leads.estado, 'perdido'),
-          lt(leads.actualizadoEn, hace10dias)
-        )
-      )
-
-    let borrados = 0
-    for (const lead of perdidosViejos) {
-      await db.delete(leadInteracciones).where(eq(leadInteracciones.leadId, lead.id))
-      await db.delete(leads).where(eq(leads.id, lead.id))
-      borrados++
-    }
-
     return NextResponse.json({
       ok: true,
       ejecutadoEn: ahora.toISOString(),
       seguimientos: interesadosSinActividad.length,
-      borrados,
     })
   } catch (error) {
     console.error('Error en cron de leads:', error)
