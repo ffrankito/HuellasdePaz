@@ -219,6 +219,14 @@ export default function MisLeadsPage() {
     setMostrarTraspasoGestion(false)
     setPendingFollowUp(null)
     setNotaFollowUp('')
+    setInteracciones([])
+    if (leadActual) {
+      setCargandoInteracciones(true)
+      fetch(`/api/leads/${leadActual.id}?withInteracciones=true`)
+        .then(r => r.json())
+        .then(data => { setInteracciones(data.interacciones ?? []); setCargandoInteracciones(false) })
+        .catch(() => setCargandoInteracciones(false))
+    }
   }, [leadActual?.id])
 
   const guardarSegGestion = (isoStr: string | null, etiqueta?: string) => {
@@ -263,13 +271,6 @@ export default function MisLeadsPage() {
   const abrirLead = () => {
     setLeadAbierto(true); setCronometroActivo(true)
     setReporte(''); setNuevoEstado(leadActual?.estado ?? ''); setError('')
-    if (leadActual) {
-      setCargandoInteracciones(true)
-      fetch(`/api/leads/${leadActual.id}?withInteracciones=true`)
-        .then(r => r.json())
-        .then(data => { setInteracciones(data.interacciones ?? []); setCargandoInteracciones(false) })
-        .catch(() => setCargandoInteracciones(false))
-    }
   }
 
   const avanzarSiguiente = () => {
@@ -568,12 +569,25 @@ export default function MisLeadsPage() {
                     </div>
                   ) : null
                 })()}
-                {leadActual?.ultimaNotaDesc && (
-                  <div style={{ marginTop: 16, background: '#f9fafb', border: '1px solid #e5e7eb', borderRadius: 10, padding: '10px 14px', textAlign: 'left' }}>
-                    <p style={{ fontSize: 11, color: '#9ca3af', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', margin: '0 0 4px' }}>Última interacción</p>
-                    <p style={{ fontSize: 13, color: '#374151', margin: 0, lineHeight: 1.4 }}>💬 {leadActual.ultimaNotaDesc}</p>
-                  </div>
-                )}
+                <div style={{ marginTop: 16, background: '#f9fafb', border: '1px solid #e5e7eb', borderRadius: 10, padding: '10px 14px', textAlign: 'left' }}>
+                  <p style={{ fontSize: 11, color: '#9ca3af', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', margin: '0 0 6px' }}>Actividad</p>
+                  {cargandoInteracciones ? (
+                    <p style={{ fontSize: 12, color: '#9ca3af', margin: 0 }}>Cargando...</p>
+                  ) : interacciones.length === 0 ? (
+                    <p style={{ fontSize: 12, color: '#9ca3af', margin: 0 }}>Sin actividad previa</p>
+                  ) : (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 8, maxHeight: 180, overflowY: 'auto' }}>
+                      {[...interacciones].reverse().map(item => (
+                        <div key={item.id} style={{ borderLeft: '2px solid #e5e7eb', paddingLeft: 8 }}>
+                          <p style={{ fontSize: 12, color: '#374151', margin: '0 0 2px', lineHeight: 1.4 }}>{item.descripcion}</p>
+                          <p style={{ fontSize: 10, color: '#9ca3af', margin: 0 }}>
+                            {new Date(item.creadoEn).toLocaleDateString('es-AR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', timeZone: 'America/Argentina/Buenos_Aires' })}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
                 {seleccionesActual && (
                   <div style={{ marginTop: 20, textAlign: 'left' }}>
                     <p style={{ fontSize: 12, color: '#9ca3af', marginBottom: 8, textTransform: 'uppercase', letterSpacing: 1 }}>Seleccionó en el cotizador</p>
