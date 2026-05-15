@@ -2,7 +2,7 @@
 
 ## Estado actual (Mayo 2026)
 
-Todas las fases 0–3 están implementadas y en producción. Hay 24 issues abiertos — ver checklist de entrega más abajo.
+Todas las fases 0–3 están implementadas y en producción. Hay 27 issues abiertos — ver checklist de entrega más abajo.
 
 ---
 
@@ -81,18 +81,22 @@ Todas las fases 0–3 están implementadas y en producción. Hay 24 issues abier
 
 **Pendiente:** Notificación al socio cuando cambia el estado de su lead ([HDP-15](https://linear.app/ravennarosario/issue/HDP-15)). Paginación en tabla de leads ([HDP-14](https://linear.app/ravennarosario/issue/HDP-14)).
 
-### Features post-lanzamiento
+---
 
-| Feature | Descripción | Estado |
-|---------|-------------|--------|
+## v3 — Fase 4: mejoras pre-handoff + módulos opcionales 📋
+
+### Mejoras pre-handoff (comprometidas con el cliente)
+
+Estas features están dentro del alcance contratado y deben entregarse antes o junto con el handoff.
+
+| Feature | Descripción | Issue |
+|---------|-------------|-------|
 | C1 | Plan Plus — cargo adicional perros >25kg | 📋 [HDP-2](https://linear.app/ravennarosario/issue/HDP-2) |
 | C2 | Exportación mensual para Jaque Mate (.xlsx) | 📋 [HDP-4](https://linear.app/ravennarosario/issue/HDP-4) |
 | C3 | Prioridad alta para leads B2B en cola de agentes | 📋 [HDP-3](https://linear.app/ravennarosario/issue/HDP-3) |
 | C4 | Motivo obligatorio al reasignar lead entre agentes | 📋 [HDP-6](https://linear.app/ravennarosario/issue/HDP-6) |
 
----
-
-## v3 — Módulos opcionales (Fase 4) 📋
+### Módulos opcionales (cotizables aparte)
 
 | Módulo | Descripción | Estimación |
 |--------|-------------|------------|
