@@ -121,6 +121,9 @@ Estos ítems deben estar resueltos antes de entregar el sistema al cliente. Algu
 | 🟠 | Reemplazar número WhatsApp placeholder (cotizador) | [HDP-19](https://linear.app/ravennarosario/issue/HDP-19) | Cliente |
 | 🟠 | Configurar dominio propio en Resend | [HDP-1](https://linear.app/ravennarosario/issue/HDP-1) | Cliente |
 | 🟠 | Dirección real en footer de la landing | [HDP-21](https://linear.app/ravennarosario/issue/HDP-21) | Cliente |
+| 🟠 | Cargar precios reales en servicios_config y planes_config | [HDP-26](https://linear.app/ravennarosario/issue/HDP-26) | Cliente |
+| 🔵 | Sesión de capacitación para el equipo del cliente | [HDP-25](https://linear.app/ravennarosario/issue/HDP-25) | Dev + Cliente |
+| 🔵 | Entregar credenciales de producción al cliente (handoff) | [HDP-27](https://linear.app/ravennarosario/issue/HDP-27) | Dev |
 
 ---
 
