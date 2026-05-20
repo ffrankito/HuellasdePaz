@@ -40,33 +40,26 @@ const TIPO_LABEL: Record<string, string> = {
 function fmtFecha(d: Date | string | null): string {
   if (!d) return ''
   return new Date(d).toLocaleString('es-AR', {
-    timeZone: 'America/Argentina/Buenos_Aires',
+    timeZone: TZ,
     day: '2-digit', month: '2-digit', year: 'numeric',
     hour: '2-digit', minute: '2-digit',
   })
 }
 
+const TZ = 'America/Argentina/Buenos_Aires'
+const MS_PER_DAY = 86_400_000
+
 function rangoDelDia(fechaParam: string | null): { inicio: Date; fin: Date; label: string } {
-  // Argentina = UTC-3 fijo (sin horario de verano)
-  // Medianoche en Argentina = 03:00 UTC
-  let hoyART: string
+  const hoy = fechaParam && /^\d{4}-\d{2}-\d{2}$/.test(fechaParam)
+    ? fechaParam
+    : new Intl.DateTimeFormat('en-CA', { timeZone: TZ }).format(new Date())
 
-  if (fechaParam && /^\d{4}-\d{2}-\d{2}$/.test(fechaParam)) {
-    hoyART = fechaParam
-  } else {
-    const ahoraUTC = new Date()
-    // Restar 3 horas para obtener la hora argentina
-    const ahoraART = new Date(ahoraUTC.getTime() - 3 * 60 * 60 * 1000)
-    hoyART = ahoraART.toISOString().slice(0, 10)
-  }
+  // Medianoche Argentina con offset explícito — no magic numbers
+  const inicio = new Date(`${hoy}T00:00:00-03:00`)
+  const fin    = new Date(inicio.getTime() + MS_PER_DAY)
 
-  const inicio = new Date(`${hoyART}T03:00:00.000Z`)
-  const fin    = new Date(inicio.getTime() + 24 * 60 * 60 * 1000)
-
-  const [anio, mes, dia] = hoyART.split('-')
-  const label = `${dia}-${mes}-${anio}`
-
-  return { inicio, fin, label }
+  const [anio, mes, dia] = hoy.split('-')
+  return { inicio, fin, label: `${dia}-${mes}-${anio}` }
 }
 
 export async function GET(request: NextRequest) {

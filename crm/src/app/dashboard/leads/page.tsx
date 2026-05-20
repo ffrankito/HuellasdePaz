@@ -29,6 +29,8 @@ type FiltroOrigen = 'todos' | string
 
 // ── Constantes estáticas fuera del componente ──────────────────────────────
 
+const TZ = 'America/Argentina/Buenos_Aires'
+
 const PALETA = ['#1d4ed8', '#dc2626', '#7e22ce', '#c2410c', '#0891b2', '#be185d', '#065f46', '#92400e']
 
 const ORIGEN_LABEL: Record<string, string> = {
@@ -301,14 +303,8 @@ export default function LeadsPage() {
   )
 
   const esHoyART = useCallback((fechaISO: string) => {
-    // Compara en timezone de Argentina (UTC-3 fijo)
-    const hoy = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Argentina/Buenos_Aires' }))
-    const fecha = new Date(new Date(fechaISO).toLocaleString('en-US', { timeZone: 'America/Argentina/Buenos_Aires' }))
-    return (
-      fecha.getFullYear() === hoy.getFullYear() &&
-      fecha.getMonth()    === hoy.getMonth() &&
-      fecha.getDate()     === hoy.getDate()
-    )
+    const fmt = (d: Date) => new Intl.DateTimeFormat('en-CA', { timeZone: TZ }).format(d)
+    return fmt(new Date(fechaISO)) === fmt(new Date())
   }, [])
 
   const leadsFiltrados = useMemo(() => {
