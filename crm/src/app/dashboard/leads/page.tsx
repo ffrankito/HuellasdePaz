@@ -245,6 +245,8 @@ export default function LeadsPage() {
   const [agentes, setAgentes]         = useState<Agente[]>([])
   const [filtro, setFiltro]           = useState<FiltroAgente>('todos')
   const [filtroOrigen, setFiltroOrigen] = useState<FiltroOrigen>('todos')
+  const [filtroHoy, setFiltroHoy]     = useState(false)
+  const [descargando, setDescargando] = useState(false)
   const [busqueda, setBusqueda]       = useState('')
 
   const [modalSeg, setModalSeg]               = useState<ModalSeguimiento>(null)
@@ -298,17 +300,34 @@ export default function LeadsPage() {
     [leads]
   )
 
+  const esHoyART = useCallback((fechaISO: string) => {
+    // Compara en timezone de Argentina (UTC-3 fijo)
+    const hoy = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Argentina/Buenos_Aires' }))
+    const fecha = new Date(new Date(fechaISO).toLocaleString('en-US', { timeZone: 'America/Argentina/Buenos_Aires' }))
+    return (
+      fecha.getFullYear() === hoy.getFullYear() &&
+      fecha.getMonth()    === hoy.getMonth() &&
+      fecha.getDate()     === hoy.getDate()
+    )
+  }, [])
+
   const leadsFiltrados = useMemo(() => {
     const q = busqueda.toLowerCase().trim()
     return leads
       .filter(l => {
         const passAgente   = filtro === 'todos' || (filtro === 'mios' ? l.asignadoAId === me?.id : l.asignadoAId === filtro)
         const passOrigen   = filtroOrigen === 'todos' || l.origen === filtroOrigen
+        const passHoy      = !filtroHoy || esHoyART(l.creadoEn)
         const passBusqueda = !q || l.nombre.toLowerCase().includes(q) || l.telefono.includes(q)
-        return passAgente && passOrigen && passBusqueda
+        return passAgente && passOrigen && passHoy && passBusqueda
       })
       .sort((a, b) => (PRIORIDAD_ORIGEN[a.origen ?? ''] ?? 99) - (PRIORIDAD_ORIGEN[b.origen ?? ''] ?? 99))
-  }, [leads, filtro, filtroOrigen, busqueda, me])
+  }, [leads, filtro, filtroOrigen, filtroHoy, busqueda, me, esHoyART])
+
+  const totalHoy = useMemo(
+    () => leads.filter(l => esHoyART(l.creadoEn)).length,
+    [leads, esHoyART]
+  )
 
   const puedeAccionar = useCallback(
     (lead: Lead) => me?.rol === 'admin' || me?.rol === 'manager' || lead.asignadoAId === me?.id,
@@ -355,6 +374,33 @@ export default function LeadsPage() {
       body: JSON.stringify({ traspasoAId: traspasoAgenteId, motivoTraspaso: motivo }),
     })
   }, [modalTraspaso, traspasoAgenteId, motivoTraspaso, agentes])
+
+  async function descargarExcel() {
+    setDescargando(true)
+    try {
+      const res = await fetch('/api/leads/exportar')
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}))
+        alert(err.error ?? 'Error al generar el Excel. Intentá de nuevo.')
+        return
+      }
+      const blob = await res.blob()
+      const url  = URL.createObjectURL(blob)
+      const a    = document.createElement('a')
+      const hoy  = new Date().toLocaleDateString('es-AR', {
+        timeZone: 'America/Argentina/Buenos_Aires',
+        day: '2-digit', month: '2-digit', year: 'numeric',
+      }).replace(/\//g, '-')
+      a.href     = url
+      a.download = `leads-${hoy}.xlsx`
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      URL.revokeObjectURL(url)
+    } finally {
+      setDescargando(false)
+    }
+  }
 
   async function onDragEnd(result: DropResult) {
     if (!result.destination) return
@@ -483,7 +529,14 @@ export default function LeadsPage() {
       <div className="page-header">
         <div>
           <h1 style={{ fontSize: 24, fontWeight: 600, color: '#111827', margin: 0 }}>Leads</h1>
-          <p style={{ fontSize: 14, color: '#6b7280', marginTop: 4, marginBottom: 0 }}>{leadsFiltrados.length} leads</p>
+          <p style={{ fontSize: 14, color: '#6b7280', marginTop: 4, marginBottom: 0 }}>
+            {leadsFiltrados.length} leads
+            {filtroHoy && totalHoy > 0 && (
+              <span style={{ marginLeft: 8, fontSize: 12, color: '#2d8a54', fontWeight: 600 }}>
+                — {totalHoy} ingresaron hoy
+              </span>
+            )}
+          </p>
         </div>
         <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
           <input
@@ -493,10 +546,46 @@ export default function LeadsPage() {
             onChange={e => setBusqueda(e.target.value)}
             style={{ padding: '9px 14px', borderRadius: 10, border: '1px solid #e5e7eb', fontSize: 13, outline: 'none', width: 240, color: '#111827' }}
           />
+          {(me?.rol === 'admin' || me?.rol === 'manager') && (
+            <button
+              onClick={descargarExcel}
+              disabled={descargando}
+              title="Descargar leads de hoy con actividad en Excel"
+              style={{
+                display: 'flex', alignItems: 'center', gap: 6,
+                padding: '9px 16px', borderRadius: 10, border: '1.5px solid #e5e7eb',
+                background: descargando ? '#f3f4f6' : 'white', color: descargando ? '#9ca3af' : '#374151',
+                fontSize: 13, fontWeight: 500, cursor: descargando ? 'not-allowed' : 'pointer',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              {descargando ? '⏳ Generando...' : '⬇ Excel de hoy'}
+            </button>
+          )}
           <Link href="/dashboard/leads/nuevo" style={{ background: '#111827', color: 'white', padding: '10px 20px', borderRadius: 10, fontSize: 14, fontWeight: 500, textDecoration: 'none', whiteSpace: 'nowrap' }}>
             + Nuevo lead
           </Link>
         </div>
+      </div>
+
+      {/* ── Filtro Hoy ── */}
+      <div style={{ display: 'flex', gap: 7, marginBottom: 8, alignItems: 'center' }}>
+        <span style={{ fontSize: 11, color: '#9ca3af', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Período:</span>
+        <button
+          onClick={() => setFiltroHoy(false)}
+          style={btnFiltro(!filtroHoy)}
+        >
+          Todos
+        </button>
+        <button
+          onClick={() => setFiltroHoy(true)}
+          style={{
+            ...btnFiltro(filtroHoy),
+            ...(filtroHoy ? { background: '#2d8a54', borderColor: '#2d8a54', color: 'white' } : {}),
+          }}
+        >
+          Hoy {totalHoy > 0 && `(${totalHoy})`}
+        </button>
       </div>
 
       {/* ── Filtros por agente ── */}
