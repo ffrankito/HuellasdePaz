@@ -17,6 +17,7 @@ type Lead = {
   agenteNombre: string | null
   seguimientoEn: string | null
   ultimaNotaDesc: string | null
+  ultimaInteraccionEn: string | null
   creadoEn: string
 }
 
@@ -313,7 +314,7 @@ export default function LeadsPage() {
       .filter(l => {
         const passAgente   = filtro === 'todos' || (filtro === 'mios' ? l.asignadoAId === me?.id : l.asignadoAId === filtro)
         const passOrigen   = filtroOrigen === 'todos' || l.origen === filtroOrigen
-        const passHoy      = !filtroHoy || esHoyART(l.creadoEn)
+        const passHoy      = !filtroHoy || esHoyART(l.ultimaInteraccionEn ?? l.creadoEn)
         const passBusqueda = !q || l.nombre.toLowerCase().includes(q) || l.telefono.includes(q)
         return passAgente && passOrigen && passHoy && passBusqueda
       })
@@ -321,7 +322,7 @@ export default function LeadsPage() {
   }, [leads, filtro, filtroOrigen, filtroHoy, busqueda, me, esHoyART])
 
   const totalHoy = useMemo(
-    () => leads.filter(l => esHoyART(l.creadoEn)).length,
+    () => leads.filter(l => esHoyART(l.ultimaInteraccionEn ?? l.creadoEn)).length,
     [leads, esHoyART]
   )
 
@@ -574,7 +575,7 @@ export default function LeadsPage() {
           Todos
         </button>
         <button
-          onClick={() => setFiltroHoy(true)}
+          onClick={() => { setFiltroHoy(true); setFiltro('todos') }}
           style={{
             ...btnFiltro(filtroHoy),
             ...(filtroHoy ? { background: '#2d8a54', borderColor: '#2d8a54', color: 'white' } : {}),
