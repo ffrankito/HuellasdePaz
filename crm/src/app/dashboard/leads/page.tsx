@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useMemo, useCallback, memo } from 'react'
+import { useState, useEffect, useRef, useMemo, useCallback, memo } from 'react'
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd'
 import Link from 'next/link'
 
@@ -29,8 +29,6 @@ type FiltroAgente = 'todos' | 'mios' | string
 type FiltroOrigen = 'todos' | string
 
 // ── Constantes estáticas fuera del componente ──────────────────────────────
-
-const TZ = 'America/Argentina/Buenos_Aires'
 
 const PALETA = ['#1d4ed8', '#dc2626', '#7e22ce', '#c2410c', '#0891b2', '#be185d', '#065f46', '#92400e']
 
@@ -250,7 +248,8 @@ export default function LeadsPage() {
   const [filtroOrigen, setFiltroOrigen] = useState<FiltroOrigen>('todos')
   const [filtroHoy, setFiltroHoy]     = useState(false)
   const [descargando, setDescargando] = useState(false)
-  const [busqueda, setBusqueda]       = useState('')
+  const isMounted                     = useRef(false)
+  const [busqueda, setBusqueda]         = useState('')
 
   const [modalSeg, setModalSeg]               = useState<ModalSeguimiento>(null)
   const [segPersonalizado, setSegPersonalizado] = useState('')
@@ -286,6 +285,18 @@ export default function LeadsPage() {
     return () => clearInterval(poll)
   }, [])
 
+  // Cuando cambia filtroHoy, re-fetchea del servidor con el parámetro correcto
+  useEffect(() => {
+    if (!isMounted.current) { isMounted.current = true; return }
+    setLeads([])
+    setLoading(true)
+    const url = filtroHoy ? '/api/leads?hoy=true' : '/api/leads'
+    fetch(url)
+      .then(r => r.json())
+      .then((data: Lead[]) => { setLeads(data); setLoading(false) })
+      .catch(() => setLoading(false))
+  }, [filtroHoy])
+
   // ── Valores derivados memoizados ─────────────────────────────────────────
 
   const colorPorId = useMemo(() => {
@@ -303,28 +314,20 @@ export default function LeadsPage() {
     [leads]
   )
 
-  const esHoyART = useCallback((fechaISO: string) => {
-    const fmt = (d: Date) => new Intl.DateTimeFormat('en-CA', { timeZone: TZ }).format(d)
-    return fmt(new Date(fechaISO)) === fmt(new Date())
-  }, [])
-
   const leadsFiltrados = useMemo(() => {
     const q = busqueda.toLowerCase().trim()
     return leads
       .filter(l => {
         const passAgente   = filtro === 'todos' || (filtro === 'mios' ? l.asignadoAId === me?.id : l.asignadoAId === filtro)
         const passOrigen   = filtroOrigen === 'todos' || l.origen === filtroOrigen
-        const passHoy      = !filtroHoy || esHoyART(l.ultimaInteraccionEn ?? l.creadoEn)
         const passBusqueda = !q || l.nombre.toLowerCase().includes(q) || l.telefono.includes(q)
-        return passAgente && passOrigen && passHoy && passBusqueda
+        return passAgente && passOrigen && passBusqueda
       })
       .sort((a, b) => (PRIORIDAD_ORIGEN[a.origen ?? ''] ?? 99) - (PRIORIDAD_ORIGEN[b.origen ?? ''] ?? 99))
-  }, [leads, filtro, filtroOrigen, filtroHoy, busqueda, me, esHoyART])
+  }, [leads, filtro, filtroOrigen, busqueda, me])
 
-  const totalHoy = useMemo(
-    () => leads.filter(l => esHoyART(l.ultimaInteraccionEn ?? l.creadoEn)).length,
-    [leads, esHoyART]
-  )
+  // Cuando Hoy está activo, leads ya viene filtrado del servidor
+  const totalHoy = filtroHoy ? leads.length : 0
 
   const puedeAccionar = useCallback(
     (lead: Lead) => me?.rol === 'admin' || me?.rol === 'manager' || lead.asignadoAId === me?.id,

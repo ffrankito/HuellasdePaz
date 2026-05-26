@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { revalidatePath } from 'next/cache'
 import { db } from '@/db'
 import { leads, usuarios } from '@/db/schema'
-import { eq, asc, sql } from 'drizzle-orm'
+import { eq, asc, sql, or, gte, and } from 'drizzle-orm'
 import { crearLeadAutomatico } from '@/lib/leads/crearLeadAutomatico'
 import type { OrigenLead } from '@/lib/leads/crearLeadAutomatico'
 import { getCorsHeaders } from '@/lib/cors'
@@ -48,15 +48,19 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url)
     const agenteId = searchParams.get('agenteId')
     const misLeads = searchParams.get('misLeads')
+    const soloHoy  = searchParams.get('hoy') === 'true'
 
     const esAdminOManager = auth.usuario.rol === 'admin' || auth.usuario.rol === 'manager'
 
-    // Solo admin/manager pueden ver leads de otros agentes
     if (agenteId && !esAdminOManager) {
       return NextResponse.json({ error: 'Sin permisos' }, { status: 403, headers: corsHeaders })
     }
 
-    const query = db
+    // Inicio del día en Argentina (UTC-3 fijo)
+    const hoyART   = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Argentina/Buenos_Aires' }).format(new Date())
+    const inicioDia = new Date(`${hoyART}T00:00:00-03:00`)
+
+    const baseSelect = db
       .select({
         id: leads.id,
         nombre: leads.nombre,
@@ -88,11 +92,25 @@ export async function GET(request: NextRequest) {
       .leftJoin(usuarios, eq(leads.asignadoAId, usuarios.id))
       .orderBy(asc(leads.creadoEn))
 
-    const data = misLeads === 'true'
-      ? await query.where(eq(leads.asignadoAId, auth.usuario.id))
+    // Condición de agente
+    const condAgente = misLeads === 'true'
+      ? eq(leads.asignadoAId, auth.usuario.id)
       : agenteId
-        ? await query.where(eq(leads.asignadoAId, agenteId))
-        : await query
+        ? eq(leads.asignadoAId, agenteId)
+        : undefined
+
+    // Condición de fecha: creado hoy O con actividad hoy
+    const condHoy = soloHoy
+      ? or(gte(leads.creadoEn, inicioDia), gte(leads.ultimaInteraccionEn, inicioDia))
+      : undefined
+
+    const condFinal = condAgente && condHoy
+      ? and(condAgente, condHoy)
+      : condAgente ?? condHoy
+
+    const data = condFinal
+      ? await baseSelect.where(condFinal)
+      : await baseSelect
 
     return NextResponse.json(data, { headers: corsHeaders })
   } catch (error) {
