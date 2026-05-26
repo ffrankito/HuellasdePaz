@@ -249,6 +249,7 @@ export default function LeadsPage() {
   const [filtroHoy, setFiltroHoy]     = useState(false)
   const [descargando, setDescargando] = useState(false)
   const isMounted                     = useRef(false)
+  const filtroHoyRef                  = useRef(false)
   const [busqueda, setBusqueda]         = useState('')
 
   const [modalSeg, setModalSeg]               = useState<ModalSeguimiento>(null)
@@ -266,11 +267,14 @@ export default function LeadsPage() {
       setAgentes(agentesData)
     })
 
-    const cargar = (esPolling = false) =>
-      fetch('/api/leads')
+    const cargar = (esPolling = false) => {
+      const url = filtroHoyRef.current ? '/api/leads?hoy=true' : '/api/leads'
+      return fetch(url)
         .then(r => r.json())
         .then((data: Lead[]) => {
           if (!esPolling) { setLeads(data); setLoading(false); return }
+          // En modo Hoy no mostramos banner de nuevos, simplemente actualizamos
+          if (filtroHoyRef.current) { setLeads(data); return }
           setLeads(prev => {
             const ids = new Set(prev.map(l => l.id))
             const nuevos = data.filter(l => !ids.has(l.id))
@@ -279,13 +283,17 @@ export default function LeadsPage() {
             return [...prev, ...nuevos]
           })
         })
+    }
 
     cargar()
     const poll = setInterval(() => cargar(true), 10_000)
     return () => clearInterval(poll)
   }, [])
 
-  // Cuando cambia filtroHoy, re-fetchea del servidor con el parámetro correcto
+  // Sincroniza el ref con el estado (el polling lo lee sin cerrar sobre el state)
+  useEffect(() => { filtroHoyRef.current = filtroHoy }, [filtroHoy])
+
+  // Cuando cambia filtroHoy, re-fetchea inmediatamente
   useEffect(() => {
     if (!isMounted.current) { isMounted.current = true; return }
     setLeads([])
