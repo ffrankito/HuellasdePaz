@@ -552,7 +552,7 @@ export default function LeadsPage() {
             onChange={e => setBusqueda(e.target.value)}
             style={{ padding: '9px 14px', borderRadius: 10, border: '1px solid #e5e7eb', fontSize: 13, outline: 'none', width: 240, color: '#111827' }}
           />
-          {filtroHoy && (me?.rol === 'admin' || me?.rol === 'manager') && (
+          {filtroHoy && (
             <button
               onClick={descargarExcel}
               disabled={descargando}

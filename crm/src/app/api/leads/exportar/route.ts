@@ -63,7 +63,7 @@ function rangoDelDia(fechaParam: string | null): { inicio: Date; fin: Date; labe
 }
 
 export async function GET(request: NextRequest) {
-  const auth = await requireAuth(['admin', 'manager'])
+  const auth = await requireAuth()
   if (!auth.ok) return auth.response
 
   try {
