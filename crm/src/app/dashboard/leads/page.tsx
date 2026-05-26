@@ -293,11 +293,9 @@ export default function LeadsPage() {
   // Sincroniza el ref con el estado (el polling lo lee sin cerrar sobre el state)
   useEffect(() => { filtroHoyRef.current = filtroHoy }, [filtroHoy])
 
-  // Cuando cambia filtroHoy, re-fetchea inmediatamente
+  // Cuando cambia filtroHoy, re-fetchea inmediatamente (sin blanquear el kanban)
   useEffect(() => {
     if (!isMounted.current) { isMounted.current = true; return }
-    setLeads([])
-    setLoading(true)
     const url = filtroHoy ? '/api/leads?hoy=true' : '/api/leads'
     fetch(url)
       .then(r => r.json())
@@ -541,7 +539,7 @@ export default function LeadsPage() {
             {leadsFiltrados.length} leads
             {filtroHoy && totalHoy > 0 && (
               <span style={{ marginLeft: 8, fontSize: 12, color: '#2d8a54', fontWeight: 600 }}>
-                — {totalHoy} ingresaron hoy
+                — {totalHoy} activos hoy
               </span>
             )}
           </p>
