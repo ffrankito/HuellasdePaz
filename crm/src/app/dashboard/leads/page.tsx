@@ -248,9 +248,7 @@ export default function LeadsPage() {
   const [filtroOrigen, setFiltroOrigen] = useState<FiltroOrigen>('todos')
   const [filtroHoy, setFiltroHoy]     = useState(false)
   const [descargando, setDescargando] = useState(false)
-  const isMounted                     = useRef(false)
-  const filtroHoyRef                  = useRef(false)
-  const [busqueda, setBusqueda]         = useState('')
+  const [busqueda, setBusqueda]       = useState('')
 
   const [modalSeg, setModalSeg]               = useState<ModalSeguimiento>(null)
   const [segPersonalizado, setSegPersonalizado] = useState('')
@@ -268,19 +266,16 @@ export default function LeadsPage() {
     })
 
     const cargar = (esPolling = false) => {
-      const url = filtroHoyRef.current ? '/api/leads?hoy=true' : '/api/leads'
-      return fetch(url)
+      return fetch('/api/leads')
         .then(r => r.json())
         .then((data: Lead[]) => {
           if (!esPolling) { setLeads(data); setLoading(false); return }
-          // En modo Hoy no mostramos banner de nuevos, simplemente actualizamos
-          if (filtroHoyRef.current) { setLeads(data); return }
           setLeads(prev => {
-            const ids = new Set(prev.map(l => l.id))
-            const nuevos = data.filter(l => !ids.has(l.id))
-            if (nuevos.length === 0) return prev
-            setNuevosCount(n => n + nuevos.length)
-            return [...prev, ...nuevos]
+            const prevIds = new Set(prev.map(l => l.id))
+            const nuevos = data.filter(l => !prevIds.has(l.id))
+            if (nuevos.length > 0) setNuevosCount(n => n + nuevos.length)
+            // Reemplazar siempre para mantener ultimaInteraccionEn fresco
+            return data
           })
         })
     }
@@ -289,19 +284,6 @@ export default function LeadsPage() {
     const poll = setInterval(() => cargar(true), 10_000)
     return () => clearInterval(poll)
   }, [])
-
-  // Sincroniza el ref con el estado (el polling lo lee sin cerrar sobre el state)
-  useEffect(() => { filtroHoyRef.current = filtroHoy }, [filtroHoy])
-
-  // Cuando cambia filtroHoy, re-fetchea inmediatamente (sin blanquear el kanban)
-  useEffect(() => {
-    if (!isMounted.current) { isMounted.current = true; return }
-    const url = filtroHoy ? '/api/leads?hoy=true' : '/api/leads'
-    fetch(url)
-      .then(r => r.json())
-      .then((data: Lead[]) => { setLeads(data); setLoading(false) })
-      .catch(() => setLoading(false))
-  }, [filtroHoy])
 
   // ── Valores derivados memoizados ─────────────────────────────────────────
 
@@ -320,9 +302,23 @@ export default function LeadsPage() {
     [leads]
   )
 
+  // Medianoche Argentina — calculado una vez por sesión
+  const inicioDia = useMemo(() => {
+    const hoy = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Argentina/Buenos_Aires' }).format(new Date())
+    return new Date(`${hoy}T00:00:00-03:00`)
+  }, [])
+
+  // Leads con actividad hoy (creados o gestionados hoy) — filtro cliente, sin red
+  const leadsActivos = useMemo(() =>
+    leads.filter(l =>
+      new Date(l.creadoEn) >= inicioDia ||
+      (l.ultimaInteraccionEn != null && new Date(l.ultimaInteraccionEn) >= inicioDia)
+    ), [leads, inicioDia])
+
   const leadsFiltrados = useMemo(() => {
     const q = busqueda.toLowerCase().trim()
-    return leads
+    const base = filtroHoy ? leadsActivos : leads
+    return base
       .filter(l => {
         const passAgente   = filtro === 'todos' || (filtro === 'mios' ? l.asignadoAId === me?.id : l.asignadoAId === filtro)
         const passOrigen   = filtroOrigen === 'todos' || l.origen === filtroOrigen
@@ -330,10 +326,9 @@ export default function LeadsPage() {
         return passAgente && passOrigen && passBusqueda
       })
       .sort((a, b) => (PRIORIDAD_ORIGEN[a.origen ?? ''] ?? 99) - (PRIORIDAD_ORIGEN[b.origen ?? ''] ?? 99))
-  }, [leads, filtro, filtroOrigen, busqueda, me])
+  }, [leads, leadsActivos, filtroHoy, filtro, filtroOrigen, busqueda, me])
 
-  // Cuando Hoy está activo, leads ya viene filtrado del servidor
-  const totalHoy = filtroHoy ? leads.length : 0
+  const totalHoy = filtroHoy ? leadsActivos.length : 0
 
   const puedeAccionar = useCallback(
     (lead: Lead) => me?.rol === 'admin' || me?.rol === 'manager' || lead.asignadoAId === me?.id,
