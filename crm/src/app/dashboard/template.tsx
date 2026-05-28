@@ -47,7 +47,7 @@ export default function DashboardTemplate({ children }: { children: React.ReactN
           style={{
             height: '100%',
             width: '0%',
-            background: 'linear-gradient(90deg, #1a8a9c, #4ade80)',
+            background: 'linear-gradient(90deg, #126070, #1a8a9c)',
             boxShadow: '0 0 8px rgba(26,138,156,0.5)',
             opacity: 0,
           }}
