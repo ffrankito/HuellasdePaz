@@ -7,8 +7,8 @@
   --green-light:  #99D0D8;
   --green-50:     #F0F8FA;
   --green-100:    #CCE8ED;
-  --cream:        #f5f2ee;
-  --cream-dark:   #ede9e3;
+  --cream:        #f0f5f6;
+  --cream-dark:   #e6f0f2;
   --text:         #1e1a16;
   --text-soft:    #6b6259;
   --text-muted:   #a89f94;
@@ -276,7 +276,7 @@ img { max-width: 100%; display: block; }
 .step-content { animation: step-in 0.26s cubic-bezier(0.22,1,0.36,1); }
 
 /* â”€â”€â”€ SITE HEADER â”€â”€â”€ */
-.site-header { position: sticky; top: 0; z-index: 100; background: rgba(245,242,238,0.90); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-bottom: 1px solid var(--border); box-shadow: 0 1px 12px rgba(0,0,0,0.05); }
+.site-header { position: sticky; top: 0; z-index: 100; background: rgba(240,245,246,0.95); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-bottom: 1px solid var(--border); box-shadow: 0 1px 12px rgba(0,0,0,0.05); }
 .site-header__inner { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; min-height: 64px; }
 .site-header__logo { display: flex; align-items: center; text-decoration: none; flex-shrink: 0; }
 .site-header__logo-text { font-family: var(--font-display); font-size: 18px; font-weight: 600; color: var(--text); letter-spacing: -0.01em; }

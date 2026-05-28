@@ -382,7 +382,7 @@ const renderStep3 = () => (
     return (
       <div className="success">
         <div className="success__check">✓</div>
-        <h2 className="success__title">Gracias por confiar en Huellas de Paz.</h2>
+        <h2 className="success__title">Gracias por confiar en Aires de Paz.</h2>
         <p className="success__text">
           Recibimos tu consulta. Sabemos lo importante que es este momento y estaremos a tu lado
           en cada detalle. Muy pronto nos comunicaremos para coordinar el retiro y la entrega.
