@@ -76,24 +76,9 @@ export default function LoginPage() {
         <div style={{ position: 'absolute', top: 0, left: 48, right: 48, height: 3, background: 'linear-gradient(90deg, transparent, #1a8a9c, transparent)', borderRadius: '0 0 4px 4px' }} />
 
         {/* Logo */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 40 }}>
-          <svg width="64" height="52" viewBox="0 0 100 78" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M 3 64 Q 50 10 97 64" stroke="#1a8a9c" strokeWidth="3.5" strokeLinecap="round"/>
-            <circle cx="50" cy="32" r="24" fill="white" stroke="#1a8a9c" strokeWidth="3"/>
-            <circle cx="36" cy="28" r="5.5" fill="#1a8a9c"/>
-            <circle cx="45" cy="23" r="5.5" fill="#1a8a9c"/>
-            <circle cx="55" cy="23" r="5.5" fill="#1a8a9c"/>
-            <circle cx="64" cy="28" r="5.5" fill="#1a8a9c"/>
-            <ellipse cx="50" cy="42" rx="10" ry="9" fill="#1a8a9c"/>
-          </svg>
-          <div>
-            <p style={{ fontSize: 15, fontWeight: 700, color: '#111827', margin: 0, letterSpacing: '-0.01em' }}>
-              Aires de Paz
-            </p>
-            <p style={{ fontSize: 11, color: '#9ca3af', margin: 0, letterSpacing: '0.05em', textTransform: 'uppercase' }}>
-              División Mascotas
-            </p>
-          </div>
+        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 32 }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/logo.png" alt="Aires de Paz" style={{ height: 100, width: 'auto', objectFit: 'contain' }} />
         </div>
 
         {/* Heading */}
