@@ -46,7 +46,7 @@ const beneficios = [
             { num:'3', titulo:'Empezamos a trabajar juntos', desc:'Tus clientes tienen un respaldo de calidad y vos generás un ingreso extra.' },
           ].map(paso => (
             <div style="display:flex;gap:14px;align-items:flex-start">
-              <div style="width:32px;height:32px;border-radius:50%;background:#f0faf4;border:1.5px solid #aadfc2;display:flex;align-items:center;justify-content:center;font-size:0.8125rem;font-weight:700;color:#2d8a54;flex-shrink:0">{paso.num}</div>
+              <div style="width:32px;height:32px;border-radius:50%;background:#f0f8fa;border:1.5px solid #99d0d8;display:flex;align-items:center;justify-content:center;font-size:0.8125rem;font-weight:700;color:#1a8a9c;flex-shrink:0">{paso.num}</div>
               <div>
                 <p style="font-size:0.9375rem;font-weight:600;color:#1c1917;margin:0 0 3px">{paso.titulo}</p>
                 <p style="font-size:0.875rem;color:#78716c;margin:0;line-height:1.6">{paso.desc}</p>
@@ -112,7 +112,7 @@ const beneficios = [
           <span class="btn-submit__shimmer" aria-hidden="true"></span>
         </button>
 
-        <div id="cv-success" style="display:none;align-items:center;gap:8px;font-size:0.875rem;color:#2d8a54;background:#f0faf4;border:1px solid #aadfc2;border-radius:10px;padding:12px 16px">
+        <div id="cv-success" style="display:none;align-items:center;gap:8px;font-size:0.875rem;color:#1a8a9c;background:#f0f8fa;border:1px solid #99d0d8;border-radius:10px;padding:12px 16px">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>
           ¡Gracias! Recibimos tu postulación y te contactamos pronto.
         </div>
@@ -132,7 +132,7 @@ const beneficios = [
   @media(min-width:768px){ .beneficios-grid { grid-template-columns:repeat(3,1fr); } }
 
   .beneficio-card { background:white; border:1px solid #e7e5e4; border-radius:1.25rem; padding:1.5rem; transition:transform 0.3s,box-shadow 0.3s,border-color 0.3s; }
-  .beneficio-card:hover { transform:translateY(-4px); box-shadow:0 8px 24px rgba(45,138,84,0.1); border-color:#aadfc2; }
+  .beneficio-card:hover { transform:translateY(-4px); box-shadow:0 8px 24px rgba(26,138,156,0.1); border-color:#99d0d8; }
 
   .convenio-grid { display:grid; grid-template-columns:1fr; gap:3rem; align-items:start; }
   @media(min-width:768px){ .convenio-grid { grid-template-columns:1fr 1fr; } }
@@ -140,17 +140,17 @@ const beneficios = [
   .float-field { position:relative; padding-top:6px; }
   .float-input { width:100%; background:transparent; border:none; border-bottom:1.5px solid #d6d3d1; padding:14px 2px 8px; font-size:0.9375rem; color:#1c1917; font-family:inherit; outline:none; transition:border-color 0.3s; resize:none; box-sizing:border-box; }
   .float-textarea { padding-top:18px; }
-  .float-line { position:absolute; bottom:0; left:0; width:0; height:2px; background:#2d8a54; transition:width 0.35s; pointer-events:none; border-radius:2px; }
+  .float-line { position:absolute; bottom:0; left:0; width:0; height:2px; background:#1a8a9c; transition:width 0.35s; pointer-events:none; border-radius:2px; }
   .float-input:focus ~ .float-line, .float-input:valid ~ .float-line { width:100%; }
   .float-label { position:absolute; left:2px; top:22px; font-size:0.9375rem; color:#78716c; pointer-events:none; transition:transform 0.3s,font-size 0.3s,color 0.3s; transform-origin:left top; }
-  .float-input:focus ~ .float-label, .float-input:not(:placeholder-shown) ~ .float-label { transform:translateY(-22px); font-size:0.75rem; color:#2d8a54; }
+  .float-input:focus ~ .float-label, .float-input:not(:placeholder-shown) ~ .float-label { transform:translateY(-22px); font-size:0.75rem; color:#1a8a9c; }
   .float-hint { font-size:0.75rem; color:#a8a29e; margin-top:5px; padding-left:2px; }
   .float-select { width:100%; background:transparent; border:none; border-bottom:1.5px solid #d6d3d1; padding:14px 2px 8px; font-size:0.9375rem; color:#78716c; font-family:inherit; outline:none; cursor:pointer; appearance:none; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2378716c' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 8px center; box-sizing:border-box; }
   .float-select:focus { color:#1c1917; border-bottom-color:transparent; }
   .float-select:focus ~ .float-line { width:100%; }
 
-  .btn-submit { position:relative; display:flex; align-items:center; justify-content:center; background:#2d8a54; color:white; font-size:0.9375rem; font-weight:500; padding:14px 32px; border-radius:9999px; border:none; cursor:pointer; overflow:hidden; transition:background-color 0.25s,transform 0.2s; font-family:inherit; width:100%; }
-  .btn-submit:hover:not(:disabled) { background:#1a5233; transform:translateY(-1px); }
+  .btn-submit { position:relative; display:flex; align-items:center; justify-content:center; background:#1a8a9c; color:white; font-size:0.9375rem; font-weight:500; padding:14px 32px; border-radius:9999px; border:none; cursor:pointer; overflow:hidden; transition:background-color 0.25s,transform 0.2s; font-family:inherit; width:100%; }
+  .btn-submit:hover:not(:disabled) { background:#126070; transform:translateY(-1px); }
   .btn-submit:disabled { cursor:not-allowed; opacity:0.8; }
   .btn-submit__shimmer { position:absolute; top:0; left:-100%; width:60%; height:100%; background:linear-gradient(120deg,transparent 20%,rgba(255,255,255,0.28) 50%,transparent 80%); pointer-events:none; transition:left 0.55s; }
   .btn-submit:hover .btn-submit__shimmer { left:150%; }

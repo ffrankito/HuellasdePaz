@@ -28,7 +28,7 @@ const pts = [
     {pts.map(p => (
       <span
         class="particle"
-        style={`left:${p.l};bottom:-8px;width:${p.s}px;height:${p.s}px;background:radial-gradient(circle,rgba(45,138,84,0.6),rgba(77,184,122,0.3) 60%,transparent);animation-duration:${p.d}s;animation-delay:-${p.dl}s;--dx:${p.dx}`}
+        style={`left:${p.l};bottom:-8px;width:${p.s}px;height:${p.s}px;background:radial-gradient(circle,rgba(26,138,156,0.6),rgba(74,184,200,0.3) 60%,transparent);animation-duration:${p.d}s;animation-delay:-${p.dl}s;--dx:${p.dx}`}
       ></span>
     ))}
   </div>
@@ -61,8 +61,8 @@ const pts = [
       <p style="font-size:0.875rem;font-weight:600;color:#44403c;text-align:center;margin:0 0 1rem">Cobertura por período</p>
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;text-align:center">
         <div style="background:#f5f5f4;border-radius:12px;padding:12px 8px"><p style="font-family:var(--font-display,'Playfair Display',serif);font-size:1.5rem;font-weight:700;color:#a89f94;margin:0 0 4px">0%</p><p style="font-size:0.75rem;color:#78716c;margin:0">Meses 1–6</p></div>
-        <div style="background:#f0faf4;border-radius:12px;padding:12px 8px"><p style="font-family:var(--font-display,'Playfair Display',serif);font-size:1.5rem;font-weight:700;color:#2d8a54;margin:0 0 4px">50%</p><p style="font-size:0.75rem;color:#78716c;margin:0">Meses 7–12</p></div>
-        <div style="background:#2d8a54;border-radius:12px;padding:12px 8px"><p style="font-family:var(--font-display,'Playfair Display',serif);font-size:1.5rem;font-weight:700;color:white;margin:0 0 4px">100%</p><p style="font-size:0.75rem;color:#d6f0e0;margin:0">Desde mes 13</p></div>
+        <div style="background:#f0f8fa;border-radius:12px;padding:12px 8px"><p style="font-family:var(--font-display,'Playfair Display',serif);font-size:1.5rem;font-weight:700;color:#1a8a9c;margin:0 0 4px">50%</p><p style="font-size:0.75rem;color:#78716c;margin:0">Meses 7–12</p></div>
+        <div style="background:#1a8a9c;border-radius:12px;padding:12px 8px"><p style="font-family:var(--font-display,'Playfair Display',serif);font-size:1.5rem;font-weight:700;color:white;margin:0 0 4px">100%</p><p style="font-size:0.75rem;color:#cce8ed;margin:0">Desde mes 13</p></div>
       </div>
       <p style="font-size:0.75rem;color:#a89f94;text-align:center;margin:10px 0 0">* Mascota adicional: +50% sobre la cuota base.</p>
     </div>
@@ -71,7 +71,7 @@ const pts = [
     <div style="display:grid;grid-template-columns:repeat(1,1fr);gap:1.25rem">
       {planes.map((plan, i) => (
         <div class={`plan-card reveal-item ${plan.destacado ? 'plan-card--destacado' : ''}`} style={`--reveal-delay:${i*0.12}s`}>
-          {plan.destacado && <div style="position:absolute;top:-1px;left:50%;transform:translateX(-50%);z-index:2"><span style="display:block;background:#2d8a54;color:white;font-size:0.6875rem;font-weight:600;padding:4px 14px;border-radius:0 0 12px 12px;white-space:nowrap">Más elegido ✨</span></div>}
+          {plan.destacado && <div style="position:absolute;top:-1px;left:50%;transform:translateX(-50%);z-index:2"><span style="display:block;background:#1a8a9c;color:white;font-size:0.6875rem;font-weight:600;padding:4px 14px;border-radius:0 0 12px 12px;white-space:nowrap">Más elegido ✨</span></div>}
           <div style="text-align:center;padding-top:8px">
             <span style="font-size:2rem;display:block;margin-bottom:10px">{plan.emoji}</span>
             <h3 class="font-display" style="font-size:1rem;font-weight:600;color:#1c1917;margin:0 0 4px">{plan.nombre}</h3>
@@ -81,7 +81,7 @@ const pts = [
           <ul style="list-style:none;padding:0;margin:14px 0 0;display:flex;flex-direction:column;gap:7px;flex:1">
             {plan.beneficios.map(b => (
               <li style="display:flex;align-items:flex-start;gap:8px;font-size:0.875rem;color:#57534e">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2d8a54" stroke-width="2.5" style="flex-shrink:0;margin-top:2px"><polyline points="20 6 9 17 4 12"/></svg>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1a8a9c" stroke-width="2.5" style="flex-shrink:0;margin-top:2px"><polyline points="20 6 9 17 4 12"/></svg>
                 {b}
               </li>
             ))}
@@ -102,9 +102,9 @@ const pts = [
   .timeline { display:grid; grid-template-columns:repeat(3,1fr); }
   @media(max-width:640px){ .timeline{grid-template-columns:1fr;gap:2rem} }
   .timeline-step { position:relative; display:flex; flex-direction:column; align-items:center; padding:0 0.75rem; }
-  .timeline-num { width:48px; height:48px; border-radius:50%; background:#f0faf4; border:2px solid #aadfc2; display:flex; align-items:center; justify-content:center; font-family:var(--font-display,'Playfair Display',serif); font-size:1rem; font-weight:600; color:#2d8a54; margin-bottom:12px; position:relative; z-index:1; transition:background 0.3s,color 0.3s; }
-  .timeline-step:hover .timeline-num { background:#2d8a54; color:white; }
-  .timeline-line { position:absolute; top:24px; left:calc(50% + 24px); right:calc(-50% + 24px); height:2px; background:linear-gradient(to right,#aadfc2,#d6f0e0); }
+  .timeline-num { width:48px; height:48px; border-radius:50%; background:#f0f8fa; border:2px solid #99d0d8; display:flex; align-items:center; justify-content:center; font-family:var(--font-display,'Playfair Display',serif); font-size:1rem; font-weight:600; color:#1a8a9c; margin-bottom:12px; position:relative; z-index:1; transition:background 0.3s,color 0.3s; }
+  .timeline-step:hover .timeline-num { background:#1a8a9c; color:white; }
+  .timeline-line { position:absolute; top:24px; left:calc(50% + 24px); right:calc(-50% + 24px); height:2px; background:linear-gradient(to right,#99d0d8,#cce8ed); }
   @media(max-width:640px){ .timeline-line{display:none} }
 
   .plan-card { position:relative; background:rgba(255,255,255,0.88); backdrop-filter:blur(8px); border-radius:1.5rem; border:1px solid #e7e5e4; padding:1.75rem; display:flex; flex-direction:column; overflow:visible; transition:transform 0.3s,box-shadow 0.3s,border-color 0.3s; }
@@ -113,27 +113,27 @@ const pts = [
   /* Borde gradiente animado en hover (no aplica al destacado que ya tiene el suyo) */
   .plan-card:not(.plan-card--destacado)::before {
     content:""; position:absolute; inset:0; border-radius:1.5rem; padding:1.5px;
-    background:linear-gradient(135deg,#aadfc2 0%,#2d8a54 55%,#1a5233 100%);
+    background:linear-gradient(135deg,#99d0d8 0%,#1a8a9c 55%,#126070 100%);
     -webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
     -webkit-mask-composite:xor; mask-composite:exclude;
     opacity:0; transition:opacity 0.4s; pointer-events:none;
   }
   .plan-card:not(.plan-card--destacado):hover::before { opacity:1; }
 
-  .plan-card--destacado { border-color:transparent; background:linear-gradient(rgba(255,255,255,0.93),rgba(255,255,255,0.93)) padding-box,conic-gradient(from var(--ba),#aadfc2,#2d8a54 25%,#4db87a 50%,#2d8a54 75%,#aadfc2) border-box; animation:ba-spin 4s linear infinite; }
+  .plan-card--destacado { border-color:transparent; background:linear-gradient(rgba(255,255,255,0.93),rgba(255,255,255,0.93)) padding-box,conic-gradient(from var(--ba),#99d0d8,#1a8a9c 25%,#4ab8c8 50%,#1a8a9c 75%,#99d0d8) border-box; animation:ba-spin 4s linear infinite; }
   @property --ba { syntax:'<angle>'; initial-value:0deg; inherits:false; }
   @keyframes ba-spin { to{--ba:360deg} }
   .plan-cta { display:flex; align-items:center; justify-content:center; width:100%; padding:10px 20px; border-radius:9999px; font-size:0.875rem; font-weight:500; text-decoration:none; margin-top:18px; transition:background-color 0.2s,transform 0.15s; }
   .plan-cta:hover { transform:translateY(-1px); }
-  .plan-cta--primary { background:#2d8a54; color:white; }
-  .plan-cta--primary:hover { background:#1a5233; }
+  .plan-cta--primary { background:#1a8a9c; color:white; }
+  .plan-cta--primary:hover { background:#126070; }
   .plan-cta--outline { border:1px solid #d6d3d1; color:#44403c; }
-  .plan-cta--outline:hover { border-color:#2d8a54; color:#2d8a54; }
+  .plan-cta--outline:hover { border-color:#1a8a9c; color:#1a8a9c; }
 
   .reveal-item { opacity:0; transform:translateY(28px); transition:opacity 0.55s ease calc(var(--reveal-delay,0s)),transform 0.55s ease calc(var(--reveal-delay,0s)); }
   .reveal-item.is-visible { opacity:1; transform:translateY(0); }
 
-  @media(prefers-reduced-motion:reduce){ .reveal-item{opacity:1;transform:none;transition:none} .plan-card--destacado{animation:none;border-color:#aadfc2} }
+  @media(prefers-reduced-motion:reduce){ .reveal-item{opacity:1;transform:none;transition:none} .plan-card--destacado{animation:none;border-color:#99d0d8} }
 </style>
 
 <script>
