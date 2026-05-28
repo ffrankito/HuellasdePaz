@@ -7,6 +7,7 @@ const geist = Geist({ subsets: ['latin'] })
 export const metadata: Metadata = {
   title: 'Aires de Paz — CRM',
   description: 'Sistema de gestión interno',
+  icons: { icon: '/favicon.svg' },
 }
 
 export default function RootLayout({
