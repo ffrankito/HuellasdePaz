@@ -289,11 +289,18 @@ export function Sidebar({ usuario }: { usuario: Usuario }) {
       {/* Header */}
       <div style={{ padding: '20px 18px 16px', borderBottom: '1px solid #f3f4f6', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/logo.png" alt="Aires de Paz" style={{ height: 40, width: 'auto', flexShrink: 0, objectFit: 'contain' }} />
+          <svg width="38" height="30" viewBox="0 0 100 78" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ flexShrink: 0 }}>
+            <path d="M 3 64 Q 50 10 97 64" stroke="#1a8a9c" strokeWidth="3.5" strokeLinecap="round"/>
+            <circle cx="50" cy="32" r="24" fill="white" stroke="#1a8a9c" strokeWidth="3"/>
+            <circle cx="36" cy="28" r="5.5" fill="#1a8a9c"/>
+            <circle cx="45" cy="23" r="5.5" fill="#1a8a9c"/>
+            <circle cx="55" cy="23" r="5.5" fill="#1a8a9c"/>
+            <circle cx="64" cy="28" r="5.5" fill="#1a8a9c"/>
+            <ellipse cx="50" cy="42" rx="10" ry="9" fill="#1a8a9c"/>
+          </svg>
           <div>
             <p style={{ fontSize: 13.5, fontWeight: 700, color: '#111827', margin: 0, letterSpacing: '-0.01em' }}>Aires de Paz</p>
-            <p style={{ fontSize: 10.5, color: '#9ca3af', margin: 0 }}>Sistema de gestión</p>
+            <p style={{ fontSize: 10.5, color: '#9ca3af', margin: 0 }}>División Mascotas</p>
           </div>
         </div>
         <button

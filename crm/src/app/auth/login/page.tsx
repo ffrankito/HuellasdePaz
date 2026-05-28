@@ -78,7 +78,7 @@ export default function LoginPage() {
         {/* Logo */}
         <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 32 }}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/logo.png" alt="Aires de Paz" style={{ height: 100, width: 'auto', objectFit: 'contain' }} />
+          <img src="/logo.png" alt="Aires de Paz" style={{ height: 160, width: 'auto', objectFit: 'contain' }} />
         </div>
 
         {/* Heading */}
