@@ -3,6 +3,7 @@ import { usuarios, leads } from '@/db/schema'
 import { eq, and, count } from 'drizzle-orm'
 import Link from 'next/link'
 import NuevoAgenteBtn from '@/components/dashboard/NuevoAgenteBtn'
+import { SetPasswordBtn } from '@/components/dashboard/SetPasswordBtn'
 
 export default async function ManagerAgentesPage() {
   const agentes = await db
@@ -84,6 +85,7 @@ export default async function ManagerAgentesPage() {
                     Top agente
                   </span>
                 )}
+                <SetPasswordBtn usuarioId={agente.id} nombre={agente.nombre} />
                 <Link
                   href={`/dashboard/leads?agenteId=${agente.id}`}
                   style={{ fontSize: 13, color: '#6b7280', textDecoration: 'none', fontWeight: 500 }}
