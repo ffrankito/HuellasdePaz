@@ -144,7 +144,7 @@ export default async function MemorialPublicoPage({ params }: { params: Promise<
         {/* Dedicatoria */}
         {row.dedicatoria && (
           <div style={{ ...card, padding: '28px 28px 28px', position: 'relative', overflow: 'hidden' }}>
-            <div style={{ position: 'absolute', top: 10, left: 18, fontSize: 96, color: 'rgba(45,138,84,0.1)', fontFamily: 'Georgia, serif', lineHeight: 1, userSelect: 'none', pointerEvents: 'none' }}>
+            <div style={{ position: 'absolute', top: 10, left: 18, fontSize: 96, color: 'rgba(26,138,156,0.1)', fontFamily: 'Georgia, serif', lineHeight: 1, userSelect: 'none', pointerEvents: 'none' }}>
               &ldquo;
             </div>
             <p style={{ fontSize: 9, color: 'rgba(255,255,255,0.22)', margin: '0 0 16px', letterSpacing: '0.2em', textTransform: 'uppercase', fontWeight: 600, position: 'relative', zIndex: 1 }}>
@@ -193,9 +193,9 @@ export default async function MemorialPublicoPage({ params }: { params: Promise<
         <div style={{ paddingTop: 36, textAlign: 'center' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7, marginBottom: 6 }}>
             <svg width="11" height="11" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <path d="M12 2C8 2 4 6 4 10c0 5 8 12 8 12s8-7 8-12c0-4-4-8-8-8z" fill="#4db87a" fillOpacity="0.55"/>
+              <path d="M12 2C8 2 4 6 4 10c0 5 8 12 8 12s8-7 8-12c0-4-4-8-8-8z" fill="#4ab8c8" fillOpacity="0.55"/>
             </svg>
-            <span style={{ fontSize: 11, color: 'rgba(77,184,122,0.4)', letterSpacing: '0.14em', textTransform: 'uppercase', fontWeight: 500 }}>
+            <span style={{ fontSize: 11, color: 'rgba(74,184,200,0.4)', letterSpacing: '0.14em', textTransform: 'uppercase', fontWeight: 500 }}>
               Aires de Paz · Rosario
             </span>
           </div>

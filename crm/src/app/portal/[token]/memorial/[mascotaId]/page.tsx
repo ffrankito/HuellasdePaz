@@ -43,7 +43,7 @@ export default async function MemorialPage({
 
       {/* Fondo estrellado sutil */}
       <div style={{ position: 'fixed', inset: 0, backgroundImage: 'radial-gradient(circle at 1px 1px, rgba(255,255,255,0.025) 1px, transparent 0)', backgroundSize: '36px 36px', pointerEvents: 'none', zIndex: 0 }} />
-      <div style={{ position: 'fixed', inset: 0, background: 'radial-gradient(ellipse at 50% -10%, rgba(45,138,84,0.1) 0%, transparent 55%)', pointerEvents: 'none', zIndex: 0 }} />
+      <div style={{ position: 'fixed', inset: 0, background: 'radial-gradient(ellipse at 50% -10%, rgba(26,138,156,0.1) 0%, transparent 55%)', pointerEvents: 'none', zIndex: 0 }} />
 
       <div style={{ position: 'relative', zIndex: 1, maxWidth: 480, margin: '0 auto', padding: '28px 20px 72px' }}>
 
@@ -101,7 +101,7 @@ export default async function MemorialPage({
         {mascota.dedicatoria && (
           <div style={{ padding: '36px 8px 32px' }}>
             <div style={{ display: 'flex', gap: 20, alignItems: 'flex-start' }}>
-              <div style={{ width: 2, flexShrink: 0, alignSelf: 'stretch', background: 'linear-gradient(to bottom, rgba(45,138,84,0.6), rgba(45,138,84,0.1))', borderRadius: 2, marginTop: 4 }} />
+              <div style={{ width: 2, flexShrink: 0, alignSelf: 'stretch', background: 'linear-gradient(to bottom, rgba(26,138,156,0.6), rgba(26,138,156,0.1))', borderRadius: 2, marginTop: 4 }} />
               <div>
                 <p style={{ fontSize: 9, color: 'rgba(255,255,255,0.2)', margin: '0 0 14px', letterSpacing: '0.18em', textTransform: 'uppercase' }}>Dedicatoria</p>
                 <p style={{ fontSize: 18, color: 'rgba(255,255,255,0.72)', margin: 0, lineHeight: 1.85, fontStyle: 'italic', fontWeight: 300, fontFamily: 'Georgia, Times New Roman, serif' }}>
@@ -150,8 +150,8 @@ export default async function MemorialPage({
               target="_blank"
               style={{
                 flex: 1, padding: '13px', borderRadius: 14, fontSize: 13, fontWeight: 500,
-                border: '1px solid rgba(45,138,84,0.3)', background: 'rgba(45,138,84,0.08)',
-                color: 'rgba(45,138,84,0.85)', textDecoration: 'none', textAlign: 'center' as const,
+                border: '1px solid rgba(26,138,156,0.3)', background: 'rgba(26,138,156,0.08)',
+                color: 'rgba(26,138,156,0.85)', textDecoration: 'none', textAlign: 'center' as const,
                 display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
               }}
             >
@@ -175,8 +175,8 @@ export default async function MemorialPage({
             style={{
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
               width: '100%', padding: '13px', borderRadius: 14, fontSize: 13,
-              fontWeight: 500, border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(45,138,84,0.1)',
-              color: 'rgba(45,138,84,0.8)', textDecoration: 'none', boxSizing: 'border-box' as const,
+              fontWeight: 500, border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(26,138,156,0.1)',
+              color: 'rgba(26,138,156,0.8)', textDecoration: 'none', boxSizing: 'border-box' as const,
             }}
           >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -190,11 +190,11 @@ export default async function MemorialPage({
         {/* Footer */}
         <div style={{ textAlign: 'center', marginTop: 52, paddingTop: 24, borderTop: '1px solid rgba(255,255,255,0.04)' }}>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
-            <div style={{ width: 4, height: 4, borderRadius: '50%', background: 'rgba(45,138,84,0.4)' }} />
+            <div style={{ width: 4, height: 4, borderRadius: '50%', background: 'rgba(26,138,156,0.4)' }} />
             <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.12)', letterSpacing: '0.2em', textTransform: 'uppercase', margin: 0 }}>
               Aires de Paz · Rosario
             </p>
-            <div style={{ width: 4, height: 4, borderRadius: '50%', background: 'rgba(45,138,84,0.4)' }} />
+            <div style={{ width: 4, height: 4, borderRadius: '50%', background: 'rgba(26,138,156,0.4)' }} />
           </div>
         </div>
 
