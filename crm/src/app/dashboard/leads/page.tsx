@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect, useRef, useMemo, useCallback, memo } from 'react'
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd'
@@ -478,12 +478,12 @@ export default function LeadsPage() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: 7, maxHeight: 260, overflowY: 'auto', marginBottom: 18 }}>
               {agentes.filter(a => a.id !== me?.id).map(ag => (
                 <button key={ag.id} onClick={() => setTraspasoAgenteId(ag.id)}
-                  style={{ padding: '11px 14px', borderRadius: 11, border: '2px solid', borderColor: traspasoAgenteId === ag.id ? '#2d8a54' : '#e5e7eb', background: traspasoAgenteId === ag.id ? '#f0faf5' : 'white', display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer', textAlign: 'left' }}>
+                  style={{ padding: '11px 14px', borderRadius: 11, border: '2px solid', borderColor: traspasoAgenteId === ag.id ? '#1a8a9c' : '#e5e7eb', background: traspasoAgenteId === ag.id ? '#f0f8fa' : 'white', display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer', textAlign: 'left' }}>
                   <div style={{ width: 32, height: 32, borderRadius: '50%', background: '#f3f4f6', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, color: '#374151', flexShrink: 0 }}>
                     {iniciales(ag.nombre)}
                   </div>
                   <span style={{ fontSize: 13, fontWeight: 600, color: '#111827', flex: 1 }}>{ag.nombre}</span>
-                  {traspasoAgenteId === ag.id && <span style={{ color: '#2d8a54', fontSize: 15 }}>✓</span>}
+                  {traspasoAgenteId === ag.id && <span style={{ color: '#1a8a9c', fontSize: 15 }}>✓</span>}
                 </button>
               ))}
             </div>
@@ -505,7 +505,7 @@ export default function LeadsPage() {
                 Cancelar
               </button>
               <button onClick={confirmarTraspaso} disabled={!traspasoAgenteId || !motivoTraspaso.trim()}
-                style={{ padding: '11px', borderRadius: 10, border: 'none', background: traspasoAgenteId && motivoTraspaso.trim() ? '#2d8a54' : '#9ca3af', color: 'white', fontWeight: 600, fontSize: 13, cursor: traspasoAgenteId && motivoTraspaso.trim() ? 'pointer' : 'not-allowed' }}>
+                style={{ padding: '11px', borderRadius: 10, border: 'none', background: traspasoAgenteId && motivoTraspaso.trim() ? '#1a8a9c' : '#9ca3af', color: 'white', fontWeight: 600, fontSize: 13, cursor: traspasoAgenteId && motivoTraspaso.trim() ? 'pointer' : 'not-allowed' }}>
                 Confirmar →
               </button>
             </div>
@@ -533,7 +533,7 @@ export default function LeadsPage() {
           <p style={{ fontSize: 14, color: '#6b7280', marginTop: 4, marginBottom: 0 }}>
             {leadsFiltrados.length} leads
             {filtroHoy && totalHoy > 0 && (
-              <span style={{ marginLeft: 8, fontSize: 12, color: '#2d8a54', fontWeight: 600 }}>
+              <span style={{ marginLeft: 8, fontSize: 12, color: '#1a8a9c', fontWeight: 600 }}>
                 — {totalHoy} activos hoy
               </span>
             )}
@@ -582,7 +582,7 @@ export default function LeadsPage() {
           onClick={() => { setFiltroHoy(true); setFiltro('todos') }}
           style={{
             ...btnFiltro(filtroHoy),
-            ...(filtroHoy ? { background: '#2d8a54', borderColor: '#2d8a54', color: 'white' } : {}),
+            ...(filtroHoy ? { background: '#1a8a9c', borderColor: '#1a8a9c', color: 'white' } : {}),
           }}
         >
           Hoy {totalHoy > 0 && `(${totalHoy})`}

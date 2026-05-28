@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, Suspense } from 'react'
 import { useRouter } from 'next/navigation'
@@ -28,7 +28,7 @@ function LoginForm() {
       const data = await res.json()
       router.push(`/portal/convenio/${data.token}`)
     } else {
-      setError('No encontramos tu portal. Contactá a Huellas de Paz.')
+      setError('No encontramos tu portal. Contactá a Aires de Paz.')
       setLoading(false)
     }
   }
@@ -54,7 +54,7 @@ function LoginForm() {
   const btnStyle: React.CSSProperties = {
     width: '100%', padding: '14px', borderRadius: 12, fontSize: 15, fontWeight: 600,
     border: 'none', cursor: loading ? 'not-allowed' : 'pointer',
-    background: loading ? '#e5e7eb' : '#2d8a54',
+    background: loading ? '#e5e7eb' : '#1a8a9c',
     color: loading ? '#9ca3af' : 'white',
     transition: 'background 0.15s',
   }
@@ -62,26 +62,26 @@ function LoginForm() {
   return (
     <main style={{
       minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center',
-      background: '#f0faf5', padding: '24px',
+      background: '#f0f8fa', padding: '24px',
       fontFamily: '-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif',
     }}>
       <div style={{
         background: 'white', borderRadius: 28, padding: '48px 44px 40px',
         width: '100%', maxWidth: 420, position: 'relative',
-        boxShadow: '0 4px 6px rgba(0,0,0,0.04), 0 20px 60px rgba(45,138,84,0.1), 0 0 0 1px rgba(45,138,84,0.08)',
+        boxShadow: '0 4px 6px rgba(0,0,0,0.04), 0 20px 60px rgba(26,138,156,0.1), 0 0 0 1px rgba(26,138,156,0.08)',
       }}>
-        <div style={{ position: 'absolute', top: 0, left: 48, right: 48, height: 3, background: 'linear-gradient(90deg, transparent, #2d8a54, transparent)', borderRadius: '0 0 4px 4px' }} />
+        <div style={{ position: 'absolute', top: 0, left: 48, right: 48, height: 3, background: 'linear-gradient(90deg, transparent, #1a8a9c, transparent)', borderRadius: '0 0 4px 4px' }} />
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 36 }}>
-          <div style={{ width: 44, height: 44, borderRadius: 14, background: 'linear-gradient(135deg, #e8f5ed 0%, #d1ead9 100%)', border: '1px solid rgba(45,138,84,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ width: 44, height: 44, borderRadius: 14, background: 'linear-gradient(135deg, #e8f5ed 0%, #c8e6ea 100%)', border: '1px solid rgba(26,138,156,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-              <path d="M12 2C8 2 4 6 4 10c0 5 8 12 8 12s8-7 8-12c0-4-4-8-8-8z" fill="#2d8a54"/>
-              <circle cx="9" cy="7" r="1.5" fill="#aadfc2"/><circle cx="15" cy="7" r="1.5" fill="#aadfc2"/>
-              <circle cx="7" cy="11" r="1.2" fill="#aadfc2"/><circle cx="17" cy="11" r="1.2" fill="#aadfc2"/>
+              <path d="M12 2C8 2 4 6 4 10c0 5 8 12 8 12s8-7 8-12c0-4-4-8-8-8z" fill="#1a8a9c"/>
+              <circle cx="9" cy="7" r="1.5" fill="#99d0d8"/><circle cx="15" cy="7" r="1.5" fill="#99d0d8"/>
+              <circle cx="7" cy="11" r="1.2" fill="#99d0d8"/><circle cx="17" cy="11" r="1.2" fill="#99d0d8"/>
             </svg>
           </div>
           <div>
-            <p style={{ fontSize: 15, fontWeight: 700, color: '#111827', margin: 0 }}>Huellas de Paz</p>
+            <p style={{ fontSize: 15, fontWeight: 700, color: '#111827', margin: 0 }}>Aires de Paz</p>
             <p style={{ fontSize: 11, color: '#9ca3af', margin: 0, letterSpacing: '0.05em', textTransform: 'uppercase' }}>Portal de socios</p>
           </div>
         </div>
@@ -100,7 +100,7 @@ function LoginForm() {
               <div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
                   <label style={{ fontSize: 13, fontWeight: 500, color: '#374151' }}>Contraseña</label>
-                  <button type="button" onClick={() => { setVista('recuperar'); setError(null) }} style={{ fontSize: 12, color: '#2d8a54', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
+                  <button type="button" onClick={() => { setVista('recuperar'); setError(null) }} style={{ fontSize: 12, color: '#1a8a9c', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
                     ¿Olvidaste tu contraseña?
                   </button>
                 </div>
@@ -147,7 +147,7 @@ function LoginForm() {
         )}
 
         <div style={{ marginTop: 28, paddingTop: 20, borderTop: '1px solid #f3f4f6', textAlign: 'center' }}>
-          <p style={{ fontSize: 11, color: '#d1d5db', margin: 0 }}>© 2025 Huellas de Paz · Rosario, Argentina</p>
+          <p style={{ fontSize: 11, color: '#d1d5db', margin: 0 }}>© 2025 Aires de Paz · Rosario, Argentina</p>
         </div>
       </div>
     </main>

@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 const rolLabel: Record<string, string> = {
   admin:      'Administrador',
@@ -26,11 +26,11 @@ export function UserCard({ nombre, rol }: { nombre: string; rol: string }) {
           <div className="uc-avatar-logo">
             {/* Pata (logo1) */}
             <svg className="uc-logo1" viewBox="0 0 24 24" fill="none">
-              <path d="M12 2C8 2 4 6 4 10c0 5 8 12 8 12s8-7 8-12c0-4-4-8-8-8z" fill="#2d8a54"/>
-              <circle cx="9"  cy="7"  r="1.5" fill="#aadfc2"/>
-              <circle cx="15" cy="7"  r="1.5" fill="#aadfc2"/>
-              <circle cx="7"  cy="11" r="1.2" fill="#aadfc2"/>
-              <circle cx="17" cy="11" r="1.2" fill="#aadfc2"/>
+              <path d="M12 2C8 2 4 6 4 10c0 5 8 12 8 12s8-7 8-12c0-4-4-8-8-8z" fill="#1a8a9c"/>
+              <circle cx="9"  cy="7"  r="1.5" fill="#99d0d8"/>
+              <circle cx="15" cy="7"  r="1.5" fill="#99d0d8"/>
+              <circle cx="7"  cy="11" r="1.2" fill="#99d0d8"/>
+              <circle cx="17" cy="11" r="1.2" fill="#99d0d8"/>
             </svg>
             {/* Inicial (logo2, empieza desplazado) */}
             <span className="uc-logo2">{inicial}</span>
@@ -66,7 +66,7 @@ export function UserCard({ nombre, rol }: { nombre: string; rol: string }) {
         .uc-border {
           position: absolute;
           inset: 0;
-          border: 1.5px solid #2d8a54;
+          border: 1.5px solid #1a8a9c;
           border-radius: 12px;
           opacity: 0;
           transform: rotate(10deg);
@@ -167,7 +167,7 @@ export function UserCard({ nombre, rol }: { nombre: string; rol: string }) {
           font-size: 6.5px;
           text-transform: uppercase;
           padding: 0 6px 0 8px;
-          color: #2d8a54;
+          color: #1a8a9c;
           background: #111827;
           opacity: 0;
           letter-spacing: 6px;
@@ -183,16 +183,16 @@ export function UserCard({ nombre, rol }: { nombre: string; rol: string }) {
 
         @keyframes uc-opacity {
           0%   { border-right: 1px solid transparent; }
-          10%  { border-right: 1px solid #2d8a54; }
-          80%  { border-right: 1px solid #2d8a54; }
+          10%  { border-right: 1px solid #1a8a9c; }
+          80%  { border-right: 1px solid #1a8a9c; }
           100% { border-right: 1px solid transparent; }
         }
 
         @keyframes uc-trail {
-          0%  { background: linear-gradient(90deg, rgba(45,138,84,0) 90%, rgba(45,138,84,1) 100%); opacity: 0; }
-          30% { background: linear-gradient(90deg, rgba(45,138,84,0) 70%, rgba(45,138,84,1) 100%); opacity: 1; }
-          70% { background: linear-gradient(90deg, rgba(45,138,84,0) 70%, rgba(45,138,84,1) 100%); opacity: 1; }
-          95% { background: linear-gradient(90deg, rgba(45,138,84,0) 90%, rgba(45,138,84,1) 100%); opacity: 0; }
+          0%  { background: linear-gradient(90deg, rgba(26,138,156,0) 90%, rgba(26,138,156,1) 100%); opacity: 0; }
+          30% { background: linear-gradient(90deg, rgba(26,138,156,0) 70%, rgba(26,138,156,1) 100%); opacity: 1; }
+          70% { background: linear-gradient(90deg, rgba(26,138,156,0) 70%, rgba(26,138,156,1) 100%); opacity: 1; }
+          95% { background: linear-gradient(90deg, rgba(26,138,156,0) 90%, rgba(26,138,156,1) 100%); opacity: 0; }
         }
       `}</style>
     </div>

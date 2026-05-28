@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useEffect } from 'react'
 
@@ -34,7 +34,7 @@ export default function DashboardError({
         </p>
         <button
           onClick={reset}
-          style={{ padding: '10px 24px', borderRadius: 10, fontSize: 14, fontWeight: 600, background: '#2d8a54', color: 'white', border: 'none', cursor: 'pointer' }}
+          style={{ padding: '10px 24px', borderRadius: 10, fontSize: 14, fontWeight: 600, background: '#1a8a9c', color: 'white', border: 'none', cursor: 'pointer' }}
         >
           Reintentar
         </button>

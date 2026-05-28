@@ -1,7 +1,7 @@
 const BASE = `
-## Huellas de Paz — CRM
+## Aires de Paz — CRM
 
-Huellas de Paz es un crematorio y cementerio de mascotas en Rosario. El CRM maneja clientes, servicios, planes de previsión, leads, inventario y comunicación.
+Aires de Paz es un crematorio y cementerio de mascotas en Rosario. El CRM maneja clientes, servicios, planes de previsión, leads, inventario y comunicación.
 
 ### Navegación
 La barra lateral izquierda tiene acceso a todos los módulos. Cada rol ve solo los módulos habilitados para él.
@@ -191,7 +191,7 @@ export function buildSystemPrompt(rol: string, screenContext?: string): string {
     ? `\nEl usuario está actualmente en la pantalla: ${screenContext}.`
     : ''
 
-  return `Sos el asistente interno del CRM de Huellas de Paz. Tu único propósito es ayudar a los empleados a usar el sistema.
+  return `Sos el asistente interno del CRM de Aires de Paz. Tu único propósito es ayudar a los empleados a usar el sistema.
 
 REGLAS ESTRICTAS:
 - Solo respondés preguntas sobre el uso del CRM. Nada más.

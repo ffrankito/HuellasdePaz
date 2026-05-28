@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
@@ -258,7 +258,7 @@ export function Sidebar({ usuario }: { usuario: Usuario }) {
             background: activo ? '#f0fdf4' : 'transparent',
             textDecoration: 'none',
             transition: 'background 0.12s, color 0.12s',
-            borderLeft: activo ? '3px solid #2d8a54' : '3px solid transparent',
+            borderLeft: activo ? '3px solid #1a8a9c' : '3px solid transparent',
             boxSizing: 'border-box',
           }}
           onMouseEnter={e => {
@@ -275,7 +275,7 @@ export function Sidebar({ usuario }: { usuario: Usuario }) {
           }}
         >
           {icono && (
-            <span style={{ color: activo ? '#2d8a54' : '#9ca3af', display: 'flex', transition: 'color 0.12s' }}>
+            <span style={{ color: activo ? '#1a8a9c' : '#9ca3af', display: 'flex', transition: 'color 0.12s' }}>
               {icono}
             </span>
           )}
@@ -289,17 +289,17 @@ export function Sidebar({ usuario }: { usuario: Usuario }) {
       {/* Header */}
       <div style={{ padding: '20px 18px 16px', borderBottom: '1px solid #f3f4f6', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <div style={{ width: 34, height: 34, borderRadius: 10, background: 'linear-gradient(135deg, #e8f5ed, #d1ead9)', border: '1px solid rgba(45,138,84,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+          <div style={{ width: 34, height: 34, borderRadius: 10, background: 'linear-gradient(135deg, #e8f5ed, #c8e6ea)', border: '1px solid rgba(26,138,156,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
             <svg width="17" height="17" viewBox="0 0 24 24" fill="none">
-              <path d="M12 2C8 2 4 6 4 10c0 5 8 12 8 12s8-7 8-12c0-4-4-8-8-8z" fill="#2d8a54"/>
-              <circle cx="9"  cy="7"  r="1.5" fill="#aadfc2"/>
-              <circle cx="15" cy="7"  r="1.5" fill="#aadfc2"/>
-              <circle cx="7"  cy="11" r="1.2" fill="#aadfc2"/>
-              <circle cx="17" cy="11" r="1.2" fill="#aadfc2"/>
+              <path d="M12 2C8 2 4 6 4 10c0 5 8 12 8 12s8-7 8-12c0-4-4-8-8-8z" fill="#1a8a9c"/>
+              <circle cx="9"  cy="7"  r="1.5" fill="#99d0d8"/>
+              <circle cx="15" cy="7"  r="1.5" fill="#99d0d8"/>
+              <circle cx="7"  cy="11" r="1.2" fill="#99d0d8"/>
+              <circle cx="17" cy="11" r="1.2" fill="#99d0d8"/>
             </svg>
           </div>
           <div>
-            <p style={{ fontSize: 13.5, fontWeight: 700, color: '#111827', margin: 0, letterSpacing: '-0.01em' }}>Huellas de Paz</p>
+            <p style={{ fontSize: 13.5, fontWeight: 700, color: '#111827', margin: 0, letterSpacing: '-0.01em' }}>Aires de Paz</p>
             <p style={{ fontSize: 10.5, color: '#9ca3af', margin: 0 }}>Sistema de gestión</p>
           </div>
         </div>
@@ -343,7 +343,7 @@ export function Sidebar({ usuario }: { usuario: Usuario }) {
 
       {/* Footer */}
       <div style={{ padding: '10px 12px', borderTop: '1px solid #f3f4f6', display: 'flex', alignItems: 'center', gap: 8 }}>
-        <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'linear-gradient(135deg, #2d8a54, #1a5233)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+        <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'linear-gradient(135deg, #1a8a9c, #126070)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
           <span style={{ fontSize: 12, fontWeight: 700, color: 'white' }}>{usuario.nombre.charAt(0).toUpperCase()}</span>
         </div>
         <div style={{ flex: 1, minWidth: 0 }}>
@@ -357,11 +357,11 @@ export function Sidebar({ usuario }: { usuario: Usuario }) {
           style={{
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             width: 30, height: 30, borderRadius: 8,
-            color: pathname === '/dashboard/perfil' ? '#2d8a54' : '#9ca3af',
+            color: pathname === '/dashboard/perfil' ? '#1a8a9c' : '#9ca3af',
             background: pathname === '/dashboard/perfil' ? '#f0fdf4' : 'transparent',
             textDecoration: 'none', transition: 'color 0.15s, background 0.15s', flexShrink: 0,
           }}
-          onMouseEnter={e => { if (pathname !== '/dashboard/perfil') { (e.currentTarget as HTMLAnchorElement).style.color = '#2d8a54'; (e.currentTarget as HTMLAnchorElement).style.background = '#f0fdf4' } }}
+          onMouseEnter={e => { if (pathname !== '/dashboard/perfil') { (e.currentTarget as HTMLAnchorElement).style.color = '#1a8a9c'; (e.currentTarget as HTMLAnchorElement).style.background = '#f0fdf4' } }}
           onMouseLeave={e => { if (pathname !== '/dashboard/perfil') { (e.currentTarget as HTMLAnchorElement).style.color = '#9ca3af'; (e.currentTarget as HTMLAnchorElement).style.background = 'transparent' } }}
         >
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -376,7 +376,7 @@ export function Sidebar({ usuario }: { usuario: Usuario }) {
             style={{
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               width: 30, height: 30, borderRadius: 8,
-              color: pathname === '/dashboard/configuracion' ? '#2d8a54' : '#9ca3af',
+              color: pathname === '/dashboard/configuracion' ? '#1a8a9c' : '#9ca3af',
               background: pathname === '/dashboard/configuracion' ? '#f0fdf4' : 'transparent',
               textDecoration: 'none', transition: 'color 0.15s, background 0.15s', flexShrink: 0,
             }}

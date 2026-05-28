@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useEffect, useRef } from 'react'
 import { usePathname } from 'next/navigation'
@@ -47,8 +47,8 @@ export default function DashboardTemplate({ children }: { children: React.ReactN
           style={{
             height: '100%',
             width: '0%',
-            background: 'linear-gradient(90deg, #2d8a54, #4ade80)',
-            boxShadow: '0 0 8px rgba(45,138,84,0.5)',
+            background: 'linear-gradient(90deg, #1a8a9c, #4ade80)',
+            boxShadow: '0 0 8px rgba(26,138,156,0.5)',
             opacity: 0,
           }}
         />

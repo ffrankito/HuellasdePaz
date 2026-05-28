@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useRef, useEffect } from 'react'
 import { usePathname } from 'next/navigation'
@@ -129,10 +129,10 @@ export function AsistenteWidget() {
         <div style={{
           position: 'absolute',
           width: 52, height: 52, borderRadius: '50%',
-          backgroundImage: 'linear-gradient(#2d8a54 35%, #86efac)',
+          backgroundImage: 'linear-gradient(#1a8a9c 35%, #86efac)',
           animation: 'asistenteSpinning 1.7s linear infinite',
           filter: 'blur(1px)',
-          boxShadow: '0px -5px 20px 0px #2d8a54, 0px 5px 20px 0px #86efac',
+          boxShadow: '0px -5px 20px 0px #1a8a9c, 0px 5px 20px 0px #86efac',
         }} />
         <div style={{
           position: 'absolute',
@@ -143,7 +143,7 @@ export function AsistenteWidget() {
         <div style={{
           position: 'relative',
           width: 36, height: 36, borderRadius: '50%',
-          background: abierto ? '#2d8a54' : '#f5f2ee',
+          background: abierto ? '#1a8a9c' : '#f5f2ee',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           transition: 'background 0.2s',
         }}>
@@ -152,7 +152,7 @@ export function AsistenteWidget() {
               <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
             </svg>
           ) : (
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2d8a54" strokeWidth="2">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1a8a9c" strokeWidth="2">
               <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
             </svg>
           )}
@@ -174,18 +174,18 @@ export function AsistenteWidget() {
           {/* Header */}
           <div style={{
             padding: '14px 18px',
-            background: '#f0faf5', borderBottom: '1px solid #d1ead9',
+            background: '#f0f8fa', borderBottom: '1px solid #c8e6ea',
             display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0,
           }}>
             <div style={{
               width: 28, height: 28, borderRadius: '50%', flexShrink: 0,
-              backgroundImage: 'linear-gradient(#2d8a54 35%, #86efac)',
+              backgroundImage: 'linear-gradient(#1a8a9c 35%, #86efac)',
               animation: 'asistenteSpinning 1.7s linear infinite',
               filter: 'blur(0.5px)',
             }} />
             <div>
               <p style={{ fontSize: 13, fontWeight: 700, color: '#111827', margin: 0 }}>Asistente CRM</p>
-              <p style={{ fontSize: 11, color: '#6b7280', margin: 0 }}>Huellas de Paz · Solo uso del sistema</p>
+              <p style={{ fontSize: 11, color: '#6b7280', margin: 0 }}>Aires de Paz · Solo uso del sistema</p>
             </div>
           </div>
 
@@ -201,8 +201,8 @@ export function AsistenteWidget() {
                   {SUGERENCIAS.map(s => (
                     <button key={s} onClick={() => enviar(s)} style={{
                       fontSize: 11, padding: '5px 10px', borderRadius: 20,
-                      border: '1px solid #d1ead9', background: '#f0faf5',
-                      color: '#2d8a54', cursor: 'pointer', fontWeight: 500,
+                      border: '1px solid #c8e6ea', background: '#f0f8fa',
+                      color: '#1a8a9c', cursor: 'pointer', fontWeight: 500,
                     }}>
                       {s}
                     </button>
@@ -217,7 +217,7 @@ export function AsistenteWidget() {
                   maxWidth: '84%',
                   padding: '9px 13px',
                   borderRadius: m.role === 'user' ? '16px 16px 4px 16px' : '16px 16px 16px 4px',
-                  background: m.role === 'user' ? '#2d8a54' : '#f3f4f6',
+                  background: m.role === 'user' ? '#1a8a9c' : '#f3f4f6',
                   color: m.role === 'user' ? 'white' : '#111827',
                   fontSize: 13, lineHeight: 1.55, whiteSpace: 'pre-wrap',
                 }}>
@@ -236,7 +236,7 @@ export function AsistenteWidget() {
                 }}>
                   {[0, 1, 2].map(i => (
                     <div key={i} style={{
-                      width: 6, height: 6, borderRadius: '50%', background: '#2d8a54',
+                      width: 6, height: 6, borderRadius: '50%', background: '#1a8a9c',
                       animation: `asistenteDot 1.2s ease-in-out ${i * 0.2}s infinite`,
                     }} />
                   ))}
@@ -279,7 +279,7 @@ export function AsistenteWidget() {
               disabled={cargando || !input.trim()}
               style={{
                 width: 36, height: 36, borderRadius: 10, flexShrink: 0,
-                background: cargando || !input.trim() ? '#e5e7eb' : '#2d8a54',
+                background: cargando || !input.trim() ? '#e5e7eb' : '#1a8a9c',
                 border: 'none', cursor: cargando || !input.trim() ? 'not-allowed' : 'pointer',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 transition: 'background 0.15s',

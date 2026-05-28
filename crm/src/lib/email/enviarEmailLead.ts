@@ -14,7 +14,8 @@ export async function enviarEmailLead({
   nombreAgente: string
 }) {
   const { error } = await resend.emails.send({
-    from: 'Huellas de Paz <onboarding@resend.dev>',
+    from: 'Aires de Paz <onboarding@resend.dev>',
+    replyTo: 'mascotas@airesdepaz.com',
     to: para,
     subject: asunto,
     html: `
@@ -26,7 +27,7 @@ export async function enviarEmailLead({
 
     <div style="background:#111827;border-radius:16px;padding:40px;text-align:center;margin-bottom:32px;">
       <div style="font-size:40px;margin-bottom:16px;">🐾</div>
-      <h1 style="color:white;font-size:22px;font-weight:600;margin:0 0 8px;">Huellas de Paz</h1>
+      <h1 style="color:white;font-size:22px;font-weight:600;margin:0 0 8px;">Aires de Paz</h1>
       <p style="color:#9ca3af;font-size:14px;margin:0;">Rosario, Argentina</p>
     </div>
 
@@ -37,7 +38,7 @@ export async function enviarEmailLead({
     <hr style="border:none;border-top:1px solid #e5e7eb;margin:24px 0;" />
 
     <p style="font-size:12px;color:#9ca3af;text-align:center;margin:0;">
-      ${nombreAgente} · <strong>Huellas de Paz</strong> · Rosario, Argentina
+      ${nombreAgente} · <strong>Aires de Paz</strong> · Rosario, Argentina
     </p>
 
   </div>

@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
@@ -184,7 +184,7 @@ export function ConvenioForm({ convenio, serviciosConfig = [] }: { convenio?: Co
                 {serviciosConfig.map(({ id, nombre }) => {
                   const checked = form.serviciosCubiertos.includes(id)
                   return (
-                    <label key={id} style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', padding: '8px 14px', border: `1.5px solid ${checked ? '#2d8a54' : '#e5e7eb'}`, borderRadius: 8, background: checked ? '#f0fdf4' : 'white', fontSize: 13, fontWeight: 500, color: checked ? '#15803d' : '#374151', transition: 'all 0.15s', userSelect: 'none' }}>
+                    <label key={id} style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', padding: '8px 14px', border: `1.5px solid ${checked ? '#1a8a9c' : '#e5e7eb'}`, borderRadius: 8, background: checked ? '#f0fdf4' : 'white', fontSize: 13, fontWeight: 500, color: checked ? '#15803d' : '#374151', transition: 'all 0.15s', userSelect: 'none' }}>
                       <input
                         type="checkbox"
                         checked={checked}
@@ -196,7 +196,7 @@ export function ConvenioForm({ convenio, serviciosConfig = [] }: { convenio?: Co
                         }))}
                         style={{ display: 'none' }}
                       />
-                      <span style={{ width: 16, height: 16, borderRadius: 4, border: `1.5px solid ${checked ? '#2d8a54' : '#d1d5db'}`, background: checked ? '#2d8a54' : 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                      <span style={{ width: 16, height: 16, borderRadius: 4, border: `1.5px solid ${checked ? '#1a8a9c' : '#d1d5db'}`, background: checked ? '#1a8a9c' : 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                         {checked && <svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>}
                       </span>
                       {nombre}

@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 
@@ -11,7 +11,7 @@ export function GuardarLinkCard({ portalUrl, dark = false }: { portalUrl: string
     setTimeout(() => setCopiado(false), 2000)
   }
 
-  const waText = encodeURIComponent(`Mi portal de Huellas de Paz: ${portalUrl}`)
+  const waText = encodeURIComponent(`Mi portal de Aires de Paz: ${portalUrl}`)
 
   const bg = dark ? 'rgba(255,255,255,0.05)' : 'white'
   const border = dark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #f3f4f6'
@@ -20,7 +20,7 @@ export function GuardarLinkCard({ portalUrl, dark = false }: { portalUrl: string
   const btnBg = dark ? 'rgba(255,255,255,0.07)' : 'white'
   const btnBorder = dark ? '1px solid rgba(255,255,255,0.1)' : '1px solid #e5e7eb'
   const btnColor = dark ? 'rgba(255,255,255,0.6)' : '#374151'
-  const copiadoBg = dark ? 'rgba(45,138,84,0.2)' : '#f0fdf4'
+  const copiadoBg = dark ? 'rgba(26,138,156,0.2)' : '#f0fdf4'
   const copiadoColor = dark ? '#4ade80' : '#15803d'
 
   return (

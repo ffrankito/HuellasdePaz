@@ -3,7 +3,7 @@ export const pickupMethods = [
     id: "sucursal",
     title: "Traerla a\nnuestra sede",
     label: "La llevo a",
-    addr: "Dirección de Huellas de Paz\nRosario, Santa Fe",
+    addr: "Dirección de Aires de Paz\nRosario, Santa Fe",
     hours: "Horario a coordinar",
   },
   {

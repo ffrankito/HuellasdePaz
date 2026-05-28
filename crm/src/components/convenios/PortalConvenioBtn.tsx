@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
@@ -50,7 +50,7 @@ export function InvitarConvenioBtn({
         disabled={loading}
         style={{
           padding: '10px 20px', borderRadius: 10, fontSize: 14, fontWeight: 500,
-          border: 'none', background: ok ? '#f0fdf4' : '#2d8a54',
+          border: 'none', background: ok ? '#f0fdf4' : '#1a8a9c',
           color: ok ? '#15803d' : 'white',
           cursor: loading ? 'not-allowed' : 'pointer',
           opacity: loading ? 0.7 : 1,
@@ -101,7 +101,7 @@ export function TogglePortalActivoBtn({
         color: activo ? '#15803d' : '#6b7280', cursor: 'pointer',
       }}
     >
-      <span style={{ width: 32, height: 18, borderRadius: 20, background: activo ? '#2d8a54' : '#d1d5db', position: 'relative', flexShrink: 0, transition: 'background 0.2s' }}>
+      <span style={{ width: 32, height: 18, borderRadius: 20, background: activo ? '#1a8a9c' : '#d1d5db', position: 'relative', flexShrink: 0, transition: 'background 0.2s' }}>
         <span style={{ position: 'absolute', top: 3, left: activo ? 16 : 3, width: 12, height: 12, borderRadius: '50%', background: 'white', transition: 'left 0.2s' }} />
       </span>
       Portal {activo ? 'activo' : 'inactivo'}

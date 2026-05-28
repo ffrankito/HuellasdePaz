@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
@@ -62,8 +62,8 @@ function ResetPasswordForm() {
     }}>
       <div style={{ background: 'white', borderRadius: 20, padding: '40px 36px', width: '100%', maxWidth: 400, boxShadow: '0 4px 24px rgba(0,0,0,0.08)' }}>
         <div style={{ textAlign: 'center', marginBottom: 28 }}>
-          <div style={{ width: 48, height: 48, borderRadius: 14, background: '#f0fdf4', border: '1px solid #d1ead9', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 14px' }}>
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2d8a54" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <div style={{ width: 48, height: 48, borderRadius: 14, background: '#f0fdf4', border: '1px solid #c8e6ea', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 14px' }}>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1a8a9c" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
             </svg>
           </div>

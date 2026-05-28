@@ -1,13 +1,13 @@
 @import "tailwindcss";
 
 @theme {
-  --color-brand-50: #f0faf4;
-  --color-brand-100: #d6f0e0;
-  --color-brand-200: #aadfc2;
-  --color-brand-400: #4db87a;
-  --color-brand-600: #2d8a54;
-  --color-brand-800: #1a5233;
-  --color-brand-900: #0f3320;
+  --color-brand-50: #f0f8fa;
+  --color-brand-100: #cce8ed;
+  --color-brand-200: #99d0d8;
+  --color-brand-400: #4ab8c8;
+  --color-brand-600: #1a8a9c;
+  --color-brand-800: #126070;
+  --color-brand-900: #0a3d47;
 
   --color-stone-50: #faf9f7;
   --color-stone-100: #f0ede8;
@@ -24,11 +24,11 @@
 html { scroll-behavior: smooth; }
 
 .orb { position:absolute; border-radius:50%; filter:blur(90px); pointer-events:none; }
-.orb--verde    { background:radial-gradient(circle,rgba(45,138,84,0.12) 0%,transparent 70%); animation:orb-drift 14s ease-in-out infinite alternate; }
-.orb--verde-2  { background:radial-gradient(circle,rgba(45,138,84,0.08) 0%,transparent 70%); animation:orb-drift 20s ease-in-out infinite alternate-reverse; }
+.orb--verde    { background:radial-gradient(circle,rgba(26,138,156,0.12) 0%,transparent 70%); animation:orb-drift 14s ease-in-out infinite alternate; }
+.orb--verde-2  { background:radial-gradient(circle,rgba(26,138,156,0.08) 0%,transparent 70%); animation:orb-drift 20s ease-in-out infinite alternate-reverse; }
 .orb--calido   { background:radial-gradient(circle,rgba(251,191,36,0.07) 0%,transparent 70%); animation:orb-drift 18s ease-in-out infinite alternate-reverse; }
-.orb--aurora-1 { background:radial-gradient(circle,rgba(45,138,84,0.10) 0%,rgba(77,184,122,0.05) 40%,transparent 70%); animation:orb-drift 16s ease-in-out infinite alternate; }
-.orb--aurora-2 { background:radial-gradient(circle,rgba(251,191,36,0.06) 0%,rgba(45,138,84,0.04) 50%,transparent 70%); animation:orb-drift 22s ease-in-out infinite alternate-reverse; }
+.orb--aurora-1 { background:radial-gradient(circle,rgba(26,138,156,0.10) 0%,rgba(74,184,200,0.05) 40%,transparent 70%); animation:orb-drift 16s ease-in-out infinite alternate; }
+.orb--aurora-2 { background:radial-gradient(circle,rgba(251,191,36,0.06) 0%,rgba(26,138,156,0.04) 50%,transparent 70%); animation:orb-drift 22s ease-in-out infinite alternate-reverse; }
 @keyframes orb-drift { 0%{transform:translate(0,0)} 100%{transform:translate(30px,20px)} }
 
 body {

@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
@@ -172,7 +172,7 @@ export function NuevoServicioForm({ clientes, mascotas, serviciosConfig }: {
                     <span style={{ color: '#d97706' }}>−${comisionMonto.toLocaleString('es-AR')}</span>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13 }}>
-                    <span style={{ color: '#9ca3af' }}>Ingreso neto Huellas de Paz</span>
+                    <span style={{ color: '#9ca3af' }}>Ingreso neto Aires de Paz</span>
                     <span style={{ color: '#6b7280', fontWeight: 600 }}>${ingresoNeto!.toLocaleString('es-AR')}</span>
                   </div>
                 </>
@@ -195,14 +195,14 @@ export function NuevoServicioForm({ clientes, mascotas, serviciosConfig }: {
           <button
             type="button"
             onClick={() => setModalidadRetiro(modalidadRetiro === 'sucursal' ? '' : 'sucursal')}
-            style={{ padding: '10px', borderRadius: 10, border: '2px solid', borderColor: modalidadRetiro === 'sucursal' ? '#2d8a54' : '#e5e7eb', background: modalidadRetiro === 'sucursal' ? '#f0faf5' : 'white', color: modalidadRetiro === 'sucursal' ? '#2d8a54' : '#374151', fontWeight: modalidadRetiro === 'sucursal' ? 700 : 400, fontSize: 13, cursor: 'pointer' }}
+            style={{ padding: '10px', borderRadius: 10, border: '2px solid', borderColor: modalidadRetiro === 'sucursal' ? '#1a8a9c' : '#e5e7eb', background: modalidadRetiro === 'sucursal' ? '#f0f8fa' : 'white', color: modalidadRetiro === 'sucursal' ? '#1a8a9c' : '#374151', fontWeight: modalidadRetiro === 'sucursal' ? 700 : 400, fontSize: 13, cursor: 'pointer' }}
           >
             🏠 El cliente trae la mascota
           </button>
           <button
             type="button"
             onClick={() => setModalidadRetiro(modalidadRetiro === 'domicilio' ? '' : 'domicilio')}
-            style={{ padding: '10px', borderRadius: 10, border: '2px solid', borderColor: modalidadRetiro === 'domicilio' ? '#2d8a54' : '#e5e7eb', background: modalidadRetiro === 'domicilio' ? '#f0faf5' : 'white', color: modalidadRetiro === 'domicilio' ? '#2d8a54' : '#374151', fontWeight: modalidadRetiro === 'domicilio' ? 700 : 400, fontSize: 13, cursor: 'pointer' }}
+            style={{ padding: '10px', borderRadius: 10, border: '2px solid', borderColor: modalidadRetiro === 'domicilio' ? '#1a8a9c' : '#e5e7eb', background: modalidadRetiro === 'domicilio' ? '#f0f8fa' : 'white', color: modalidadRetiro === 'domicilio' ? '#1a8a9c' : '#374151', fontWeight: modalidadRetiro === 'domicilio' ? 700 : 400, fontSize: 13, cursor: 'pointer' }}
           >
             🚗 Retiro a domicilio
           </button>

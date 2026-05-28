@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
@@ -54,7 +54,7 @@ export function NovedadCard({ id, titulo, contenido, imagen, creadoEn, publicada
     transition: 'all 0.15s', flexShrink: 0,
   }
 
-  const accentColors = ['#111827', '#2d8a54', '#1d4ed8']
+  const accentColors = ['#111827', '#1a8a9c', '#1d4ed8']
 
   return (
     <article style={{
@@ -99,7 +99,7 @@ export function NovedadCard({ id, titulo, contenido, imagen, creadoEn, publicada
                 <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
               </svg>
             </button>
-            <button onClick={() => toggle('publicada')} title={publicada ? 'Pasar a borrador' : 'Publicar'} style={{ ...btnBase, border: '1px solid rgba(255,255,255,0.3)', background: publicada ? 'rgba(45,138,84,0.85)' : 'rgba(255,255,255,0.15)', color: 'white', backdropFilter: 'blur(6px)' }}>
+            <button onClick={() => toggle('publicada')} title={publicada ? 'Pasar a borrador' : 'Publicar'} style={{ ...btnBase, border: '1px solid rgba(255,255,255,0.3)', background: publicada ? 'rgba(26,138,156,0.85)' : 'rgba(255,255,255,0.15)', color: 'white', backdropFilter: 'blur(6px)' }}>
               {publicada ? (
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
@@ -148,7 +148,7 @@ export function NovedadCard({ id, titulo, contenido, imagen, creadoEn, publicada
                   <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
                 </svg>
               </button>
-              <button onClick={() => toggle('publicada')} title={publicada ? 'Pasar a borrador' : 'Publicar'} style={{ ...btnBase, border: publicada ? '1px solid #d1ead9' : '1px solid #e5e7eb', background: publicada ? '#f0faf5' : 'white', color: publicada ? '#2d8a54' : '#9ca3af' }}>
+              <button onClick={() => toggle('publicada')} title={publicada ? 'Pasar a borrador' : 'Publicar'} style={{ ...btnBase, border: publicada ? '1px solid #c8e6ea' : '1px solid #e5e7eb', background: publicada ? '#f0f8fa' : 'white', color: publicada ? '#1a8a9c' : '#9ca3af' }}>
                 {publicada ? (
                   <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>

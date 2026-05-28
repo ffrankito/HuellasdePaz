@@ -138,12 +138,12 @@ export default async function ConvenioDetallePage({
           <div style={{ background: 'white', borderRadius: 16, border: '1px solid #f3f4f6', padding: '24px', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
             <h2 style={{ fontSize: 15, fontWeight: 600, color: '#111827', margin: '0 0 16px' }}>Comisiones a pagar</h2>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: '#f0faf5', borderRadius: 12, border: '1px solid #d1ead9' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: '#f0f8fa', borderRadius: 12, border: '1px solid #c8e6ea' }}>
                 <div>
-                  <p style={{ fontSize: 12, color: '#2d8a54', margin: '0 0 2px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Ya cobrado</p>
+                  <p style={{ fontSize: 12, color: '#1a8a9c', margin: '0 0 2px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Ya cobrado</p>
                   <p style={{ fontSize: 11, color: '#6b7280', margin: 0 }}>Servicios pagados por el cliente</p>
                 </div>
-                <p style={{ fontSize: 26, fontWeight: 700, color: '#2d8a54', margin: 0 }}>
+                <p style={{ fontSize: 26, fontWeight: 700, color: '#1a8a9c', margin: 0 }}>
                   ${comisionCobrada.toLocaleString('es-AR')}
                 </p>
               </div>

@@ -10,7 +10,7 @@ type Props = {
 export function WhatsAppPlanButton({ telefono, nombre, cuotasPagadas, planNombre }: Props) {
   const numero = telefono.replace(/\D/g, '')
   const texto = encodeURIComponent(
-    `Hola ${nombre}, te contactamos de Huellas de Paz. Queremos recordarte que tu cuota #${cuotasPagadas + 1} del ${planNombre} está pendiente de pago. Ante cualquier consulta, estamos a tu disposición. ¡Gracias!`
+    `Hola ${nombre}, te contactamos de Aires de Paz. Queremos recordarte que tu cuota #${cuotasPagadas + 1} del ${planNombre} está pendiente de pago. Ante cualquier consulta, estamos a tu disposición. ¡Gracias!`
   )
 
   return (

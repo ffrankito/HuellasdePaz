@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useRef, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
@@ -211,7 +211,7 @@ export function NuevaNovedadForm() {
                 <div
                   style={{
                     width: 36, height: 20, borderRadius: 10, position: 'relative', flexShrink: 0,
-                    background: publicarAhora ? '#2d8a54' : '#d1d5db',
+                    background: publicarAhora ? '#1a8a9c' : '#d1d5db',
                     transition: 'background 0.15s', cursor: 'pointer',
                   }}
                   onClick={() => setPublicarAhora(v => !v)}

@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect } from 'react'
 
@@ -19,7 +19,7 @@ const CATEGORIA_LABEL: Record<string, string> = {
 }
 
 const CATEGORIA_COLOR: Record<string, { bg: string; text: string }> = {
-  urna:      { bg: '#f0faf5', text: '#2d8a54' },
+  urna:      { bg: '#f0f8fa', text: '#1a8a9c' },
   caja:      { bg: '#f0f9ff', text: '#0369a1' },
   accesorio: { bg: '#faf5ff', text: '#7c3aed' },
 }
@@ -97,8 +97,8 @@ export function SelectorProducto({
             style={{
               display: 'flex', alignItems: 'center', gap: 12,
               padding: '10px 14px', borderRadius: 10, textAlign: 'left',
-              border: `1.5px solid ${seleccionado ? '#2d8a54' : '#e5e7eb'}`,
-              background: seleccionado ? '#f0faf5' : 'white',
+              border: `1.5px solid ${seleccionado ? '#1a8a9c' : '#e5e7eb'}`,
+              background: seleccionado ? '#f0f8fa' : 'white',
               cursor: 'pointer', fontFamily: 'inherit',
             }}
           >
@@ -138,7 +138,7 @@ export function SelectorProducto({
             </div>
 
             {seleccionado && (
-              <svg style={{ flexShrink: 0 }} width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2d8a54" strokeWidth="2.5">
+              <svg style={{ flexShrink: 0 }} width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1a8a9c" strokeWidth="2.5">
                 <polyline points="20 6 9 17 4 12"/>
               </svg>
             )}

@@ -43,7 +43,8 @@ export async function notificarCambioEstado({
   const portalUrl = tokenPortal ? `${appUrl}/portal/${tokenPortal}` : null
 
   const { error } = await resend.emails.send({
-    from: 'Huellas de Paz <onboarding@resend.dev>',
+    from: 'Aires de Paz <onboarding@resend.dev>',
+    replyTo: 'mascotas@airesdepaz.com',
     to: email,
     subject: `${info.emoji} ${nombreMascota}: ${info.label}`,
     html: `
@@ -54,7 +55,7 @@ export async function notificarCambioEstado({
   <div style="max-width:520px;margin:0 auto;padding:40px 20px;">
 
     <div style="background:#111827;border-radius:16px;padding:32px 40px;margin-bottom:24px;">
-      <p style="color:#9ca3af;font-size:12px;margin:0 0 12px;text-transform:uppercase;letter-spacing:0.08em;">Huellas de Paz · Rosario</p>
+      <p style="color:#9ca3af;font-size:12px;margin:0 0 12px;text-transform:uppercase;letter-spacing:0.08em;">Aires de Paz · Rosario</p>
       <h1 style="color:white;font-size:20px;font-weight:700;margin:0;line-height:1.3;">
         Actualización del servicio de ${nombreMascota}
       </h1>
@@ -84,7 +85,7 @@ export async function notificarCambioEstado({
 
     <hr style="border:none;border-top:1px solid #e5e7eb;margin:24px 0;" />
     <p style="font-size:12px;color:#9ca3af;text-align:center;margin:0;">
-      Con cariño, el equipo de <strong>Huellas de Paz</strong>
+      Con cariño, el equipo de <strong>Aires de Paz</strong>
     </p>
 
   </div>

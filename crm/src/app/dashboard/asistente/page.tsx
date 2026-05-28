@@ -1,4 +1,4 @@
-import { redirect } from 'next/navigation'
+﻿import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { db } from '@/db'
 import { asistenteLog, usuarios } from '@/db/schema'
@@ -77,15 +77,15 @@ export default async function AuditoriaAsistentePage() {
           {/* Ícono Claude */}
           <div style={{
             width: 40, height: 40, borderRadius: 12, flexShrink: 0,
-            background: 'linear-gradient(135deg, #f0faf5 0%, #d1ead9 100%)',
-            border: '1px solid rgba(45,138,84,0.2)',
+            background: 'linear-gradient(135deg, #f0f8fa 0%, #c8e6ea 100%)',
+            border: '1px solid rgba(26,138,156,0.2)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-              <path d="M12 2C9.5 2 7.5 3.5 6.5 5.5L3 12l3.5 6.5C7.5 20.5 9.5 22 12 22s4.5-1.5 5.5-3.5L21 12l-3.5-6.5C16.5 3.5 14.5 2 12 2z" fill="#2d8a54" opacity="0.15"/>
-              <path d="M8 12c0-2.2 1.8-4 4-4s4 1.8 4 4-1.8 4-4 4-4-1.8-4-4z" fill="#2d8a54" opacity="0.3"/>
-              <path d="M12 9.5c-1.4 0-2.5 1.1-2.5 2.5s1.1 2.5 2.5 2.5 2.5-1.1 2.5-2.5-1.1-2.5-2.5-2.5z" fill="#2d8a54"/>
-              <path d="M12 2v3M12 19v3M2 12h3M19 12h3" stroke="#2d8a54" strokeWidth="1.5" strokeLinecap="round" opacity="0.4"/>
+              <path d="M12 2C9.5 2 7.5 3.5 6.5 5.5L3 12l3.5 6.5C7.5 20.5 9.5 22 12 22s4.5-1.5 5.5-3.5L21 12l-3.5-6.5C16.5 3.5 14.5 2 12 2z" fill="#1a8a9c" opacity="0.15"/>
+              <path d="M8 12c0-2.2 1.8-4 4-4s4 1.8 4 4-1.8 4-4 4-4-1.8-4-4z" fill="#1a8a9c" opacity="0.3"/>
+              <path d="M12 9.5c-1.4 0-2.5 1.1-2.5 2.5s1.1 2.5 2.5 2.5 2.5-1.1 2.5-2.5-1.1-2.5-2.5-2.5z" fill="#1a8a9c"/>
+              <path d="M12 2v3M12 19v3M2 12h3M19 12h3" stroke="#1a8a9c" strokeWidth="1.5" strokeLinecap="round" opacity="0.4"/>
             </svg>
           </div>
           <div>

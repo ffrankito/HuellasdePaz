@@ -1,10 +1,10 @@
-import { db } from '@/db'
+﻿import { db } from '@/db'
 import { mascotas, clientes } from '@/db/schema'
 import { eq } from 'drizzle-orm'
 import Link from 'next/link'
 
 export const metadata = {
-  title: 'Memoriales · Huellas de Paz',
+  title: 'Memoriales · Aires de Paz',
   description: 'Recordamos a quienes siempre estarán en nuestros corazones.',
 }
 
@@ -29,18 +29,18 @@ export default async function MemorialesPublicosPage() {
 
       {/* Header */}
       <div style={{ background: 'linear-gradient(175deg, #16130f 0%, #0e2116 100%)', padding: '48px 24px 52px', position: 'relative', overflow: 'hidden', textAlign: 'center' }}>
-        <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', width: 500, height: 500, background: 'radial-gradient(circle, rgba(45,138,84,0.12) 0%, transparent 65%)', pointerEvents: 'none' }} />
-        <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 1, background: 'linear-gradient(to right, transparent 5%, rgba(45,138,84,0.4) 40%, rgba(77,184,122,0.5) 50%, rgba(45,138,84,0.4) 60%, transparent 95%)' }} />
+        <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', width: 500, height: 500, background: 'radial-gradient(circle, rgba(26,138,156,0.12) 0%, transparent 65%)', pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 1, background: 'linear-gradient(to right, transparent 5%, rgba(26,138,156,0.4) 40%, rgba(74,184,200,0.5) 50%, rgba(26,138,156,0.4) 60%, transparent 95%)' }} />
 
         <div style={{ position: 'relative', zIndex: 1 }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, marginBottom: 20 }}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <path d="M12 2C8 2 4 6 4 10c0 5 8 12 8 12s8-7 8-12c0-4-4-8-8-8z" fill="#4db87a" fillOpacity="0.8"/>
-              <circle cx="9" cy="7" r="1.5" fill="#4db87a" fillOpacity="0.45"/>
-              <circle cx="15" cy="7" r="1.5" fill="#4db87a" fillOpacity="0.45"/>
+              <path d="M12 2C8 2 4 6 4 10c0 5 8 12 8 12s8-7 8-12c0-4-4-8-8-8z" fill="#4ab8c8" fillOpacity="0.8"/>
+              <circle cx="9" cy="7" r="1.5" fill="#4ab8c8" fillOpacity="0.45"/>
+              <circle cx="15" cy="7" r="1.5" fill="#4ab8c8" fillOpacity="0.45"/>
             </svg>
-            <span style={{ fontSize: 11, color: 'rgba(77,184,122,0.7)', letterSpacing: '0.15em', textTransform: 'uppercase', fontWeight: 500 }}>
-              Huellas de Paz · Rosario
+            <span style={{ fontSize: 11, color: 'rgba(74,184,200,0.7)', letterSpacing: '0.15em', textTransform: 'uppercase', fontWeight: 500 }}>
+              Aires de Paz · Rosario
             </span>
           </div>
           <h1 style={{ fontSize: 38, fontWeight: 700, color: 'white', margin: '0 0 14px', fontFamily: 'Georgia, Times New Roman, serif', letterSpacing: '-0.02em', lineHeight: 1.15 }}>
@@ -131,7 +131,7 @@ export default async function MemorialesPublicosPage() {
                       )}
 
                       <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                        <span style={{ fontSize: 12, color: 'rgba(77,184,122,0.65)', fontWeight: 500 }}>Ver memorial →</span>
+                        <span style={{ fontSize: 12, color: 'rgba(74,184,200,0.65)', fontWeight: 500 }}>Ver memorial →</span>
                       </div>
                     </div>
                   </article>

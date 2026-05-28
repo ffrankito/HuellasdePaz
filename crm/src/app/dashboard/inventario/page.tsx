@@ -1,4 +1,4 @@
-import { db } from '@/db'
+﻿import { db } from '@/db'
 import { inventario } from '@/db/schema'
 import { desc } from 'drizzle-orm'
 import Link from 'next/link'
@@ -62,7 +62,7 @@ export default async function InventarioPage() {
                     <td style={{ padding: '14px 20px', fontSize: 14, color: '#4b5563', textTransform: 'capitalize' }}>{item.categoria}</td>
                     <td style={{ padding: '14px 20px' }}>
                       {item.paraVenta
-                        ? <span style={{ background: '#f0faf5', color: '#2d8a54', padding: '3px 10px', borderRadius: 20, fontSize: 12, fontWeight: 500 }}>Venta</span>
+                        ? <span style={{ background: '#f0f8fa', color: '#1a8a9c', padding: '3px 10px', borderRadius: 20, fontSize: 12, fontWeight: 500 }}>Venta</span>
                         : <span style={{ background: '#f3f4f6', color: '#9ca3af', padding: '3px 10px', borderRadius: 20, fontSize: 12 }}>Interno</span>
                       }
                     </td>

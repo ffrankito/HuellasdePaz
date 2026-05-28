@@ -14,9 +14,9 @@ export async function generateMetadata({ params }: { params: Promise<{ mascotaId
     .where(and(eq(mascotas.id, mascotaId), eq(mascotas.memoriaPublica, true)))
     .limit(1)
 
-  if (!row[0]) return { title: 'Memorial · Huellas de Paz' }
+  if (!row[0]) return { title: 'Memorial · Aires de Paz' }
   return {
-    title: `Memorial de ${row[0].nombre} · Huellas de Paz`,
+    title: `Memorial de ${row[0].nombre} · Aires de Paz`,
     description: `Recordamos con amor a ${row[0].nombre}.`,
   }
 }
@@ -196,7 +196,7 @@ export default async function MemorialPublicoPage({ params }: { params: Promise<
               <path d="M12 2C8 2 4 6 4 10c0 5 8 12 8 12s8-7 8-12c0-4-4-8-8-8z" fill="#4db87a" fillOpacity="0.55"/>
             </svg>
             <span style={{ fontSize: 11, color: 'rgba(77,184,122,0.4)', letterSpacing: '0.14em', textTransform: 'uppercase', fontWeight: 500 }}>
-              Huellas de Paz · Rosario
+              Aires de Paz · Rosario
             </span>
           </div>
           <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.1)', margin: 0 }}>

@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
@@ -38,7 +38,7 @@ function ActivarForm() {
     setError(null)
     const { error } = await supabase.auth.updateUser({ password })
     if (error) {
-      setError('El link de activación expiró. Pedile al equipo de Huellas de Paz que te reenvíe la invitación.')
+      setError('El link de activación expiró. Pedile al equipo de Aires de Paz que te reenvíe la invitación.')
       setLoading(false)
       return
     }
@@ -81,13 +81,13 @@ function ActivarForm() {
       }}>
         <div style={{
           position: 'absolute', inset: 0, opacity: 0.4,
-          background: 'radial-gradient(ellipse at 50% 0%, rgba(45,138,84,0.35) 0%, transparent 70%)',
+          background: 'radial-gradient(ellipse at 50% 0%, rgba(26,138,156,0.35) 0%, transparent 70%)',
           pointerEvents: 'none',
         }} />
         <div style={{ position: 'relative', zIndex: 1 }}>
           <div style={{ fontSize: 42, marginBottom: 14, lineHeight: 1 }}>🐾</div>
           <h1 style={{ fontSize: 22, fontWeight: 700, color: 'white', margin: '0 0 6px', letterSpacing: '-0.01em' }}>
-            Huellas de Paz
+            Aires de Paz
           </h1>
           <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.4)', margin: 0 }}>
             Portal de clientes
@@ -116,7 +116,7 @@ function ActivarForm() {
               </p>
               <div style={{ marginTop: 20, display: 'flex', justifyContent: 'center' }}>
                 <div style={{ width: 36, height: 4, background: '#f3f4f6', borderRadius: 2, overflow: 'hidden' }}>
-                  <div style={{ height: '100%', background: '#2d8a54', borderRadius: 2, animation: 'progress 2.2s linear forwards' }} />
+                  <div style={{ height: '100%', background: '#1a8a9c', borderRadius: 2, animation: 'progress 2.2s linear forwards' }} />
                 </div>
               </div>
               <style>{`@keyframes progress { from { width: 0 } to { width: 100% } }`}</style>
@@ -178,7 +178,7 @@ function ActivarForm() {
                         <div key={n} style={{
                           flex: 1, height: 3, borderRadius: 2,
                           background: password.length >= n * 3
-                            ? n === 1 ? '#ef4444' : n === 2 ? '#f59e0b' : '#2d8a54'
+                            ? n === 1 ? '#ef4444' : n === 2 ? '#f59e0b' : '#1a8a9c'
                             : '#f3f4f6',
                           transition: 'background 0.2s',
                         }} />
@@ -196,10 +196,10 @@ function ActivarForm() {
                   style={{
                     marginTop: 4, padding: '14px', borderRadius: 12, fontSize: 15, fontWeight: 600,
                     border: 'none',
-                    background: loading ? '#e5e7eb' : 'linear-gradient(135deg, #2d8a54 0%, #1a5233 100%)',
+                    background: loading ? '#e5e7eb' : 'linear-gradient(135deg, #1a8a9c 0%, #126070 100%)',
                     color: loading ? '#9ca3af' : 'white',
                     cursor: loading ? 'not-allowed' : 'pointer',
-                    boxShadow: loading ? 'none' : '0 4px 14px rgba(45,138,84,0.3)',
+                    boxShadow: loading ? 'none' : '0 4px 14px rgba(26,138,156,0.3)',
                     transition: 'all 0.15s',
                   }}
                 >

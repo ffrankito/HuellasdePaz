@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect, useRef, useMemo } from 'react'
 import { EmailLeadForm } from '@/components/leads/EmailLeadForm'
@@ -362,8 +362,8 @@ export default function MisLeadsPage() {
                   onClick={() => setTraspasoAgenteId(agente.id)}
                   style={{
                     padding: '12px 16px', borderRadius: 12, border: '2px solid',
-                    borderColor: traspasoAgenteId === agente.id ? '#2d8a54' : '#e5e7eb',
-                    background: traspasoAgenteId === agente.id ? '#f0faf5' : 'white',
+                    borderColor: traspasoAgenteId === agente.id ? '#1a8a9c' : '#e5e7eb',
+                    background: traspasoAgenteId === agente.id ? '#f0f8fa' : 'white',
                     display: 'flex', alignItems: 'center', gap: 12, cursor: 'pointer', textAlign: 'left',
                   }}
                 >
@@ -374,7 +374,7 @@ export default function MisLeadsPage() {
                     <p style={{ margin: 0, fontSize: 14, fontWeight: 600, color: '#111827' }}>{agente.nombre}</p>
                     <p style={{ margin: 0, fontSize: 12, color: '#9ca3af' }}>{agente.rol}</p>
                   </div>
-                  {traspasoAgenteId === agente.id && <span style={{ marginLeft: 'auto', color: '#2d8a54', fontSize: 16 }}>✓</span>}
+                  {traspasoAgenteId === agente.id && <span style={{ marginLeft: 'auto', color: '#1a8a9c', fontSize: 16 }}>✓</span>}
                 </button>
               ))}
             </div>
@@ -400,7 +400,7 @@ export default function MisLeadsPage() {
               <button
                 onClick={confirmarTraspaso}
                 disabled={!traspasoAgenteId || !motivoTraspaso.trim()}
-                style={{ padding: '12px', borderRadius: 10, border: 'none', background: traspasoAgenteId && motivoTraspaso.trim() ? '#2d8a54' : '#9ca3af', color: 'white', fontWeight: 600, fontSize: 14, cursor: traspasoAgenteId && motivoTraspaso.trim() ? 'pointer' : 'not-allowed' }}
+                style={{ padding: '12px', borderRadius: 10, border: 'none', background: traspasoAgenteId && motivoTraspaso.trim() ? '#1a8a9c' : '#9ca3af', color: 'white', fontWeight: 600, fontSize: 14, cursor: traspasoAgenteId && motivoTraspaso.trim() ? 'pointer' : 'not-allowed' }}
               >
                 Confirmar →
               </button>
@@ -486,8 +486,8 @@ export default function MisLeadsPage() {
                 <div style={{ borderTop: '1px solid #f3f4f6', paddingTop: 14 }}>
                   <label style={{ fontSize: 13, fontWeight: 600, color: '#374151', display: 'block', marginBottom: 10 }}>Retiro</label>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 10 }}>
-                    <button type="button" onClick={() => setModal(p => ({ ...p, modalidadRetiro: 'sucursal' }))} style={{ padding: '10px', borderRadius: 10, border: '2px solid', borderColor: modal.modalidadRetiro === 'sucursal' ? '#2d8a54' : '#e5e7eb', background: modal.modalidadRetiro === 'sucursal' ? '#f0faf5' : 'white', color: modal.modalidadRetiro === 'sucursal' ? '#2d8a54' : '#374151', fontWeight: modal.modalidadRetiro === 'sucursal' ? 700 : 400, fontSize: 13, cursor: 'pointer' }}>🏠 El cliente trae la mascota</button>
-                    <button type="button" onClick={() => setModal(p => ({ ...p, modalidadRetiro: 'domicilio' }))} style={{ padding: '10px', borderRadius: 10, border: '2px solid', borderColor: modal.modalidadRetiro === 'domicilio' ? '#2d8a54' : '#e5e7eb', background: modal.modalidadRetiro === 'domicilio' ? '#f0faf5' : 'white', color: modal.modalidadRetiro === 'domicilio' ? '#2d8a54' : '#374151', fontWeight: modal.modalidadRetiro === 'domicilio' ? 700 : 400, fontSize: 13, cursor: 'pointer' }}>🚗 Retiro a domicilio</button>
+                    <button type="button" onClick={() => setModal(p => ({ ...p, modalidadRetiro: 'sucursal' }))} style={{ padding: '10px', borderRadius: 10, border: '2px solid', borderColor: modal.modalidadRetiro === 'sucursal' ? '#1a8a9c' : '#e5e7eb', background: modal.modalidadRetiro === 'sucursal' ? '#f0f8fa' : 'white', color: modal.modalidadRetiro === 'sucursal' ? '#1a8a9c' : '#374151', fontWeight: modal.modalidadRetiro === 'sucursal' ? 700 : 400, fontSize: 13, cursor: 'pointer' }}>🏠 El cliente trae la mascota</button>
+                    <button type="button" onClick={() => setModal(p => ({ ...p, modalidadRetiro: 'domicilio' }))} style={{ padding: '10px', borderRadius: 10, border: '2px solid', borderColor: modal.modalidadRetiro === 'domicilio' ? '#1a8a9c' : '#e5e7eb', background: modal.modalidadRetiro === 'domicilio' ? '#f0f8fa' : 'white', color: modal.modalidadRetiro === 'domicilio' ? '#1a8a9c' : '#374151', fontWeight: modal.modalidadRetiro === 'domicilio' ? 700 : 400, fontSize: 13, cursor: 'pointer' }}>🚗 Retiro a domicilio</button>
                   </div>
                   <input type="datetime-local" value={modal.fechaRetiro} onChange={e => setModal(p => ({ ...p, fechaRetiro: e.target.value }))} style={{ width: '100%', border: '1px solid #e5e7eb', borderRadius: 10, padding: '10px 12px', fontSize: 14, outline: 'none', boxSizing: 'border-box' as const }} />
                 </div>
@@ -624,7 +624,7 @@ export default function MisLeadsPage() {
                     {leadActual.email && <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14 }}><span style={{ color: '#9ca3af' }}>Email</span><span style={{ fontWeight: 600 }}>{leadActual.email}</span></div>}
                   </div>
                   <button
-                    onClick={() => window.open(`https://wa.me/549${leadActual.telefono.replace(/\D/g, '')}?text=Hola%20${encodeURIComponent(leadActual.nombre)}%2C%20te%20contactamos%20de%20Huellas%20de%20Paz`, 'whatsapp', 'width=480,height=700,top=100,left=100')}
+                    onClick={() => window.open(`https://wa.me/549${leadActual.telefono.replace(/\D/g, '')}?text=Hola%20${encodeURIComponent(leadActual.nombre)}%2C%20te%20contactamos%20de%20Aires%20de%20Paz`, 'whatsapp', 'width=480,height=700,top=100,left=100')}
                     style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, marginTop: 16, background: '#25D366', color: 'white', borderRadius: 10, padding: '10px', fontSize: 14, fontWeight: 600, cursor: 'pointer', border: 'none', width: '100%' }}
                   >
                     💬 Contactar por WhatsApp

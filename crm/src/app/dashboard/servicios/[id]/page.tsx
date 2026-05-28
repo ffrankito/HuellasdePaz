@@ -90,15 +90,15 @@ export default async function ServicioDetallePage({ params }: { params: Promise<
                   {i > 0 && (
                     <div style={{
                       position: 'absolute', top: 10, right: '50%', left: '-50%', height: 2,
-                      background: done ? '#2d8a54' : '#e5e7eb',
+                      background: done ? '#1a8a9c' : '#e5e7eb',
                     }} />
                   )}
                   <div style={{
                     width: 20, height: 20, borderRadius: '50%', zIndex: 1,
-                    background: active ? '#2d8a54' : done ? '#bbf7d0' : '#f3f4f6',
-                    border: active ? '3px solid #2d8a54' : 'none',
+                    background: active ? '#1a8a9c' : done ? '#bbf7d0' : '#f3f4f6',
+                    border: active ? '3px solid #1a8a9c' : 'none',
                   }} />
-                  <span style={{ fontSize: 10, color: active ? '#2d8a54' : done ? '#6b7280' : '#d1d5db', textAlign: 'center', lineHeight: 1.2 }}>
+                  <span style={{ fontSize: 10, color: active ? '#1a8a9c' : done ? '#6b7280' : '#d1d5db', textAlign: 'center', lineHeight: 1.2 }}>
                     {e.replace(/_/g, ' ')}
                   </span>
                 </div>
@@ -124,7 +124,7 @@ export default async function ServicioDetallePage({ params }: { params: Promise<
                 <InfoRow label={`Comisión ${convenioNombre ?? 'convenio'}`} value={`−$${comision.toLocaleString('es-AR')}`} />
               )}
               {comision > 0 && ingresoNeto !== null && (
-                <InfoRow label="Ingreso neto Huellas" value={`$${ingresoNeto.toLocaleString('es-AR')}`} />
+                <InfoRow label="Ingreso neto Aires" value={`$${ingresoNeto.toLocaleString('es-AR')}`} />
               )}
             </>
           )}

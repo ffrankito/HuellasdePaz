@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import { EditarMemorialForm } from './EditarMemorialForm'
@@ -14,9 +14,9 @@ export function EditarMemorialInline({ mascota, token }: { mascota: Mascota; tok
         style={{
           display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
           width: '100%', padding: '13px', borderRadius: 12, fontSize: 13,
-          fontWeight: 500, border: `1px solid ${abierto ? '#d1ead9' : '#e8e4de'}`,
-          background: abierto ? '#f0faf5' : 'white',
-          color: abierto ? '#2d8a54' : '#374151',
+          fontWeight: 500, border: `1px solid ${abierto ? '#c8e6ea' : '#e8e4de'}`,
+          background: abierto ? '#f0f8fa' : 'white',
+          color: abierto ? '#1a8a9c' : '#374151',
           cursor: 'pointer', boxSizing: 'border-box' as const,
           transition: 'all 0.2s',
         }}

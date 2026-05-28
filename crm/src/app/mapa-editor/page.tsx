@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useRef, useEffect, useCallback } from 'react'
 
@@ -21,7 +21,7 @@ type Drag  =
   | { kind: 'rect';   start: Pt }
 
 // ─── Constants ────────────────────────────────────────────────────────────────
-const COLORS   = ['#2d8a54','#3b82f6','#a855f7','#f59e0b','#ef4444','#06b6d4','#ec4899','#84cc16','#f97316','#ffffff']
+const COLORS   = ['#1a8a9c','#3b82f6','#a855f7','#f59e0b','#ef4444','#06b6d4','#ec4899','#84cc16','#f97316','#ffffff']
 const INIT_VB: VB = { x: 0, y: 0, w: 100, h: 66 }
 const uid = () => Math.random().toString(36).slice(2, 9)
 
@@ -89,7 +89,7 @@ const INITIAL_SHAPES: Shape[] = [
 
   // ── Sectores (render ANTES que parcelas) ──────────────────────────────
   // A: cuadrante superior izquierdo (x:3-35, y:3-28)
-  { id: 'sector-a', kind: 'rect', label: 'Sector A', x: 3,  y: 3,  w: 32, h: 25, color: '#2d8a54', visible: true, locked: false, opacity: 0.7 },
+  { id: 'sector-a', kind: 'rect', label: 'Sector A', x: 3,  y: 3,  w: 32, h: 25, color: '#1a8a9c', visible: true, locked: false, opacity: 0.7 },
   // B: cuadrante superior central (x:39-67, y:3-28)
   { id: 'sector-b', kind: 'rect', label: 'Sector B', x: 39, y: 3,  w: 28, h: 25, color: '#3b82f6', visible: true, locked: false, opacity: 0.7 },
   // C: cuadrante superior derecho (x:69-98, y:3-27)
@@ -101,7 +101,7 @@ const INITIAL_SHAPES: Shape[] = [
 
   // ── Parcelas demo (encima de sectores) ───────────────────────────────────
   // A: 4 cols x 4 filas en x:4-34, y:4-27
-  ...Array.from({ length: 16 }, (_, i) => { const c=i%4,r=Math.floor(i/4); return { id:`pa-${i}`, kind:'rect' as const, label:`A-${i+1}`, x:4+c*7.5, y:4+r*5.5, w:6.5, h:4.5, color:'#2d8a54', visible:true, locked:false, opacity:0.65 } }),
+  ...Array.from({ length: 16 }, (_, i) => { const c=i%4,r=Math.floor(i/4); return { id:`pa-${i}`, kind:'rect' as const, label:`A-${i+1}`, x:4+c*7.5, y:4+r*5.5, w:6.5, h:4.5, color:'#1a8a9c', visible:true, locked:false, opacity:0.65 } }),
   // B: 4 cols x 4 filas en x:40-66, y:4-27
   ...Array.from({ length: 16 }, (_, i) => { const c=i%4,r=Math.floor(i/4); return { id:`pb-${i}`, kind:'rect' as const, label:`B-${i+1}`, x:40+c*7, y:4+r*5.5, w:6, h:4.5, color:'#3b82f6', visible:true, locked:false, opacity:0.65 } }),
   // C: 4 cols x 4 filas en x:70-96, y:4-27
@@ -373,7 +373,7 @@ export default function MapaEditor() {
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginRight: 6 }}>
           <span style={{ fontSize: 15 }}>🗺</span>
           <span style={{ fontSize: 13, fontWeight: 700, color: '#f0f6fc' }}>Editor de Mapa</span>
-          <span style={{ fontSize: 11, color: '#30363d', background: '#21262d', padding: '1px 6px', borderRadius: 4 }}>Huellas de Paz</span>
+          <span style={{ fontSize: 11, color: '#30363d', background: '#21262d', padding: '1px 6px', borderRadius: 4 }}>Aires de Paz</span>
         </div>
 
         <div style={{ width: 1, height: 22, background: '#21262d', margin: '0 4px' }} />

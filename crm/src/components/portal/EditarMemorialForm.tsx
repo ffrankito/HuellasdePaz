@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
@@ -190,7 +190,7 @@ export function EditarMemorialForm({ mascota, token, onSuccess }: { mascota: Mas
             onClick={() => setMemoriaPublica(v => !v)}
             style={{
               width: 44, height: 24, borderRadius: 12, border: 'none', cursor: 'pointer',
-              background: memoriaPublica ? '#2d8a54' : '#e5e7eb',
+              background: memoriaPublica ? '#1a8a9c' : '#e5e7eb',
               position: 'relative', transition: 'background 0.2s', flexShrink: 0, marginLeft: 16,
             }}
           >

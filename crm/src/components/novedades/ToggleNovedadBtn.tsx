@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
@@ -66,9 +66,9 @@ export function ToggleNovedadBtn({ id, publicada: pubInicial, destacada: destIni
         title={publicada ? 'Pasar a borrador' : 'Publicar'}
         style={{
           ...btnBase,
-          border: publicada ? '1px solid #d1ead9' : '1px solid #e5e7eb',
-          background: publicada ? '#f0faf5' : 'white',
-          color: publicada ? '#2d8a54' : '#9ca3af',
+          border: publicada ? '1px solid #c8e6ea' : '1px solid #e5e7eb',
+          background: publicada ? '#f0f8fa' : 'white',
+          color: publicada ? '#1a8a9c' : '#9ca3af',
         }}
       >
         {publicada ? (

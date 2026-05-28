@@ -59,7 +59,7 @@ export default async function MemorialPage({
             Volver
           </a>
           <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.15)', letterSpacing: '0.22em', textTransform: 'uppercase', margin: 0 }}>
-            Huellas de Paz
+            Aires de Paz
           </p>
         </div>
 
@@ -192,7 +192,7 @@ export default async function MemorialPage({
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
             <div style={{ width: 4, height: 4, borderRadius: '50%', background: 'rgba(45,138,84,0.4)' }} />
             <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.12)', letterSpacing: '0.2em', textTransform: 'uppercase', margin: 0 }}>
-              Huellas de Paz · Rosario
+              Aires de Paz · Rosario
             </p>
             <div style={{ width: 4, height: 4, borderRadius: '50%', background: 'rgba(45,138,84,0.4)' }} />
           </div>

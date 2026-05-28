@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import { ServiciosRealtime } from './ServiciosRealtime'
@@ -101,7 +101,7 @@ export function PortalTabs({
                 display: 'flex', alignItems: 'center', gap: 6,
                 padding: '14px 18px',
                 border: 'none', background: 'none',
-                borderBottom: active === tab.id ? '2px solid #2d8a54' : '2px solid transparent',
+                borderBottom: active === tab.id ? '2px solid #1a8a9c' : '2px solid transparent',
                 color: active === tab.id ? '#1e1a16' : '#a89f94',
                 fontWeight: active === tab.id ? 600 : 400,
                 fontSize: 14, cursor: 'pointer', whiteSpace: 'nowrap',
@@ -112,7 +112,7 @@ export function PortalTabs({
               <span style={{ opacity: active === tab.id ? 1 : 0.45 }}>{tab.icon}</span>
               {tab.label}
               {tab.id === 'servicio' && serviciosActivos.length > 0 && (
-                <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#2d8a54', display: 'inline-block', animation: 'blink 2s infinite' }} />
+                <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#1a8a9c', display: 'inline-block', animation: 'blink 2s infinite' }} />
               )}
             </button>
           ))}
@@ -368,7 +368,7 @@ function MemorialSheet({ mascota, token, esEditor, servicioId, onClose }: {
           {/* Dedicatoria */}
           {mascota.dedicatoria && (
             <div style={{ background: 'white', borderRadius: 16, border: '1px solid #e8e4de', padding: '18px 20px', marginTop: 12, display: 'flex', gap: 14 }}>
-              <div style={{ width: 3, flexShrink: 0, background: 'linear-gradient(to bottom, #2d8a54, rgba(45,138,84,0.1))', borderRadius: 2 }} />
+              <div style={{ width: 3, flexShrink: 0, background: 'linear-gradient(to bottom, #1a8a9c, rgba(26,138,156,0.1))', borderRadius: 2 }} />
               <div>
                 <p style={{ fontSize: 10, color: '#a89f94', margin: '0 0 8px', letterSpacing: '0.1em', textTransform: 'uppercase', fontWeight: 600 }}>Dedicatoria</p>
                 <p style={{ fontSize: 15, color: '#374151', margin: 0, lineHeight: 1.75, fontStyle: 'italic', fontFamily: 'Georgia, serif' }}>

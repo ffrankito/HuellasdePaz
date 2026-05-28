@@ -1,4 +1,4 @@
-import { db } from '@/db'
+﻿import { db } from '@/db'
 import { servicios, planes, clientes, planesConfig } from '@/db/schema'
 import { eq, and, ne } from 'drizzle-orm'
 import Link from 'next/link'
@@ -114,7 +114,7 @@ export default async function CobranzasPage() {
           <p style={{ fontSize: 26, fontWeight: 700, color: '#a16207', margin: 0 }}>{fmtMoneda(totalDeudaPlanes)}</p>
           <p style={{ fontSize: 12, color: '#9ca3af', margin: '4px 0 0' }}>{planesConAtraso.length} plan{planesConAtraso.length !== 1 ? 'es' : ''} con atraso</p>
         </div>
-        <div style={{ ...cardStyle, borderLeft: '3px solid #2d8a54' }}>
+        <div style={{ ...cardStyle, borderLeft: '3px solid #1a8a9c' }}>
           <p style={{ fontSize: 12, color: '#6b7280', margin: '0 0 6px' }}>Total pendiente</p>
           <p style={{ fontSize: 26, fontWeight: 700, color: '#111827', margin: 0 }}>{fmtMoneda(totalDeudaServicios + totalDeudaPlanes)}</p>
           <p style={{ fontSize: 12, color: '#9ca3af', margin: '4px 0 0' }}>Entre servicios y planes</p>

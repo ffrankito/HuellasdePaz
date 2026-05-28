@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useEffect, useRef, useState } from 'react'
 
@@ -21,7 +21,7 @@ const BOUNDARY: [number, number][] = [
 // Los sectores respetan esa geometría.
 const SECTORES = [
   {
-    id: 'A', label: 'Sector A', color: '#2d8a54',
+    id: 'A', label: 'Sector A', color: '#1a8a9c',
     // NW — parte norte, mitad oeste
     bounds: [[-33.0795, -60.5946], [-33.0807, -60.5922]] as [[number,number],[number,number]],
   },
@@ -100,7 +100,7 @@ export default function MapaDemoPage() {
 
         // Contorno real del cementerio
         L.polygon(BOUNDARY, {
-          color: '#2d8a54', weight: 3,
+          color: '#1a8a9c', weight: 3,
           fillColor: 'transparent', fillOpacity: 0,
           dashArray: '6,4',
         }).addTo(map)
@@ -129,9 +129,9 @@ export default function MapaDemoPage() {
             const isDemo = idx === MASCOTA.parcela
 
             L.rectangle([[latA, lngA], [latB, lngB]], {
-              color:       isDemo ? '#f59e0b' : '#2d8a54',
+              color:       isDemo ? '#f59e0b' : '#1a8a9c',
               weight:      isDemo ? 3 : 1.5,
-              fillColor:   isDemo ? '#f59e0b' : '#2d8a54',
+              fillColor:   isDemo ? '#f59e0b' : '#1a8a9c',
               fillOpacity: isDemo ? 0.7 : 0.35,
             })
               .bindTooltip(`A-${idx}`, { direction: 'center', className: 'parcel-label' })
@@ -148,7 +148,7 @@ export default function MapaDemoPage() {
           iconAnchor: [55, 18], className: '',
         })
         L.marker(CREMATORIO, { icon: crematorioIcon })
-          .bindPopup('<b>Edificio del Crematorio</b><br><span style="color:#64748b;font-size:12px">Instalaciones de Huellas de Paz</span>')
+          .bindPopup('<b>Edificio del Crematorio</b><br><span style="color:#64748b;font-size:12px">Instalaciones de Aires de Paz</span>')
           .addTo(map)
 
         // Marcador "Entrada"
@@ -196,7 +196,7 @@ export default function MapaDemoPage() {
       {/* Header */}
       <div style={{ background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)', borderBottom: '1px solid #334155', padding: '14px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <div style={{ background: '#2d8a5420', border: '1px solid #2d8a5450', borderRadius: 10, width: 40, height: 40, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20 }}>🐾</div>
+          <div style={{ background: '#1a8a9c20', border: '1px solid #1a8a9c50', borderRadius: 10, width: 40, height: 40, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20 }}>🐾</div>
           <div>
             <p style={{ fontSize: 16, fontWeight: 700, color: 'white', margin: 0, letterSpacing: '-0.01em' }}>Ubicación de <span style={{ color: '#4ade80' }}>{MASCOTA.nombre}</span></p>
             <p style={{ fontSize: 11, color: '#64748b', margin: 0, marginTop: 2 }}>Cementerio Parque Aires de Paz · Rosario, Santa Fe</p>
@@ -230,7 +230,7 @@ export default function MapaDemoPage() {
               <p style={{ fontSize: 10, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 10px', fontWeight: 600 }}>Ubicación</p>
               <div style={{ display: 'flex', gap: 8 }}>
                 {[
-                  { l: 'Sector', v: MASCOTA.sector, c: '#2d8a54' },
+                  { l: 'Sector', v: MASCOTA.sector, c: '#1a8a9c' },
                   { l: 'Fila',   v: MASCOTA.fila,   c: '#f59e0b' },
                   { l: 'Parcela',v: MASCOTA.parcela, c: '#f59e0b' },
                 ].map(item => (
@@ -250,8 +250,8 @@ export default function MapaDemoPage() {
                 { n: '3', t: 'Fila 2, Parcela 5 — señalizada en el mapa' },
               ].map(p => (
                 <div key={p.n} style={{ display: 'flex', gap: 10, alignItems: 'flex-start', marginBottom: 10 }}>
-                  <div style={{ width: 20, height: 20, borderRadius: '50%', background: '#2d8a5430', border: '1px solid #2d8a54', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <span style={{ fontSize: 10, color: '#2d8a54', fontWeight: 700 }}>{p.n}</span>
+                  <div style={{ width: 20, height: 20, borderRadius: '50%', background: '#1a8a9c30', border: '1px solid #1a8a9c', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <span style={{ fontSize: 10, color: '#1a8a9c', fontWeight: 700 }}>{p.n}</span>
                   </div>
                   <p style={{ fontSize: 12, color: '#cbd5e1', margin: 0, lineHeight: 1.5 }}>{p.t}</p>
                 </div>
@@ -261,7 +261,7 @@ export default function MapaDemoPage() {
             <a
               href="https://www.google.com/maps/dir/?api=1&destination=-33.0807,-60.5922"
               target="_blank" rel="noopener noreferrer"
-              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, background: '#2d8a54', color: 'white', borderRadius: 10, padding: '12px', fontSize: 13, fontWeight: 600, textDecoration: 'none', marginTop: 'auto' }}
+              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, background: '#1a8a9c', color: 'white', borderRadius: 10, padding: '12px', fontSize: 13, fontWeight: 600, textDecoration: 'none', marginTop: 'auto' }}
             >
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
               Cómo llegar al cementerio
@@ -273,7 +273,7 @@ export default function MapaDemoPage() {
       {!mostrarPanel && (
         <button
           onClick={() => setMostrarPanel(true)}
-          style={{ position: 'fixed', bottom: 20, right: 20, background: '#2d8a54', color: 'white', border: 'none', borderRadius: 10, padding: '10px 16px', fontSize: 13, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6, boxShadow: '0 4px 16px rgba(45,138,84,0.4)' }}
+          style={{ position: 'fixed', bottom: 20, right: 20, background: '#1a8a9c', color: 'white', border: 'none', borderRadius: 10, padding: '10px 16px', fontSize: 13, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6, boxShadow: '0 4px 16px rgba(26,138,156,0.4)' }}
         >
           🐾 Ver info de {MASCOTA.nombre}
         </button>

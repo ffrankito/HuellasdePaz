@@ -12,7 +12,7 @@ export function ExportarReporteButton() {
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = `reporte-huellas-de-paz-${new Date().toISOString().split('T')[0]}.pdf`
+    a.download = `reporte-aires-de-paz-${new Date().toISOString().split('T')[0]}.pdf`
     a.click()
     URL.revokeObjectURL(url)
     setLoading(false)

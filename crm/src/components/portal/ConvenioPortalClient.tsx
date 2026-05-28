@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
@@ -152,21 +152,21 @@ export function ConvenioPortalClient({
 
           <div>
             <label style={{ display: 'block', fontSize: 12, fontWeight: 500, color: '#374151', marginBottom: 5 }}>Notas adicionales</label>
-            <textarea name="notas" value={form.notas} onChange={handleChange} rows={2} placeholder="Cualquier información relevante para el equipo de Huellas de Paz..." style={{ ...inputStyle, resize: 'vertical', fontFamily: 'inherit' }} />
+            <textarea name="notas" value={form.notas} onChange={handleChange} rows={2} placeholder="Cualquier información relevante para el equipo de Aires de Paz..." style={{ ...inputStyle, resize: 'vertical', fontFamily: 'inherit' }} />
           </div>
 
           {error && <p style={{ fontSize: 13, color: '#dc2626', margin: 0 }}>{error}</p>}
           {success && (
             <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: 10, padding: '12px 16px' }}>
               <p style={{ fontSize: 13, color: '#15803d', margin: 0, fontWeight: 500 }}>
-                ¡Lead enviado! El equipo de Huellas de Paz se va a poner en contacto pronto.
+                ¡Lead enviado! El equipo de Aires de Paz se va a poner en contacto pronto.
               </p>
             </div>
           )}
 
           <button type="submit" disabled={loading} style={{
             padding: '11px 24px', borderRadius: 10, fontSize: 14, fontWeight: 600,
-            border: 'none', background: '#2d8a54', color: 'white',
+            border: 'none', background: '#1a8a9c', color: 'white',
             cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.7 : 1,
           }}>
             {loading ? 'Enviando...' : 'Enviar lead'}

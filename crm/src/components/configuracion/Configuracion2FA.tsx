@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect } from 'react'
 
@@ -162,7 +162,7 @@ export function Configuracion2FA() {
                 style={{
                   flex: 1, padding: '9px 0', borderRadius: 8, fontSize: 13, fontWeight: 600,
                   border: 'none', cursor: loading || codigo.length !== 6 ? 'not-allowed' : 'pointer',
-                  background: loading || codigo.length !== 6 ? '#d1d5db' : paso === 'otp-desactivar' ? '#dc2626' : '#2d8a54',
+                  background: loading || codigo.length !== 6 ? '#d1d5db' : paso === 'otp-desactivar' ? '#dc2626' : '#1a8a9c',
                   color: 'white',
                 }}
               >

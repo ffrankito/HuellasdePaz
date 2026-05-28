@@ -1,4 +1,4 @@
-import { Resend } from 'resend'
+﻿import { Resend } from 'resend'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
@@ -12,9 +12,10 @@ export async function enviarInvitacionConvenio({
   linkActivacion: string
 }) {
   const { error } = await resend.emails.send({
-    from: 'Huellas de Paz <onboarding@resend.dev>',
+    from: 'Aires de Paz <onboarding@resend.dev>',
+    replyTo: 'mascotas@airesdepaz.com',
     to: email,
-    subject: `Tu portal de socios de Huellas de Paz está listo`,
+    subject: `Tu portal de socios de Aires de Paz está listo`,
     html: `
 <!DOCTYPE html>
 <html lang="es">
@@ -24,7 +25,7 @@ export async function enviarInvitacionConvenio({
 
     <div style="background:#111827;border-radius:16px;padding:40px;text-align:center;margin-bottom:32px;">
       <div style="font-size:40px;margin-bottom:16px;">🐾</div>
-      <h1 style="color:white;font-size:22px;font-weight:600;margin:0 0 8px;">Huellas de Paz</h1>
+      <h1 style="color:white;font-size:22px;font-weight:600;margin:0 0 8px;">Aires de Paz</h1>
       <p style="color:#9ca3af;font-size:14px;margin:0;">Portal de socios</p>
     </div>
 
@@ -33,7 +34,7 @@ export async function enviarInvitacionConvenio({
     </h2>
 
     <p style="font-size:15px;color:#374151;line-height:1.7;margin:0 0 16px;">
-      Te damos acceso al portal de socios de Huellas de Paz. Desde ahí vas a poder derivar clientes directamente, sin necesidad de llamarnos.
+      Te damos acceso al portal de socios de Aires de Paz. Desde ahí vas a poder derivar clientes directamente, sin necesidad de llamarnos.
     </p>
 
     <div style="background:#f3f4f6;border-radius:12px;padding:20px;margin-bottom:24px;">
@@ -43,7 +44,7 @@ export async function enviarInvitacionConvenio({
     </div>
 
     <div style="text-align:center;margin-bottom:32px;">
-      <a href="${linkActivacion}" style="display:inline-block;background:#2d8a54;color:white;padding:14px 32px;border-radius:12px;font-size:15px;font-weight:600;text-decoration:none;">
+      <a href="${linkActivacion}" style="display:inline-block;background:#1a8a9c;color:white;padding:14px 32px;border-radius:12px;font-size:15px;font-weight:600;text-decoration:none;">
         Activar mi acceso →
       </a>
     </div>
@@ -55,7 +56,7 @@ export async function enviarInvitacionConvenio({
     <hr style="border:none;border-top:1px solid #e5e7eb;margin:24px 0;" />
 
     <p style="font-size:12px;color:#9ca3af;text-align:center;margin:0;">
-      El equipo de <strong>Huellas de Paz</strong> · Rosario, Argentina
+      El equipo de <strong>Aires de Paz</strong> · Rosario, Argentina
     </p>
 
   </div>

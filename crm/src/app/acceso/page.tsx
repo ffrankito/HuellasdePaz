@@ -1,4 +1,4 @@
-export default function AccesoPage() {
+﻿export default function AccesoPage() {
   return (
     <div style={{
       minHeight: '100vh',
@@ -12,17 +12,17 @@ export default function AccesoPage() {
     }}>
 
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 48 }}>
-        <div style={{ width: 40, height: 40, borderRadius: 12, background: 'linear-gradient(135deg, #e8f5ed 0%, #d1ead9 100%)', border: '1px solid rgba(45,138,84,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ width: 40, height: 40, borderRadius: 12, background: 'linear-gradient(135deg, #e8f5ed 0%, #c8e6ea 100%)', border: '1px solid rgba(26,138,156,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-            <path d="M12 2C8 2 4 6 4 10c0 5 8 12 8 12s8-7 8-12c0-4-4-8-8-8z" fill="#2d8a54"/>
-            <circle cx="9"  cy="7"  r="1.5" fill="#aadfc2"/>
-            <circle cx="15" cy="7"  r="1.5" fill="#aadfc2"/>
-            <circle cx="7"  cy="11" r="1.2" fill="#aadfc2"/>
-            <circle cx="17" cy="11" r="1.2" fill="#aadfc2"/>
+            <path d="M12 2C8 2 4 6 4 10c0 5 8 12 8 12s8-7 8-12c0-4-4-8-8-8z" fill="#1a8a9c"/>
+            <circle cx="9"  cy="7"  r="1.5" fill="#99d0d8"/>
+            <circle cx="15" cy="7"  r="1.5" fill="#99d0d8"/>
+            <circle cx="7"  cy="11" r="1.2" fill="#99d0d8"/>
+            <circle cx="17" cy="11" r="1.2" fill="#99d0d8"/>
           </svg>
         </div>
         <div>
-          <p style={{ fontSize: 15, fontWeight: 700, color: '#111827', margin: 0 }}>Huellas de Paz</p>
+          <p style={{ fontSize: 15, fontWeight: 700, color: '#111827', margin: 0 }}>Aires de Paz</p>
           <p style={{ fontSize: 11, color: '#9ca3af', margin: 0, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Rosario, Argentina</p>
         </div>
       </div>
@@ -38,7 +38,7 @@ export default function AccesoPage() {
 
         <a href="/portal/login" className="acceso-card">
           <div className="acceso-icon">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2d8a54" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1a8a9c" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
               <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
             </svg>
           </div>
@@ -53,7 +53,7 @@ export default function AccesoPage() {
 
         <a href="/portal/convenio/login" className="acceso-card">
           <div className="acceso-icon">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2d8a54" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1a8a9c" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
               <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
             </svg>
           </div>
@@ -85,15 +85,15 @@ export default function AccesoPage() {
           transition: border-color 0.15s, box-shadow 0.15s;
         }
         .acceso-card:hover {
-          border-color: #2d8a54;
-          box-shadow: 0 0 0 4px rgba(45,138,84,0.07);
+          border-color: #1a8a9c;
+          box-shadow: 0 0 0 4px rgba(26,138,156,0.07);
         }
         .acceso-icon {
           width: 52px;
           height: 52px;
           border-radius: 16px;
-          background: #f0faf5;
-          border: 1px solid #d1ead9;
+          background: #f0f8fa;
+          border: 1px solid #c8e6ea;
           display: flex;
           align-items: center;
           justify-content: center;

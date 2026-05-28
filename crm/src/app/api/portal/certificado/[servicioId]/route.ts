@@ -66,7 +66,7 @@ function generarCertificado({
     doc.on('end', () => resolve(Buffer.concat(chunks)))
     doc.on('error', reject)
 
-    const verde = '#2d8a54'
+    const verde = '#1a8a9c'
     const negro = '#111827'
     const gris = '#6b7280'
     const grisClaroHex = '#f3f4f6'
@@ -75,7 +75,7 @@ function generarCertificado({
     doc.rect(0, 0, doc.page.width, 120).fill(negro)
 
     doc.fontSize(22).font('Helvetica-Bold').fillColor('white')
-      .text('Huellas de Paz', 60, 38)
+      .text('Aires de Paz', 60, 38)
 
     doc.fontSize(10).font('Helvetica').fillColor('rgba(255,255,255,0.5)')
       .text('Crematorio y cementerio parque de mascotas · Rosario, Argentina', 60, 66)
@@ -129,7 +129,7 @@ function generarCertificado({
     doc.rect(60, y3, doc.page.width - 120, 80).fillAndStroke('#f9fafb', grisClaroHex)
     doc.fontSize(10).font('Helvetica').fillColor(gris)
       .text(
-        `Huellas de Paz certifica que el servicio de ${tipoLabel[servicio.tipo] ?? servicio.tipo.replace(/_/g, ' ')} fue realizado conforme a los más altos estándares de dignidad y respeto, en cumplimiento de la normativa vigente en la provincia de Santa Fe, Argentina.`,
+        `Aires de Paz certifica que el servicio de ${tipoLabel[servicio.tipo] ?? servicio.tipo.replace(/_/g, ' ')} fue realizado conforme a los más altos estándares de dignidad y respeto, en cumplimiento de la normativa vigente en la provincia de Santa Fe, Argentina.`,
         76,
         y3 + 16,
         { width: doc.page.width - 152, align: 'justify' }

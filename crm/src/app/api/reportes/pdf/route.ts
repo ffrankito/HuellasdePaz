@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+﻿import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/db'
 import { clientes, servicios, leads, planes } from '@/db/schema'
 import { and, gte, lt } from 'drizzle-orm'
@@ -9,7 +9,7 @@ export const dynamic = 'force-dynamic'
 const W = 595
 const MARGEN = 50
 const oscuro = '#111827'
-const verde = '#2d8a54'
+const verde = '#1a8a9c'
 const gris = '#6b7280'
 const grisClaroHex = '#f3f4f6'
 const linea = '#e5e7eb'
@@ -90,7 +90,7 @@ export async function GET(req: NextRequest) {
 
     // Logo pata (SVG path → text aproximation)
     doc.fillColor(verde).fontSize(24).font('Helvetica-Bold').text('●', 50, 22)
-    doc.fillColor('white').fontSize(20).font('Helvetica-Bold').text('Huellas de Paz', 72, 22)
+    doc.fillColor('white').fontSize(20).font('Helvetica-Bold').text('Aires de Paz', 72, 22)
     doc.fillColor('rgba(255,255,255,0.45)').fontSize(9).font('Helvetica')
       .text('Reporte de gestión · Rosario, Argentina', 72, 46)
 
@@ -246,7 +246,7 @@ export async function GET(req: NextRequest) {
     const pageHeight = 842
     doc.moveTo(MARGEN, pageHeight - 40).lineTo(W - MARGEN, pageHeight - 40).strokeColor(linea).lineWidth(0.8).stroke()
     doc.fillColor(gris).fontSize(7.5).font('Helvetica')
-      .text('Huellas de Paz · Rosario, Argentina', MARGEN, pageHeight - 28)
+      .text('Aires de Paz · Rosario, Argentina', MARGEN, pageHeight - 28)
       .text(`Generado el ${fmtFecha(new Date())}`, 0, pageHeight - 28, { align: 'right', width: W - MARGEN })
 
     doc.end()

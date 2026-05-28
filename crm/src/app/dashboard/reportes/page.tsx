@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect, useCallback } from 'react'
 import { GraficoPie } from '@/components/dashboard/GraficoPie'
@@ -110,7 +110,7 @@ function KPI({
 const CANALES = [
   { key: 'whatsapp',    label: 'WhatsApp',         emoji: '💬', color: '#25D366' },
   { key: 'instagram',   label: 'Instagram',        emoji: '📸', color: '#E1306C' },
-  { key: 'landing',     label: 'Página web',       emoji: '🌐', color: '#2d8a54' },
+  { key: 'landing',     label: 'Página web',       emoji: '🌐', color: '#1a8a9c' },
   { key: 'telefono',    label: 'Teléfono',         emoji: '📞', color: '#2563eb' },
   { key: 'directo',     label: 'Contacto directo', emoji: '🚶', color: '#374151' },
   { key: 'veterinaria', label: 'Convenio',         emoji: '🏥', color: '#d97706' },
@@ -126,7 +126,7 @@ const labelServicio: Record<string, string> = {
 const coloresServicio: Record<string, string> = {
   cremacion_individual: '#111827',
   cremacion_comunitaria: '#374151',
-  entierro: '#2d8a54',
+  entierro: '#1a8a9c',
 }
 
 export default function ReportesPage() {
@@ -364,7 +364,7 @@ export default function ReportesPage() {
                           <span style={{ fontSize: 12, color: '#9ca3af', minWidth: 36, textAlign: 'right' }}>{pct}%</span>
                         </div>
                         <div style={{ height: 7, background: '#f3f4f6', borderRadius: 4, overflow: 'hidden' }}>
-                          <div style={{ width: `${pct}%`, height: '100%', background: '#2d8a54', borderRadius: 4, transition: 'width 0.5s ease' }} />
+                          <div style={{ width: `${pct}%`, height: '100%', background: '#1a8a9c', borderRadius: 4, transition: 'width 0.5s ease' }} />
                         </div>
                       </div>
                     )

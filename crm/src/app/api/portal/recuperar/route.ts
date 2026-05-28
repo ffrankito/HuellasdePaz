@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+﻿import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/db'
 import { clientes } from '@/db/schema'
 import { Resend } from 'resend'
@@ -46,9 +46,9 @@ export async function POST(request: NextRequest) {
       const portalLink = `${appUrl}/portal/${cliente.tokenPortal}`
 
       await resend.emails.send({
-        from: 'Huellas de Paz <onboarding@resend.dev>',
+        from: 'Aires de Paz <onboarding@resend.dev>',
         to: cliente.email,
-        subject: 'Tu link de acceso al portal — Huellas de Paz',
+        subject: 'Tu link de acceso al portal — Aires de Paz',
         html: `
 <!DOCTYPE html>
 <html lang="es">
@@ -57,7 +57,7 @@ export async function POST(request: NextRequest) {
   <div style="max-width:520px;margin:0 auto;padding:40px 20px;">
     <div style="background:#111827;border-radius:16px;padding:36px;text-align:center;margin-bottom:32px;">
       <div style="font-size:36px;margin-bottom:12px;">🐾</div>
-      <h1 style="color:white;font-size:20px;font-weight:600;margin:0 0 6px;">Huellas de Paz</h1>
+      <h1 style="color:white;font-size:20px;font-weight:600;margin:0 0 6px;">Aires de Paz</h1>
       <p style="color:#9ca3af;font-size:13px;margin:0;">Rosario, Argentina</p>
     </div>
 
@@ -67,7 +67,7 @@ export async function POST(request: NextRequest) {
     </p>
 
     <div style="text-align:center;margin-bottom:28px;">
-      <a href="${portalLink}" style="display:inline-block;background:#2d8a54;color:white;padding:14px 36px;border-radius:12px;font-size:15px;font-weight:600;text-decoration:none;">
+      <a href="${portalLink}" style="display:inline-block;background:#1a8a9c;color:white;padding:14px 36px;border-radius:12px;font-size:15px;font-weight:600;text-decoration:none;">
         Entrar a mi portal →
       </a>
     </div>
@@ -78,7 +78,7 @@ export async function POST(request: NextRequest) {
 
     <hr style="border:none;border-top:1px solid #e5e7eb;margin:24px 0;" />
     <p style="font-size:12px;color:#9ca3af;text-align:center;margin:0;">
-      Con cariño, el equipo de <strong>Huellas de Paz</strong>
+      Con cariño, el equipo de <strong>Aires de Paz</strong>
     </p>
   </div>
 </body>

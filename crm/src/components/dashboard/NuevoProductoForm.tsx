@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
@@ -141,8 +141,8 @@ export function NuevoProductoForm() {
             type="button"
             onClick={() => setParaVenta(true)}
             style={{
-              padding: '14px 16px', borderRadius: 12, border: `2px solid ${paraVenta ? '#2d8a54' : '#e5e7eb'}`,
-              background: paraVenta ? '#f0faf5' : 'white', cursor: 'pointer', textAlign: 'left',
+              padding: '14px 16px', borderRadius: 12, border: `2px solid ${paraVenta ? '#1a8a9c' : '#e5e7eb'}`,
+              background: paraVenta ? '#f0f8fa' : 'white', cursor: 'pointer', textAlign: 'left',
             }}
           >
             <p style={{ fontSize: 14, fontWeight: 600, color: paraVenta ? '#15803d' : '#111827', margin: '0 0 2px' }}>Para venta</p>

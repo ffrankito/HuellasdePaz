@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
@@ -77,7 +77,7 @@ export default function PerfilPage() {
             onClick={toggleDarkMode}
             style={{
               width: 48, height: 26, borderRadius: 13, border: 'none', cursor: 'pointer',
-              background: darkMode ? '#2d8a54' : '#d1d5db',
+              background: darkMode ? '#1a8a9c' : '#d1d5db',
               position: 'relative', transition: 'background 0.2s', flexShrink: 0,
             }}
           >

@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
@@ -22,7 +22,7 @@ export function ToggleParaVentaButton({ id, paraVenta }: { id: string; paraVenta
   }
 
   return (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 16px', borderRadius: 12, border: `1.5px solid ${activo ? '#2d8a54' : '#e5e7eb'}`, background: activo ? '#f0faf5' : '#f9fafb' }}>
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 16px', borderRadius: 12, border: `1.5px solid ${activo ? '#1a8a9c' : '#e5e7eb'}`, background: activo ? '#f0f8fa' : '#f9fafb' }}>
       <div>
         <p style={{ fontSize: 14, fontWeight: 500, color: '#111827', margin: 0 }}>Disponible para venta</p>
         <p style={{ fontSize: 12, color: '#6b7280', margin: '2px 0 0' }}>Aparece en el selector al crear servicios</p>
@@ -33,7 +33,7 @@ export function ToggleParaVentaButton({ id, paraVenta }: { id: string; paraVenta
         disabled={loading}
         style={{
           width: 44, height: 24, borderRadius: 12, border: 'none', cursor: loading ? 'not-allowed' : 'pointer',
-          position: 'relative', background: activo ? '#2d8a54' : '#d1d5db', transition: 'background 0.2s', flexShrink: 0, opacity: loading ? 0.7 : 1,
+          position: 'relative', background: activo ? '#1a8a9c' : '#d1d5db', transition: 'background 0.2s', flexShrink: 0, opacity: loading ? 0.7 : 1,
         }}
       >
         <span style={{

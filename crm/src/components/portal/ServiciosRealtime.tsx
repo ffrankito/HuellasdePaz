@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
@@ -84,7 +84,7 @@ export function ServiciosRealtime({
           fontSize: 13, fontWeight: 500, boxShadow: '0 8px 24px rgba(0,0,0,0.3)',
           display: 'flex', alignItems: 'center', gap: 8, whiteSpace: 'nowrap',
         }}>
-          <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#2d8a54', display: 'inline-block' }} />
+          <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#1a8a9c', display: 'inline-block' }} />
           {actualizacion}
         </div>
       )}
@@ -94,7 +94,7 @@ export function ServiciosRealtime({
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
             <h2 style={{ fontSize: 16, fontWeight: 600, color: '#111827', margin: 0 }}>Servicios en curso</h2>
             <span style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 11, color: '#9ca3af' }}>
-              <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#2d8a54', display: 'inline-block', animation: 'blink 2s infinite' }} />
+              <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#1a8a9c', display: 'inline-block', animation: 'blink 2s infinite' }} />
               En vivo
             </span>
           </div>

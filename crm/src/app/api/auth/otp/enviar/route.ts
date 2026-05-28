@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server'
+﻿import { NextResponse } from 'next/server'
 import { randomBytes, createHash } from 'crypto'
 import { Resend } from 'resend'
 import { requireAuth } from '@/lib/api-auth'
@@ -42,7 +42,7 @@ export async function POST() {
 
   try {
     await resend.emails.send({
-      from: 'Huellas de Paz <onboarding@resend.dev>',
+      from: 'Aires de Paz <onboarding@resend.dev>',
       to: usuario.email,
       subject: `${codigo} — tu código de verificación`,
       html: `
@@ -54,7 +54,7 @@ export async function POST() {
 
     <div style="background:#111827;border-radius:16px;padding:36px;text-align:center;margin-bottom:28px;">
       <div style="font-size:36px;margin-bottom:12px;">🐾</div>
-      <h1 style="color:white;font-size:20px;font-weight:600;margin:0 0 6px;">Huellas de Paz</h1>
+      <h1 style="color:white;font-size:20px;font-weight:600;margin:0 0 6px;">Aires de Paz</h1>
       <p style="color:#9ca3af;font-size:13px;margin:0;">Panel de gestión interno</p>
     </div>
 
@@ -62,7 +62,7 @@ export async function POST() {
       <p style="font-size:15px;color:#374151;margin:0 0 24px;line-height:1.6;">
         Hola <strong>${usuario.nombre}</strong>, tu código de verificación es:
       </p>
-      <div style="background:#f0faf5;border:2px solid #2d8a54;border-radius:14px;padding:24px;margin:0 0 24px;">
+      <div style="background:#f0f8fa;border:2px solid #1a8a9c;border-radius:14px;padding:24px;margin:0 0 24px;">
         <span style="font-size:40px;font-weight:700;color:#111827;letter-spacing:10px;font-variant-numeric:tabular-nums;">${codigo}</span>
       </div>
       <p style="font-size:13px;color:#9ca3af;margin:0;line-height:1.6;">
@@ -72,7 +72,7 @@ export async function POST() {
     </div>
 
     <p style="font-size:11px;color:#d1d5db;text-align:center;margin:24px 0 0;">
-      © Huellas de Paz · Rosario, Argentina
+      © Aires de Paz · Rosario, Argentina
     </p>
   </div>
 </body>

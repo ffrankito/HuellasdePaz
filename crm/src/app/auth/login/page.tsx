@@ -1,4 +1,4 @@
-import { LoginForm } from '@/components/auth/LoginForm'
+﻿import { LoginForm } from '@/components/auth/LoginForm'
 
 const PAWS = [
   { top: '5%',  left: '4%',   size: 56, opacity: 0.07, rotate: -22, delay: '0s',   dur: '9s'  },
@@ -19,7 +19,7 @@ export default function LoginPage() {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      background: '#f0faf5',
+      background: '#f0f8fa',
       position: 'relative',
       overflow: 'hidden',
       padding: '24px',
@@ -28,9 +28,9 @@ export default function LoginPage() {
 
       {/* Glows suaves */}
       <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 0 }}>
-        <div style={{ position: 'absolute', top: '-10%', left: '50%', transform: 'translateX(-50%)', width: 900, height: 600, background: 'radial-gradient(ellipse, rgba(45,138,84,0.1) 0%, transparent 65%)', borderRadius: '50%' }} />
-        <div style={{ position: 'absolute', bottom: '-5%', left: '10%', width: 500, height: 500, background: 'radial-gradient(ellipse, rgba(45,138,84,0.07) 0%, transparent 60%)', borderRadius: '50%' }} />
-        <div style={{ position: 'absolute', top: '40%', left: '85%', width: 400, height: 400, background: 'radial-gradient(ellipse, rgba(45,138,84,0.06) 0%, transparent 60%)', borderRadius: '50%' }} />
+        <div style={{ position: 'absolute', top: '-10%', left: '50%', transform: 'translateX(-50%)', width: 900, height: 600, background: 'radial-gradient(ellipse, rgba(26,138,156,0.1) 0%, transparent 65%)', borderRadius: '50%' }} />
+        <div style={{ position: 'absolute', bottom: '-5%', left: '10%', width: 500, height: 500, background: 'radial-gradient(ellipse, rgba(26,138,156,0.07) 0%, transparent 60%)', borderRadius: '50%' }} />
+        <div style={{ position: 'absolute', top: '40%', left: '85%', width: 400, height: 400, background: 'radial-gradient(ellipse, rgba(26,138,156,0.06) 0%, transparent 60%)', borderRadius: '50%' }} />
       </div>
 
       {/* Patas flotantes */}
@@ -39,7 +39,7 @@ export default function LoginPage() {
           key={i}
           width={p.size} height={p.size}
           viewBox="0 0 24 24"
-          fill="#2d8a54"
+          fill="#1a8a9c"
           aria-hidden="true"
           style={{
             position: 'fixed',
@@ -69,34 +69,34 @@ export default function LoginPage() {
         maxWidth: 420,
         position: 'relative',
         zIndex: 1,
-        boxShadow: '0 4px 6px rgba(0,0,0,0.04), 0 20px 60px rgba(45,138,84,0.1), 0 0 0 1px rgba(45,138,84,0.08)',
+        boxShadow: '0 4px 6px rgba(0,0,0,0.04), 0 20px 60px rgba(26,138,156,0.1), 0 0 0 1px rgba(26,138,156,0.08)',
       }}>
 
         {/* Acento verde arriba de la card */}
-        <div style={{ position: 'absolute', top: 0, left: 48, right: 48, height: 3, background: 'linear-gradient(90deg, transparent, #2d8a54, transparent)', borderRadius: '0 0 4px 4px' }} />
+        <div style={{ position: 'absolute', top: 0, left: 48, right: 48, height: 3, background: 'linear-gradient(90deg, transparent, #1a8a9c, transparent)', borderRadius: '0 0 4px 4px' }} />
 
         {/* Logo */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 40 }}>
           <div style={{
             width: 44, height: 44, borderRadius: 14,
-            background: 'linear-gradient(135deg, #e8f5ed 0%, #d1ead9 100%)',
-            border: '1px solid rgba(45,138,84,0.2)',
+            background: 'linear-gradient(135deg, #e8f5ed 0%, #c8e6ea 100%)',
+            border: '1px solid rgba(26,138,156,0.2)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-              <path d="M12 2C8 2 4 6 4 10c0 5 8 12 8 12s8-7 8-12c0-4-4-8-8-8z" fill="#2d8a54"/>
-              <circle cx="9"  cy="7"  r="1.5" fill="#aadfc2"/>
-              <circle cx="15" cy="7"  r="1.5" fill="#aadfc2"/>
-              <circle cx="7"  cy="11" r="1.2" fill="#aadfc2"/>
-              <circle cx="17" cy="11" r="1.2" fill="#aadfc2"/>
+              <path d="M12 2C8 2 4 6 4 10c0 5 8 12 8 12s8-7 8-12c0-4-4-8-8-8z" fill="#1a8a9c"/>
+              <circle cx="9"  cy="7"  r="1.5" fill="#99d0d8"/>
+              <circle cx="15" cy="7"  r="1.5" fill="#99d0d8"/>
+              <circle cx="7"  cy="11" r="1.2" fill="#99d0d8"/>
+              <circle cx="17" cy="11" r="1.2" fill="#99d0d8"/>
             </svg>
           </div>
           <div>
             <p style={{ fontSize: 15, fontWeight: 700, color: '#111827', margin: 0, letterSpacing: '-0.01em' }}>
-              Huellas de Paz
+              Aires de Paz
             </p>
             <p style={{ fontSize: 11, color: '#9ca3af', margin: 0, letterSpacing: '0.05em', textTransform: 'uppercase' }}>
-              Huellas de Paz
+              Aires de Paz
             </p>
           </div>
         </div>
@@ -116,7 +116,7 @@ export default function LoginPage() {
         {/* Footer */}
         <div style={{ marginTop: 32, paddingTop: 24, borderTop: '1px solid #f3f4f6', textAlign: 'center' }}>
           <p style={{ fontSize: 11, color: '#d1d5db', margin: 0, letterSpacing: '0.04em' }}>
-            © 2025 Huellas de Paz · Rosario, Argentina
+            © 2025 Aires de Paz · Rosario, Argentina
           </p>
         </div>
       </div>

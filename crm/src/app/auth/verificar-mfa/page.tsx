@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
@@ -63,7 +63,7 @@ export default function VerificarMfaPage() {
 
         <div style={{ textAlign: 'center', marginBottom: 32 }}>
           <div style={{ width: 64, height: 64, borderRadius: 18, background: 'white', border: '1px solid #e5e7eb', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}>
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#2d8a54" strokeWidth="1.8">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#1a8a9c" strokeWidth="1.8">
               <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
             </svg>
           </div>
@@ -97,7 +97,7 @@ export default function VerificarMfaPage() {
                   fontVariantNumeric: 'tabular-nums',
                   transition: 'border-color 0.2s, box-shadow 0.2s',
                 }}
-                onFocus={e => { e.target.style.borderColor = '#2d8a54'; e.target.style.boxShadow = '0 0 0 3px rgba(45,138,84,0.1)' }}
+                onFocus={e => { e.target.style.borderColor = '#1a8a9c'; e.target.style.boxShadow = '0 0 0 3px rgba(26,138,156,0.1)' }}
                 onBlur={e => { e.target.style.borderColor = '#e5e7eb'; e.target.style.boxShadow = 'none' }}
               />
             </div>
@@ -115,7 +115,7 @@ export default function VerificarMfaPage() {
               type="submit"
               disabled={loading || codigo.length !== 6}
               style={{
-                width: '100%', background: loading || codigo.length !== 6 ? '#9ca3af' : '#2d8a54',
+                width: '100%', background: loading || codigo.length !== 6 ? '#9ca3af' : '#1a8a9c',
                 color: 'white', padding: '12px 0', borderRadius: 10,
                 fontSize: 14, fontWeight: 600, border: 'none',
                 cursor: loading || codigo.length !== 6 ? 'not-allowed' : 'pointer',
@@ -133,7 +133,7 @@ export default function VerificarMfaPage() {
                 disabled={reenvioEn > 0}
                 style={{
                   background: 'none', border: 'none', cursor: reenvioEn > 0 ? 'default' : 'pointer',
-                  fontSize: 13, color: reenvioEn > 0 ? '#9ca3af' : '#2d8a54',
+                  fontSize: 13, color: reenvioEn > 0 ? '#9ca3af' : '#1a8a9c',
                   padding: '4px 8px', fontFamily: 'inherit',
                 }}
               >

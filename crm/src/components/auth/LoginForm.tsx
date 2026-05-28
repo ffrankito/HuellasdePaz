@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect, useCallback } from 'react'
 import { createClient } from '@/lib/supabase/client'
@@ -219,8 +219,8 @@ export function LoginForm({ dark = false }: { dark?: boolean }) {
     inputColor:  'white',
     inputPh:     'rgba(255,255,255,0.22)',
     icon:        'rgba(255,255,255,0.28)',
-    focusBorder: '#2d8a54',
-    focusShadow: 'rgba(45,138,84,0.18)',
+    focusBorder: '#1a8a9c',
+    focusShadow: 'rgba(26,138,156,0.18)',
     eyeColor:    'rgba(255,255,255,0.3)',
     errBg:       'rgba(220,38,38,0.12)',
     errBorder:   'rgba(220,38,38,0.3)',
@@ -232,8 +232,8 @@ export function LoginForm({ dark = false }: { dark?: boolean }) {
     inputColor:  '#1c1917',
     inputPh:     '#c4bfbb',
     icon:        '#a8a29e',
-    focusBorder: '#2d8a54',
-    focusShadow: 'rgba(45,138,84,0.1)',
+    focusBorder: '#1a8a9c',
+    focusShadow: 'rgba(26,138,156,0.1)',
     eyeColor:    '#a8a29e',
     errBg:       '#fef2f2',
     errBorder:   '#fecaca',
@@ -248,8 +248,8 @@ export function LoginForm({ dark = false }: { dark?: boolean }) {
           ¿A dónde querés ingresar?
         </p>
         <button onClick={() => irA('dashboard')} className="lf-dest-btn">
-          <div style={{ width: 36, height: 36, borderRadius: 10, background: '#f0faf5', border: '1px solid #d1ead9', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2d8a54" strokeWidth="2">
+          <div style={{ width: 36, height: 36, borderRadius: 10, background: '#f0f8fa', border: '1px solid #c8e6ea', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1a8a9c" strokeWidth="2">
               <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
               <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
             </svg>
@@ -263,8 +263,8 @@ export function LoginForm({ dark = false }: { dark?: boolean }) {
           </svg>
         </button>
         <button onClick={() => irA('portal')} className="lf-dest-btn">
-          <div style={{ width: 36, height: 36, borderRadius: 10, background: '#f0faf5', border: '1px solid #d1ead9', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2d8a54" strokeWidth="2">
+          <div style={{ width: 36, height: 36, borderRadius: 10, background: '#f0f8fa', border: '1px solid #c8e6ea', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1a8a9c" strokeWidth="2">
               <path d="M12 2C8 2 4 6 4 10c0 5 8 12 8 12s8-7 8-12c0-4-4-8-8-8z"/>
             </svg>
           </div>
@@ -286,7 +286,7 @@ export function LoginForm({ dark = false }: { dark?: boolean }) {
             cursor: pointer; transition: border-color 0.15s, box-shadow 0.15s;
             font-family: inherit;
           }
-          .lf-dest-btn:hover { border-color: #2d8a54; box-shadow: 0 0 0 3px rgba(45,138,84,0.08); }
+          .lf-dest-btn:hover { border-color: #1a8a9c; box-shadow: 0 0 0 3px rgba(26,138,156,0.08); }
         `}</style>
       </div>
     )
@@ -297,8 +297,8 @@ export function LoginForm({ dark = false }: { dark?: boolean }) {
       <>
         <form onSubmit={handleOtpSubmit} className="lf-form">
           <div style={{ textAlign: 'center' }}>
-            <div style={{ width: 52, height: 52, borderRadius: 14, background: '#f0faf5', border: '1px solid #d1ead9', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 14px' }}>
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2d8a54" strokeWidth="1.8">
+            <div style={{ width: 52, height: 52, borderRadius: 14, background: '#f0f8fa', border: '1px solid #c8e6ea', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 14px' }}>
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1a8a9c" strokeWidth="1.8">
                 <rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
               </svg>
             </div>
@@ -393,19 +393,19 @@ export function LoginForm({ dark = false }: { dark?: boolean }) {
           }
 
           .lf-btn {
-            width: 100%; background: #2d8a54; color: white;
+            width: 100%; background: #1a8a9c; color: white;
             padding: 12px 0; border-radius: 10px; font-size: 14px; font-weight: 600;
             border: none; cursor: pointer;
             transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
             display: flex; align-items: center; justify-content: center; gap: 8px;
             font-family: inherit; margin-top: 4px; letter-spacing: 0.01em;
           }
-          .lf-btn:hover:not(:disabled) { background: #1a5233; transform: translateY(-1px); box-shadow: 0 8px 24px rgba(45,138,84,0.3); }
+          .lf-btn:hover:not(:disabled) { background: #126070; transform: translateY(-1px); box-shadow: 0 8px 24px rgba(26,138,156,0.3); }
           .lf-btn:disabled { opacity: 0.65; cursor: not-allowed; }
 
           .lf-reenvio-btn {
             background: none; border: none; cursor: pointer;
-            font-size: 13px; color: #2d8a54; padding: 4px 8px;
+            font-size: 13px; color: #1a8a9c; padding: 4px 8px;
             font-family: inherit; transition: opacity 0.15s;
           }
           .lf-reenvio-btn:disabled { color: #9ca3af; cursor: default; }
@@ -587,7 +587,7 @@ export function LoginForm({ dark = false }: { dark?: boolean }) {
 
         .lf-btn {
           width: 100%;
-          background: #2d8a54;
+          background: #1a8a9c;
           color: white;
           padding: 12px 0;
           border-radius: 10px;
@@ -602,9 +602,9 @@ export function LoginForm({ dark = false }: { dark?: boolean }) {
           letter-spacing: 0.01em;
         }
         .lf-btn:hover:not(:disabled) {
-          background: #1a5233;
+          background: #126070;
           transform: translateY(-1px);
-          box-shadow: 0 8px 24px rgba(45,138,84,0.3);
+          box-shadow: 0 8px 24px rgba(26,138,156,0.3);
         }
         .lf-btn:disabled { opacity: 0.65; cursor: not-allowed; }
 

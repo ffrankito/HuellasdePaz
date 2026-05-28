@@ -12,9 +12,10 @@ export async function enviarInvitacion({
   linkActivacion: string
 }) {
   const { error } = await resend.emails.send({
-    from: 'Huellas de Paz <onboarding@resend.dev>',
+    from: 'Aires de Paz <onboarding@resend.dev>',
+    replyTo: 'mascotas@airesdepaz.com',
     to: email,
-    subject: `Tu portal de Huellas de Paz está listo, ${nombre}`,
+    subject: `Tu portal de Aires de Paz está listo, ${nombre}`,
     html: `
 <!DOCTYPE html>
 <html lang="es">
@@ -24,7 +25,7 @@ export async function enviarInvitacion({
 
     <div style="background:#111827;border-radius:16px;padding:40px;text-align:center;margin-bottom:32px;">
       <div style="font-size:40px;margin-bottom:16px;">🐾</div>
-      <h1 style="color:white;font-size:22px;font-weight:600;margin:0 0 8px;">Huellas de Paz</h1>
+      <h1 style="color:white;font-size:22px;font-weight:600;margin:0 0 8px;">Aires de Paz</h1>
       <p style="color:#9ca3af;font-size:14px;margin:0;">Rosario, Argentina</p>
     </div>
 
@@ -56,7 +57,7 @@ export async function enviarInvitacion({
     <hr style="border:none;border-top:1px solid #e5e7eb;margin:24px 0;" />
 
     <p style="font-size:12px;color:#9ca3af;text-align:center;margin:0;">
-      Con cariño, el equipo de <strong>Huellas de Paz</strong> · Rosario, Argentina
+      Con cariño, el equipo de <strong>Aires de Paz</strong> · Rosario, Argentina
     </p>
 
   </div>

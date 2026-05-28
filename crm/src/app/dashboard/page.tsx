@@ -1,4 +1,4 @@
-import { Suspense } from 'react'
+﻿import { Suspense } from 'react'
 import { db } from '@/db'
 import { clientes, servicios, leads, inventario } from '@/db/schema'
 import { count, eq, sql, desc } from 'drizzle-orm'
@@ -67,7 +67,7 @@ async function KpiSection() {
 
   return (
     <div className="grid-4" style={{ marginBottom: 28 }}>
-      <StatCard title="Clientes totales" value={totalClientes[0].count} href="/dashboard/clientes" accent="#2d8a54" accentBg="#f0fdf4"
+      <StatCard title="Clientes totales" value={totalClientes[0].count} href="/dashboard/clientes" accent="#1a8a9c" accentBg="#f0fdf4"
         icon={<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>}
       />
       <StatCard title="Servicios totales" value={totalServicios[0].count} href="/dashboard/servicios" accent="#1d4ed8" accentBg="#eff6ff"
@@ -90,7 +90,7 @@ async function UltimosServicios() {
     <div style={{ background: 'white', borderRadius: 16, border: '1px solid #f0f0f0', padding: '24px', boxShadow: '0 1px 4px rgba(0,0,0,0.04)' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
         <h2 style={{ fontSize: 15, fontWeight: 600, color: '#111827', margin: 0 }}>Últimos servicios</h2>
-        <Link href="/dashboard/servicios" style={{ fontSize: 13, color: '#2d8a54', textDecoration: 'none', fontWeight: 500 }}>Ver todos →</Link>
+        <Link href="/dashboard/servicios" style={{ fontSize: 13, color: '#1a8a9c', textDecoration: 'none', fontWeight: 500 }}>Ver todos →</Link>
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
         {rows.length === 0 ? (
@@ -116,7 +116,7 @@ async function LeadsSinContactar() {
     <div style={{ background: 'white', borderRadius: 16, border: '1px solid #f0f0f0', padding: '24px', boxShadow: '0 1px 4px rgba(0,0,0,0.04)' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
         <h2 style={{ fontSize: 15, fontWeight: 600, color: '#111827', margin: 0 }}>Leads sin contactar</h2>
-        <Link href="/dashboard/leads" style={{ fontSize: 13, color: '#2d8a54', textDecoration: 'none', fontWeight: 500 }}>Ver todos →</Link>
+        <Link href="/dashboard/leads" style={{ fontSize: 13, color: '#1a8a9c', textDecoration: 'none', fontWeight: 500 }}>Ver todos →</Link>
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
         {rows.length === 0 ? (

@@ -33,7 +33,7 @@ export async function POST(
       para: lead.email,
       asunto,
       cuerpo,
-      nombreAgente: agente?.nombre ?? 'Huellas de Paz',
+      nombreAgente: agente?.nombre ?? 'Aires de Paz',
     })
 
     await db.insert(leadInteracciones).values({
