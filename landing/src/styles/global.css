@@ -34,7 +34,7 @@ html { scroll-behavior: smooth; }
 body {
   font-family: var(--font-body);
   color: var(--color-stone-900);
-  background-color: #f2f6f7;
+  background-color: #f0f5f6;
   -webkit-font-smoothing: antialiased;
 }
 
