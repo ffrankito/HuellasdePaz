@@ -287,15 +287,13 @@ export function Sidebar({ usuario }: { usuario: Usuario }) {
   const contenido = (
     <>
       {/* Header */}
-      <div style={{ padding: '20px 18px 16px', borderBottom: '1px solid #f3f4f6', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/logo.png" alt="Aires de Paz" style={{ width: 130, height: 'auto', flexShrink: 0, objectFit: 'contain' }} />
-        </div>
+      <div style={{ padding: '16px 18px', borderBottom: '1px solid #f3f4f6', display: 'flex', justifyContent: 'center', alignItems: 'center', position: 'relative' }}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/logo.png" alt="Aires de Paz" style={{ width: 150, height: 'auto', objectFit: 'contain' }} />
         <button
           onClick={() => setAbierto(false)}
           className="sidebar-close"
-          style={{ display: 'none', background: 'none', border: 'none', cursor: 'pointer', fontSize: 18, color: '#9ca3af', padding: 4 }}
+          style={{ display: 'none', position: 'absolute', right: 12, background: 'none', border: 'none', cursor: 'pointer', fontSize: 18, color: '#9ca3af', padding: 4 }}
         >
           ✕
         </button>
