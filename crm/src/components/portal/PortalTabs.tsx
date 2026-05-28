@@ -151,7 +151,7 @@ export function PortalTabs({
                     <p style={{ fontSize: 16, fontWeight: 600, color: '#111827', margin: 0 }}>
                       {p.nombre ?? 'Plan de previsión'}
                     </p>
-                    <span style={{ fontSize: 12, fontWeight: 500, background: p.estado === 'activo' ? '#f0fdf4' : '#f3f4f6', color: p.estado === 'activo' ? '#15803d' : '#6b7280', padding: '3px 10px', borderRadius: 20 }}>
+                    <span style={{ fontSize: 12, fontWeight: 500, background: p.estado === 'activo' ? '#f0f8fa' : '#f3f4f6', color: p.estado === 'activo' ? '#126070' : '#6b7280', padding: '3px 10px', borderRadius: 20 }}>
                       {p.estado}
                     </span>
                   </div>

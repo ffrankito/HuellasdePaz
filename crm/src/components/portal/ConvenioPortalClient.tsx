@@ -24,7 +24,7 @@ const estadoBadge: Record<string, { bg: string; color: string; label: string }> 
   contactado:  { bg: '#f5f3ff', color: '#7c3aed', label: 'Contactado' },
   interesado:  { bg: '#fefce8', color: '#a16207', label: 'Interesado' },
   cotizado:    { bg: '#fff7ed', color: '#c2410c', label: 'Cotizado' },
-  convertido:  { bg: '#f0fdf4', color: '#15803d', label: 'Cliente' },
+  convertido:  { bg: '#f0f8fa', color: '#126070', label: 'Cliente' },
   perdido:     { bg: '#f3f4f6', color: '#6b7280', label: 'Perdido' },
 }
 
@@ -92,7 +92,7 @@ export function ConvenioPortalClient({
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, marginBottom: 28 }}>
         <StatCard label="Leads enviados" value={initialStats.total} color="#111827" />
         <StatCard label="En proceso" value={initialStats.enProceso} color="#a16207" />
-        <StatCard label="Convertidos" value={initialStats.convertidos} color="#15803d" />
+        <StatCard label="Convertidos" value={initialStats.convertidos} color="#126070" />
       </div>
 
       {/* Formulario */}
@@ -157,8 +157,8 @@ export function ConvenioPortalClient({
 
           {error && <p style={{ fontSize: 13, color: '#dc2626', margin: 0 }}>{error}</p>}
           {success && (
-            <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: 10, padding: '12px 16px' }}>
-              <p style={{ fontSize: 13, color: '#15803d', margin: 0, fontWeight: 500 }}>
+            <div style={{ background: '#f0f8fa', border: '1px solid #99d0d8', borderRadius: 10, padding: '12px 16px' }}>
+              <p style={{ fontSize: 13, color: '#126070', margin: 0, fontWeight: 500 }}>
                 ¡Lead enviado! El equipo de Aires de Paz se va a poner en contacto pronto.
               </p>
             </div>

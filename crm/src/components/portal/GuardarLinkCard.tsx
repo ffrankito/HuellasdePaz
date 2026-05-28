@@ -20,8 +20,8 @@ export function GuardarLinkCard({ portalUrl, dark = false }: { portalUrl: string
   const btnBg = dark ? 'rgba(255,255,255,0.07)' : 'white'
   const btnBorder = dark ? '1px solid rgba(255,255,255,0.1)' : '1px solid #e5e7eb'
   const btnColor = dark ? 'rgba(255,255,255,0.6)' : '#374151'
-  const copiadoBg = dark ? 'rgba(26,138,156,0.2)' : '#f0fdf4'
-  const copiadoColor = dark ? '#4ade80' : '#15803d'
+  const copiadoBg = dark ? 'rgba(26,138,156,0.2)' : '#f0f8fa'
+  const copiadoColor = dark ? '#4ade80' : '#126070'
 
   return (
     <div style={{
@@ -47,7 +47,7 @@ export function GuardarLinkCard({ portalUrl, dark = false }: { portalUrl: string
           onClick={copiar}
           style={{
             flex: 1, padding: '10px 12px', borderRadius: 10, fontSize: 12, fontWeight: 500,
-            border: copiado ? (dark ? '1px solid rgba(74,222,128,0.3)' : '1px solid #bbf7d0') : btnBorder,
+            border: copiado ? (dark ? '1px solid rgba(74,222,128,0.3)' : '1px solid #99d0d8') : btnBorder,
             background: copiado ? copiadoBg : btnBg,
             color: copiado ? copiadoColor : btnColor,
             cursor: 'pointer', transition: 'all 0.15s',
@@ -79,8 +79,8 @@ export function GuardarLinkCard({ portalUrl, dark = false }: { portalUrl: string
           style={{
             flex: 1, padding: '10px 12px', borderRadius: 10, fontSize: 12, fontWeight: 500,
             border: '1px solid rgba(37,211,102,0.3)',
-            background: dark ? 'rgba(37,211,102,0.1)' : '#f0fdf4',
-            color: dark ? '#4ade80' : '#15803d',
+            background: dark ? 'rgba(37,211,102,0.1)' : '#f0f8fa',
+            color: dark ? '#4ade80' : '#126070',
             textDecoration: 'none',
             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
           }}

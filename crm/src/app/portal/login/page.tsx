@@ -123,20 +123,9 @@ function LoginForm() {
         <div style={{ position: 'absolute', top: 0, left: 48, right: 48, height: 3, background: 'linear-gradient(90deg, transparent, #1a8a9c, transparent)', borderRadius: '0 0 4px 4px' }} />
 
         {/* Logo */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 36 }}>
-          <div style={{ width: 44, height: 44, borderRadius: 14, background: 'linear-gradient(135deg, #e8f5ed 0%, #c8e6ea 100%)', border: '1px solid rgba(26,138,156,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-              <path d="M12 2C8 2 4 6 4 10c0 5 8 12 8 12s8-7 8-12c0-4-4-8-8-8z" fill="#1a8a9c"/>
-              <circle cx="9"  cy="7"  r="1.5" fill="#99d0d8"/>
-              <circle cx="15" cy="7"  r="1.5" fill="#99d0d8"/>
-              <circle cx="7"  cy="11" r="1.2" fill="#99d0d8"/>
-              <circle cx="17" cy="11" r="1.2" fill="#99d0d8"/>
-            </svg>
-          </div>
-          <div>
-            <p style={{ fontSize: 15, fontWeight: 700, color: '#111827', margin: 0, letterSpacing: '-0.01em' }}>Aires de Paz</p>
-            <p style={{ fontSize: 11, color: '#9ca3af', margin: 0, letterSpacing: '0.05em', textTransform: 'uppercase' }}>Portal de clientes</p>
-          </div>
+        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 28 }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/logo.png" alt="Aires de Paz" className="logo-dark" style={{ height: 90, width: 'auto', objectFit: 'contain' }} />
         </div>
 
         {/* Vista: login */}

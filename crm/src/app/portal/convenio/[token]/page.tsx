@@ -69,16 +69,8 @@ export default async function ConvenioPortalPage({
 
         <div style={{ maxWidth: 640, margin: '0 auto', position: 'relative', zIndex: 1 }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
-              <div style={{ width: 22, height: 22, borderRadius: 7, background: 'linear-gradient(135deg, #c8e6ea 0%, #aadfc2 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
-                  <path d="M12 2C8 2 4 6 4 10c0 5 8 12 8 12s8-7 8-12c0-4-4-8-8-8z" fill="#1a8a9c"/>
-                </svg>
-              </div>
-              <span style={{ fontSize: 11, fontWeight: 600, color: '#1a8a9c', letterSpacing: '0.04em', textTransform: 'uppercase' }}>
-                Aires de Paz
-              </span>
-            </div>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/logo.png" alt="Aires de Paz" className="logo-dark" style={{ height: 44, width: 'auto', objectFit: 'contain' }} />
             <LogoutBtn redirectTo="/portal/convenio/login" />
           </div>
           <h1 style={{ fontSize: 26, fontWeight: 700, color: '#111827', margin: '0 0 4px', letterSpacing: '-0.02em', lineHeight: 1.15 }}>
