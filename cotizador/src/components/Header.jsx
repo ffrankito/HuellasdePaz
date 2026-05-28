@@ -14,7 +14,7 @@ export default function Header() {
             <img
               src="/logo.png"
               alt="Aires de Paz"
-              style={{ height: 48, width: 'auto', objectFit: 'contain', mixBlendMode: 'multiply' }}
+              style={{ height: 56, width: 'auto', objectFit: 'contain', filter: 'contrast(1.05) saturate(1.1)' }}
             />
           </a>
 
