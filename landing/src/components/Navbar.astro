@@ -14,14 +14,16 @@ const links = [
 <!-- Scroll progress bar — Uiverse scroll-driven animation -->
 <div class="scroll-progress" aria-hidden="true"></div>
 
-<header class="fixed top-0 left-0 right-0 z-50 border-b border-stone-200" style="background:white">
+<header class="fixed top-0 left-0 right-0 z-50 border-b border-stone-200" style="background:white;position:fixed">
   <div class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
 
-    <a href="/" class="flex items-center">
+    <!-- Logo -->
+    <a href="/" class="flex items-center flex-shrink-0">
       <img src="/logo.png" alt="Aires de Paz" style="height:52px;width:auto;object-fit:contain;mix-blend-mode:multiply" />
     </a>
 
-    <nav class="hidden md:flex items-center gap-8">
+    <!-- Nav centrado -->
+    <nav class="hidden md:flex items-center gap-8 absolute left-1/2 -translate-x-1/2">
       {links.map(link => (
         <a href={link.href} class="nav-link text-sm text-stone-600">
           {link.label}
@@ -30,7 +32,7 @@ const links = [
     </nav>
 
     <!-- Dropdown Ingresar -->
-    <div class="hidden md:block relative" id="login-wrap">
+    <div class="hidden md:block relative flex-shrink-0" id="login-wrap">
       <button id="login-toggle" class="inline-flex items-center gap-1 text-sm text-stone-600 hover:text-stone-900 transition-colors">
         Ingresar
         <svg id="login-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition:transform 0.2s">
@@ -48,15 +50,6 @@ const links = [
         </a>
       </div>
     </div>
-
-    <a
-      href={WHATSAPP_URL}
-      target="_blank"
-      rel="noopener noreferrer"
-      class="hidden md:inline-flex items-center gap-2 bg-brand-600 hover:bg-brand-800 text-white text-sm font-medium px-4 py-2 rounded-full transition-colors"
-    >
-      Consultar por WhatsApp
-    </a>
 
     <button id="menu-toggle" class="md:hidden p-2 text-stone-600" aria-label="Abrir menú">
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
