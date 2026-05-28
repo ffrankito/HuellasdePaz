@@ -129,10 +129,10 @@ export function AsistenteWidget() {
         <div style={{
           position: 'absolute',
           width: 52, height: 52, borderRadius: '50%',
-          backgroundImage: 'linear-gradient(#1a8a9c 35%, #86efac)',
+          backgroundImage: 'linear-gradient(#1a8a9c 35%, #4ab8c8)',
           animation: 'asistenteSpinning 1.7s linear infinite',
           filter: 'blur(1px)',
-          boxShadow: '0px -5px 20px 0px #1a8a9c, 0px 5px 20px 0px #86efac',
+          boxShadow: '0px -5px 20px 0px #1a8a9c, 0px 5px 20px 0px #4ab8c8',
         }} />
         <div style={{
           position: 'absolute',
@@ -179,7 +179,7 @@ export function AsistenteWidget() {
           }}>
             <div style={{
               width: 28, height: 28, borderRadius: '50%', flexShrink: 0,
-              backgroundImage: 'linear-gradient(#1a8a9c 35%, #86efac)',
+              backgroundImage: 'linear-gradient(#1a8a9c 35%, #4ab8c8)',
               animation: 'asistenteSpinning 1.7s linear infinite',
               filter: 'blur(0.5px)',
             }} />
