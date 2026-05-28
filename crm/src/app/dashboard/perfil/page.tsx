@@ -20,6 +20,7 @@ export default function PerfilPage() {
     setDarkMode(nuevo)
     localStorage.setItem('darkMode', String(nuevo))
     document.body.classList.toggle('dark', nuevo)
+    document.documentElement.style.background = nuevo ? '#000' : ''
   }
 
   async function handleCambiarPassword(e: React.FormEvent) {

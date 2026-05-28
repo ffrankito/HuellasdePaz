@@ -289,7 +289,7 @@ export function Sidebar({ usuario }: { usuario: Usuario }) {
       {/* Header */}
       <div style={{ padding: '16px 18px', borderBottom: '1px solid #f3f4f6', display: 'flex', justifyContent: 'center', alignItems: 'center', position: 'relative' }}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/logo.png" alt="Aires de Paz" style={{ width: 150, height: 'auto', objectFit: 'contain' }} />
+        <img src="/logo.png" alt="Aires de Paz" className="logo-dark" style={{ width: 150, height: 'auto', objectFit: 'contain' }} />
         <button
           onClick={() => setAbierto(false)}
           className="sidebar-close"

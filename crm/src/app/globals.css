@@ -116,3 +116,7 @@ body.dark video,
 body.dark [data-no-invert] {
   filter: invert(1) hue-rotate(180deg);
 }
+/* El logo PNG tiene fondo blanco: no re-invertir para que el body-filter lo deje en negro */
+body.dark .logo-dark {
+  filter: none !important;
+}
