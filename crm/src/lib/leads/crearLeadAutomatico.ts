@@ -72,6 +72,18 @@ async function asignarAgente(): Promise<string | null> {
   return conActivos[0].id
 }
 
+// ── Estado inicial según origen ──────────────────────────────────────────────
+
+const ESTADO_POR_ORIGEN: Record<OrigenLead, 'nuevo' | 'interesado' | 'cotizado'> = {
+  cotizador:  'cotizado',   // Ya cotizó — sabe precios
+  whatsapp:   'interesado', // Se contactó activamente
+  instagram:  'interesado', // Se contactó activamente
+  landing:    'interesado', // Dejó sus datos voluntariamente
+  chatbot:    'interesado', // Interactuó con el bot
+  directo:    'nuevo',      // Carga manual
+  veterinaria:'interesado', // Derivación calificada por la veterinaria
+}
+
 // ── Función principal ────────────────────────────────────────────────────────
 
 export async function crearLeadAutomatico(datos: DatosLead) {
@@ -103,6 +115,8 @@ export async function crearLeadAutomatico(datos: DatosLead) {
   // Lead nuevo — asignar agente y crear
   const asignadoAId = await asignarAgente()
 
+  const estadoInicial = ESTADO_POR_ORIGEN[datos.origen] ?? 'nuevo'
+
   const [lead] = await db.insert(leads).values({
     nombre: datos.nombre,
     telefono: datos.telefono,
@@ -110,6 +124,7 @@ export async function crearLeadAutomatico(datos: DatosLead) {
     dni: datos.dni ?? null,
     mensaje: datos.mensaje ?? null,
     origen: datos.origen,
+    estado: estadoInicial,
     pickupMethod: datos.pickupMethod ?? null,
     asignadoAId,
     veterinariaId: datos.veterinariaId ?? null,
