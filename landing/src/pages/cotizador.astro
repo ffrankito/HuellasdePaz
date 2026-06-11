@@ -14,7 +14,31 @@ import CotizadorApp from '../cotizador/CotizadorApp.jsx'
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
   </head>
-  <body>
+  <body style="margin:0;min-height:100vh;background:#f0f5f6">
+    <div id="cotizador-loading" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;font-family:sans-serif;color:#1a8a9c">
+      <p>Cargando cotizador...</p>
+      <pre id="error-display" style="color:red;font-size:12px;max-width:90vw;white-space:pre-wrap;display:none"></pre>
+    </div>
     <CotizadorApp client:only="react" />
   </body>
+  <script>
+    window.addEventListener('error', (e) => {
+      const el = document.getElementById('error-display')
+      if (el) { el.style.display = 'block'; el.textContent = e.message + '\n' + (e.filename || '') + ':' + e.lineno }
+    })
+    window.addEventListener('unhandledrejection', (e) => {
+      const el = document.getElementById('error-display')
+      if (el) { el.style.display = 'block'; el.textContent = String(e.reason) }
+    })
+    document.addEventListener('DOMContentLoaded', () => {
+      const observer = new MutationObserver(() => {
+        const island = document.querySelector('astro-island')
+        if (island && island.children.length > 0) {
+          document.getElementById('cotizador-loading')?.remove()
+          observer.disconnect()
+        }
+      })
+      observer.observe(document.body, { childList: true, subtree: true })
+    })
+  </script>
 </html>
