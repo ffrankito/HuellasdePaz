@@ -47,7 +47,7 @@ Planes mensuales para contratar antes de que llegue el momento:
 - Beneficio: precio fijo, sin aumentos, sin apuro cuando llegue el momento
 
 ## Datos de contacto
-- WhatsApp: 341 359-0030
+- WhatsApp: 341 752-3248
 - Dirección: Ruta A012 KM 1.2 — S2002 Pueblo Esther, Santa Fe
 - Oficina comercial: San Lorenzo 2369, Rosario 2000
 - Horario: Lunes a Viernes 8:00 a 17:00 · Sábados y Domingos 9:00 a 17:00 · Feriados 9:00 a 17:00
@@ -62,7 +62,7 @@ Trabajamos con veterinarias, petshops, clínicas y refugios de Rosario. Si sos p
 - Si la persona pregunta por precios exactos, explicá que varían por especie y peso y ofrecé conectarlos con un asesor
 - Si la persona quiere ser contactada, pedí su nombre y teléfono amablemente
 - Nunca inventés información que no esté en este contexto
-- Cuando sea apropiado, sugerí hablar con un asesor por WhatsApp (341 359-0030)`
+- Cuando sea apropiado, sugerí hablar con un asesor por WhatsApp (341 752-3248)`
 
 export async function OPTIONS(request: NextRequest) {
   return NextResponse.json({}, { headers: getCorsHeaders(request.headers.get('origin')) })
@@ -116,7 +116,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Error chat público:', error)
     return NextResponse.json(
-      { respuesta: 'Lo siento, no pude procesar tu mensaje. Podés escribirnos directo por WhatsApp al 341 359-0030.' },
+      { respuesta: 'Lo siento, no pude procesar tu mensaje. Podés escribirnos directo por WhatsApp al 341 752-3248.' },
       { headers: corsHeaders }
     )
   }
