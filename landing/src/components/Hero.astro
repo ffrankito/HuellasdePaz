@@ -3,6 +3,7 @@ const WHATSAPP_NUMBER = '5493417523248'
 const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}?text=Hola%2C%20quiero%20consultar%20sobre%20Aires%20de%20Paz`
 
 const fotos = [
+  { src: 'https://images.unsplash.com/photo-1522276498395-f4f68f7f8454?w=1600&q=80&fit=crop', alt: 'Persona abrazando a su perro', pos: 'center 30%' },
   { src: 'https://images.unsplash.com/photo-1450778869180-41d0601e046e?w=1600&q=80&fit=crop', alt: 'Perro y gato juntos', pos: 'center 40%' },
   { src: 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=1600&q=80&fit=crop', alt: 'Golden retriever', pos: 'center 35%' },
   { src: 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=1600&q=80&fit=crop', alt: 'Gato naranja', pos: 'center 30%' },
@@ -130,10 +131,10 @@ const fotos = [
 <style>
   /* ── CARD LATERAL ── */
   .hero-card {
-    background: rgba(10, 20, 25, 0.55);
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(10, 20, 25, 0.08);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 24px;
     padding: 40px 44px;
     max-width: 520px;
@@ -156,7 +157,7 @@ const fotos = [
     object-fit: cover;
     object-position: center;
     transition: opacity 1.5s ease-in-out;
-    filter: brightness(1.08) saturate(1.05);
+    filter: brightness(1.18) saturate(1.05);
   }
 
   /* ── HUELLAS FLOTANTES ── */
