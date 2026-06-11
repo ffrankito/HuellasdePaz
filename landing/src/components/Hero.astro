@@ -44,16 +44,16 @@ const fotos = [
   </div>
 
   <!-- Contenido -->
-  <div class="relative z-10 max-w-6xl mx-auto px-5 py-20 md:py-24">
-    <div class="max-w-xl">
+  <div class="relative z-10 w-full px-8 md:px-16 py-20 md:py-24">
+    <div class="hero-card">
       <p class="text-white text-xs md:text-sm font-medium tracking-widest uppercase mb-4 md:mb-5" style="opacity:0.75">
         Rosario · Crematorio exclusivo · +20 años
       </p>
-      <h1 class="font-display text-4xl md:text-6xl font-semibold text-white leading-tight mb-5 md:mb-6">
+      <h1 class="font-display text-4xl md:text-5xl font-semibold text-white leading-tight mb-5 md:mb-6">
         Porque las queremos <br />
         <span class="text-brand-300">tanto como vos</span>
       </h1>
-      <p class="text-stone-200 text-base md:text-lg leading-relaxed mb-8 md:mb-10 max-w-md">
+      <p class="text-stone-200 text-base leading-relaxed mb-8 md:mb-10">
         Tu compañero de vida merece una despedida digna y llena de amor.
         Acompañamos a las familias de Rosario hace más de 20 años,
         con el primer crematorio exclusivo de mascotas de la ciudad.
@@ -66,12 +66,12 @@ const fotos = [
           </svg>
           Consultar por WhatsApp
         </a>
-        <a href="#planes" class="inline-flex items-center justify-center gap-2 border border-white/30 hover:border-white/60 text-white font-medium px-6 py-3.5 rounded-full transition-colors text-sm backdrop-blur-sm">
+        <a href="#planes" class="inline-flex items-center justify-center gap-2 border border-white/30 hover:border-white/60 text-white font-medium px-6 py-3.5 rounded-full transition-colors text-sm">
           Ver planes de previsión
         </a>
       </div>
 
-      <div class="mt-10 md:mt-12 flex flex-wrap gap-4 md:gap-6">
+      <div class="mt-8 md:mt-10 flex flex-col gap-3">
         <div class="trust-badge trust-badge--1">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-brand-300 flex-shrink-0"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
           Primer crematorio exclusivo de mascotas
@@ -128,6 +128,25 @@ const fotos = [
 </div>
 
 <style>
+  /* ── CARD LATERAL ── */
+  .hero-card {
+    background: rgba(10, 20, 25, 0.55);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 24px;
+    padding: 40px 44px;
+    max-width: 520px;
+    width: 100%;
+    margin-left: 0;
+    margin-right: auto;
+    box-shadow: 0 8px 48px rgba(0, 0, 0, 0.35);
+  }
+
+  @media (max-width: 640px) {
+    .hero-card { padding: 28px 24px; border-radius: 18px; }
+  }
+
   /* ── SLIDESHOW ── */
   .hero-slide {
     position: absolute;

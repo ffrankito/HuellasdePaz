@@ -11,7 +11,7 @@ const year = new Date().getFullYear()
       <!-- Marca -->
       <div class="md:col-span-2">
         <p class="font-display text-white text-xl font-semibold mb-3">🐾 Aires de Paz</p>
-        <p class="text-sm leading-relaxed text-stone-500 max-w-sm">
+        <p class="text-sm leading-relaxed max-w-sm" style="color:rgba(255,255,255,0.65)">
           El primer crematorio de mascotas con habilitación formal en Rosario.
           Más de 20 años acompañando a las familias en uno de los momentos más difíciles.
         </p>
@@ -42,8 +42,8 @@ const year = new Date().getFullYear()
         <p class="text-white text-sm font-medium mb-4">Contacto</p>
         <ul class="flex flex-col gap-3 text-sm">
           <li class="flex items-start gap-2">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="mt-0.5 flex-shrink-0 text-stone-500"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-            <span class="text-stone-500">Rosario, Santa Fe<br/><span class="text-stone-600 text-xs">Dirección disponible próximamente</span></span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:rgba(255,255,255,0.5)" class="mt-0.5 flex-shrink-0"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            <span style="color:rgba(255,255,255,0.65)">Rosario, Santa Fe<br/><span style="color:rgba(255,255,255,0.4); font-size:0.75rem">Dirección disponible próximamente</span></span>
           </li>
           <li>
             <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer" class="footer-link flex items-center gap-2">
@@ -59,9 +59,9 @@ const year = new Date().getFullYear()
 
     </div>
 
-    <div class="border-t border-stone-800 pt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-stone-600">
+    <div class="border-t pt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-xs" style="border-color:rgba(255,255,255,0.1);color:rgba(255,255,255,0.35)">
       <p>© {year} Aires de Paz. Todos los derechos reservados.</p>
-      <p>Desarrollado por <span class="text-stone-500">Ravenna</span></p>
+      <p>Desarrollado por <span style="color:rgba(255,255,255,0.5)">Ravenna</span></p>
     </div>
   </div>
 </footer>
@@ -70,7 +70,7 @@ const year = new Date().getFullYear()
   /* ── FOOTER LINKS con underline que crece de izquierda a derecha ── */
   .footer-link {
     position: relative;
-    color: #a8a29e;
+    color: rgba(255,255,255,0.65);
     text-decoration: none;
     display: inline-block;
     transition: color 0.2s ease;
