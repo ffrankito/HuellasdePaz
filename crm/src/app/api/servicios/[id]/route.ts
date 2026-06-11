@@ -4,8 +4,12 @@ import { db } from '@/db'
 import { servicios, clientes, mascotas } from '@/db/schema'
 import { eq } from 'drizzle-orm'
 import { notificarCambioEstado } from '@/lib/email/estadoServicio'
+import { requireAuth } from '@/lib/api-auth'
 
 export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const auth = await requireAuth()
+  if (!auth.ok) return auth.response
+
   try {
     const { id } = await params
     const body = await request.json()
@@ -53,6 +57,9 @@ async function enviarNotificacion(servicio: { clienteId: string; mascotaId: stri
 }
 
 export async function GET(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const auth = await requireAuth()
+  if (!auth.ok) return auth.response
+
   try {
     const { id } = await params
     const servicio = await db.query.servicios.findFirst({

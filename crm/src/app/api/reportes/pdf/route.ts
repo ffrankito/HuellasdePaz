@@ -2,6 +2,7 @@
 import { db } from '@/db'
 import { clientes, servicios, leads, planes } from '@/db/schema'
 import { and, gte, lt } from 'drizzle-orm'
+import { requireAuth } from '@/lib/api-auth'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -29,6 +30,9 @@ function fmtMoneda(n: number) {
 }
 
 export async function GET(req: NextRequest) {
+  const auth = await requireAuth(['admin', 'manager', 'contadora'])
+  if (!auth.ok) return auth.response
+
   const PDFDocument = (await import('pdfkit')).default
 
   const { searchParams } = new URL(req.url)

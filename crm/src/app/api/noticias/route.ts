@@ -2,15 +2,21 @@ import { NextRequest, NextResponse } from 'next/server'
 import { revalidatePath } from 'next/cache'
 import { db } from '@/db'
 import { noticiasCementerio, usuarios } from '@/db/schema'
-import { desc, eq } from 'drizzle-orm'
+import { desc, eq, and } from 'drizzle-orm'
 import { createClient } from '@/lib/supabase/server'
 import { createClient as createServiceClient } from '@supabase/supabase-js'
 
 export async function GET() {
   try {
+    // Si viene con sesión de CRM ve todo; si no (portal), solo las publicadas
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    const esCRM = !!user
+
     const data = await db
       .select()
       .from(noticiasCementerio)
+      .where(esCRM ? undefined : eq(noticiasCementerio.publicada, true))
       .orderBy(desc(noticiasCementerio.destacada), desc(noticiasCementerio.creadoEn))
     return NextResponse.json(data)
   } catch (error) {

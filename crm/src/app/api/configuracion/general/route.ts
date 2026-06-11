@@ -3,8 +3,12 @@ import { revalidatePath } from 'next/cache'
 import { db } from '@/db'
 import { configuracionGeneral } from '@/db/schema'
 import { eq } from 'drizzle-orm'
+import { requireAuth } from '@/lib/api-auth'
 
 export async function PATCH(request: NextRequest) {
+  const auth = await requireAuth(['admin'])
+  if (!auth.ok) return auth.response
+
   try {
     const body = await request.json()
 

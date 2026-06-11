@@ -2,8 +2,12 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/db'
 import { leads, usuarios } from '@/db/schema'
 import { eq, count, and, gte, lte } from 'drizzle-orm'
+import { requireAuth } from '@/lib/api-auth'
 
 export async function GET(request: NextRequest) {
+  const auth = await requireAuth(['admin', 'manager'])
+  if (!auth.ok) return auth.response
+
   try {
     const { searchParams } = new URL(request.url)
     const desde = searchParams.get('desde')

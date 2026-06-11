@@ -2,8 +2,12 @@ import { NextRequest, NextResponse } from 'next/server'
 import { revalidatePath } from 'next/cache'
 import { db } from '@/db'
 import { planesConfig } from '@/db/schema'
+import { requireAuth } from '@/lib/api-auth'
 
 export async function POST(request: NextRequest) {
+  const auth = await requireAuth(['admin'])
+  if (!auth.ok) return auth.response
+
   try {
     const body = await request.json()
 
@@ -24,6 +28,9 @@ export async function POST(request: NextRequest) {
 }
 
 export async function GET() {
+  const auth = await requireAuth(['admin'])
+  if (!auth.ok) return auth.response
+
   try {
     const data = await db.select().from(planesConfig)
     return NextResponse.json(data)

@@ -3,8 +3,12 @@ import { revalidatePath } from 'next/cache'
 import { db } from '@/db'
 import { inventario } from '@/db/schema'
 import { eq } from 'drizzle-orm'
+import { requireAuth } from '@/lib/api-auth'
 
 export async function GET(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const auth = await requireAuth()
+  if (!auth.ok) return auth.response
+
   try {
     const { id } = await params
     const item = await db.query.inventario.findFirst({ where: eq(inventario.id, id) })
@@ -16,6 +20,9 @@ export async function GET(_: NextRequest, { params }: { params: Promise<{ id: st
 }
 
 export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const auth = await requireAuth()
+  if (!auth.ok) return auth.response
+
   try {
     const { id } = await params
     const body = await request.json()
@@ -44,6 +51,9 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
 }
 
 export async function DELETE(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const auth = await requireAuth()
+  if (!auth.ok) return auth.response
+
   try {
     const { id } = await params
     await db.delete(inventario).where(eq(inventario.id, id))

@@ -3,11 +3,15 @@ import { revalidatePath } from 'next/cache'
 import { db } from '@/db'
 import { planesConfig } from '@/db/schema'
 import { eq } from 'drizzle-orm'
+import { requireAuth } from '@/lib/api-auth'
 
 export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const auth = await requireAuth(['admin'])
+  if (!auth.ok) return auth.response
+
   try {
     const { id } = await params
     const body = await request.json()
@@ -33,6 +37,9 @@ export async function PATCH(
 }
 
 export async function DELETE(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const auth = await requireAuth(['admin'])
+  if (!auth.ok) return auth.response
+
   try {
     const { id } = await params
     await db.delete(planesConfig).where(eq(planesConfig.id, id))
