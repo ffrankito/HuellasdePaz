@@ -29,7 +29,7 @@ const fotos = [
         loading={i === 0 ? 'eager' : 'lazy'}
       />
     ))}
-    <div class="absolute inset-0 bg-gradient-to-r from-stone-900/75 via-stone-900/50 to-stone-900/10"></div>
+    <div class="absolute inset-0 bg-gradient-to-r from-stone-900/60 via-stone-900/30 to-stone-900/5"></div>
   </div>
 
   <!-- Huellas flotantes -->
@@ -50,8 +50,8 @@ const fotos = [
         Rosario · Crematorio exclusivo · +20 años
       </p>
       <h1 class="font-display text-4xl md:text-6xl font-semibold text-white leading-tight mb-5 md:mb-6">
-        El último regalo <br />
-        <span class="text-brand-300">que podés darle</span>
+        Porque las queremos <br />
+        <span class="text-brand-300">tanto como vos</span>
       </h1>
       <p class="text-stone-200 text-base md:text-lg leading-relaxed mb-8 md:mb-10 max-w-md">
         Tu compañero de vida merece una despedida digna y llena de amor.
@@ -137,6 +137,7 @@ const fotos = [
     object-fit: cover;
     object-position: center;
     transition: opacity 1.5s ease-in-out;
+    filter: brightness(1.08) saturate(1.05);
   }
 
   /* ── HUELLAS FLOTANTES ── */
