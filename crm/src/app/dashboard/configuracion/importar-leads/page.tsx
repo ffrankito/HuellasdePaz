@@ -29,6 +29,7 @@ type Importacion = {
 export default function ImportarLeadsPage() {
   const [filas, setFilas] = useState<FilaLead[]>([])
   const [archivo, setArchivo] = useState<string>('')
+  const [nombreBase, setNombreBase] = useState<string>('')
   const [cargando, setCargando] = useState(false)
   const [resultado, setResultado] = useState<ResultadoImportacion | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -97,7 +98,7 @@ export default function ImportarLeadsPage() {
       const res = await fetch('/api/leads/importar', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ filas, nombreArchivo: archivo }),
+        body: JSON.stringify({ filas, nombreArchivo: archivo, nombreBase: nombreBase.trim() || 'importacion' }),
       })
 
       if (!res.ok) throw new Error('Error en el servidor')
@@ -110,6 +111,7 @@ export default function ImportarLeadsPage() {
 
     setFilas([])
     setArchivo('')
+    setNombreBase('')
     if (inputRef.current) inputRef.current.value = ''
     setCargando(false)
     cargarImportaciones()
@@ -170,6 +172,29 @@ export default function ImportarLeadsPage() {
             </p>
           </label>
         </div>
+
+        {/* Nombre de la base */}
+        {filas.length > 0 && (
+          <div style={{ background: 'white', borderRadius: 14, border: '1px solid #e5e7eb', padding: '20px 24px' }}>
+            <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#374151', marginBottom: 6 }}>
+              Nombre de la base <span style={{ color: '#9ca3af', fontWeight: 400 }}>(aparece como origen en el filtro de leads)</span>
+            </label>
+            <input
+              type="text"
+              value={nombreBase}
+              onChange={e => setNombreBase(e.target.value)}
+              placeholder="Ej: Clientes AP, Jockey Club, Feria Mascotas..."
+              style={{
+                width: '100%', padding: '10px 14px', fontSize: 14,
+                border: '1.5px solid #e5e7eb', borderRadius: 10, outline: 'none',
+                color: '#111827', background: '#f9fafb', boxSizing: 'border-box',
+              }}
+            />
+            <p style={{ fontSize: 12, color: '#9ca3af', margin: '6px 0 0' }}>
+              Si lo dejás vacío, se guarda como &quot;importacion&quot;.
+            </p>
+          </div>
+        )}
 
         {/* Preview */}
         {filas.length > 0 && (

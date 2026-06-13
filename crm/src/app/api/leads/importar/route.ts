@@ -34,6 +34,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const filas: FilaLead[] = body.filas
     const nombreArchivo: string = body.nombreArchivo
+    const nombreBase: string = (body.nombreBase || 'importacion').toLowerCase().trim()
 
     if (!filas?.length) {
       return NextResponse.json({ error: 'Sin filas' }, { status: 400 })
@@ -79,7 +80,7 @@ export async function POST(request: NextRequest) {
         email: f.email ?? null,
         dni: f.dni ?? null,
         mensaje: f.mensaje ?? null,
-        origen: 'directo' as const,
+        origen: nombreBase,
         importacionId: importacion.id,
         asignadoAId: asignarAgente(),
         ultimaInteraccionEn: new Date(),
